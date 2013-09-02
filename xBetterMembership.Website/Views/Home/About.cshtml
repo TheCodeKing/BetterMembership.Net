@@ -1,0 +1,34 @@
+﻿@{
+    this.ViewBag.Title = "About";
+}
+
+<hgroup class="title">
+    <h1>@this.ViewBag.Title.</h1>
+    <h2>@this.ViewBag.Message</h2>
+</hgroup>
+
+<article>
+    <p>
+        Use this area to provide additional information.
+    </p>
+
+    <p>
+        Use this area to provide additional information.
+    </p>
+
+    <p>
+        Use this area to provide additional information.
+    </p>
+</article>
+
+<aside>
+    <h3>Aside Title</h3>
+    <p>
+        Use this area to provide additional information.
+    </p>
+    <ul>
+        <li>@this.Html.ActionLink("Home", "Index", "Home")</li>
+        <li>@this.Html.ActionLink("About", "About", "Home")</li>
+        <li>@this.Html.ActionLink("Contact", "Contact", "Home")</li>
+    </ul>
+</aside>

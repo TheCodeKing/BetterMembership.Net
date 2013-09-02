@@ -1,0 +1,34 @@
+﻿@model ICollection<BetterMembership.Website.Models.ExternalLogin>
+
+@if (this.Model.Count > 0)
+{
+    <h3>Registered external logins</h3>
+    <table>
+        <tbody>
+            @foreach (var externalLogin in this.Model)
+            {
+                <tr>
+                    <td>@externalLogin.ProviderDisplayName</td>
+                    <td>
+                        @if (this.ViewBag.ShowRemoveButton)
+                        {
+                            using (this.Html.BeginForm("Disassociate", "Account"))
+                            {
+                                @this.Html.AntiForgeryToken()
+                                <fieldset>
+                                    @this.Html.Hidden("provider", externalLogin.Provider)
+                                    @this.Html.Hidden("providerUserId", externalLogin.ProviderUserId)
+                                    <input type="submit" value="Remove" title="Remove this @externalLogin.ProviderDisplayName credential from your account" />
+                                </fieldset>
+                            }
+                        }
+                        else
+                        {
+                            @: &nbsp;
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
