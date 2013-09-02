@@ -1,35 +1,34 @@
-﻿@using BetterMembership.Website.Models
-@model ICollection<ExternalLogin>
+﻿@model ICollection<BetterMembership.Website.Models.ExternalLogin>
 
-@if (this.Model.Count > 0)
+@if (Model.Count > 0)
 {
     <h3>Registered external logins</h3>
     <table>
         <tbody>
-            @foreach (ExternalLogin externalLogin in this.Model)
-            {
-                <tr>
-                    <td>@externalLogin.ProviderDisplayName</td>
-                    <td>
-                        @if (this.ViewBag.ShowRemoveButton)
+        @foreach (BetterMembership.Website.Models.ExternalLogin externalLogin in Model)
+        {
+            <tr>
+                <td>@externalLogin.ProviderDisplayName</td>
+                <td>
+                    @if (ViewBag.ShowRemoveButton)
+                    {
+                        using (Html.BeginForm("Disassociate", "Account"))
                         {
-                            using (this.Html.BeginForm("Disassociate", "Account"))
-                            {
-                                @this.Html.AntiForgeryToken()
-                                <div>
-                                    @this.Html.Hidden("provider", externalLogin.Provider)
-                                    @this.Html.Hidden("providerUserId", externalLogin.ProviderUserId)
-                                    <input type="submit" value="Remove" title="Remove this @externalLogin.ProviderDisplayName credential from your account" />
-                                </div>
-                            }
+                            @Html.AntiForgeryToken()
+                            <div>
+                                @Html.Hidden("provider", externalLogin.Provider)
+                                @Html.Hidden("providerUserId", externalLogin.ProviderUserId)
+                                <input type="submit" value="Remove" title="Remove this @externalLogin.ProviderDisplayName credential from your account" />
+                            </div>
                         }
-                        else
-                        {
-                            @: &nbsp;
-                        }
-                    </td>
-                </tr>
-            }
+                    }
+                    else
+                    {
+                        @: &nbsp;
+                    }
+                </td>
+            </tr>
+        }
         </tbody>
     </table>
 }

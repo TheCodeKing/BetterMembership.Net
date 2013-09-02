@@ -1,7 +1,8 @@
-﻿namespace BetterMembership.Website
-{
-    using System.Web.Mvc;
+﻿using System.Web;
+using System.Web.Mvc;
 
+namespace BetterMembership.Website
+{
     public class FilterConfig
     {
         public static void RegisterGlobalFilters(GlobalFilterCollection filters)
