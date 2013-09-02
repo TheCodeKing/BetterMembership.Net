@@ -1,10 +1,10 @@
 ﻿@{
-    ViewBag.Title = "About";
+    this.ViewBag.Title = "About";
 }
 
 <hgroup class="title">
-    <h1>@ViewBag.Title.</h1>
-    <h2>@ViewBag.Message</h2>
+    <h1>@this.ViewBag.Title.</h1>
+    <h2>@this.ViewBag.Message</h2>
 </hgroup>
 
 <article>
@@ -27,8 +27,8 @@
         Use this area to provide additional information.
     </p>
     <ul>
-        <li>@Html.ActionLink("Home", "Index", "Home")</li>
-        <li>@Html.ActionLink("About", "About", "Home")</li>
-        <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
+        <li>@this.Html.ActionLink("Home", "Index", "Home")</li>
+        <li>@this.Html.ActionLink("About", "About", "Home")</li>
+        <li>@this.Html.ActionLink("Contact", "Contact", "Home")</li>
     </ul>
 </aside>

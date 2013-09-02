@@ -6,7 +6,9 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("BetterMembershipProvider")]
-[assembly: AssemblyDescription("A better implementation of ExtendedMembershipProvider with support for legacy MembershipProvider APIs.")]
+[assembly:
+    AssemblyDescription(
+        "A better implementation of ExtendedMembershipProvider with support for legacy MembershipProvider APIs.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("BetterMembershipProvider")]
