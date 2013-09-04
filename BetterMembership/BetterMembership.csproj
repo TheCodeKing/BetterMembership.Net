@@ -55,6 +55,11 @@
   <ItemGroup>
     <Compile Include="Data\DatabaseProxy.cs" />
     <Compile Include="Data\IDatabase.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Utils\RoleProviderAccessor.cs" />
     <Compile Include="Utils\DefaultProviderSwitcher.cs" />
     <Compile Include="Dummy\DummyMembershipProvider.cs" />
@@ -65,8 +70,14 @@
     <Compile Include="Data\MembershipContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utils\MembershipProviderAccessor.cs" />
+    <Compile Include="Utils\SqlHelper.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
   <ItemGroup>
     <None Include="packages.config">
       <SubType>Designer</SubType>
