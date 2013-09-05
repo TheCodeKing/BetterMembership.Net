@@ -2,44 +2,13 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.IO;
-    using System.Web;
     using System.Web.Security;
-
-    using BetterMembership.Data;
 
     using WebMatrix.WebData;
 
-    internal static class Helper
+    internal static class MembershipExtensions
     {
         private const string DefaultPassword = "Password1!";
-
-        public static void ClearDownDatabaseTables()
-        {
-            InitializeDatabase("SqlServer", "UserProfile");
-            InitializeDatabase("SqlServerCE2", "CustomUserTable");
-        }
-
-        public static void SetupCurrentHttpContext(this HttpContext context)
-        {
-            if (context != null)
-            {
-                return;
-            }
-
-            var capabilities = new Dictionary<string, string> { { "cookies", "true" } };
-            var request = new HttpRequest("index.html", "http://foo", string.Empty)
-                              {
-                                  Browser =
-                                      new HttpBrowserCapabilities
-                                          {
-                                              Capabilities
-                                                  =
-                                                  capabilities
-                                          }
-                              };
-            HttpContext.Current = new HttpContext(request, new HttpResponse(new StringWriter()));
-        }
 
         public static TestUser WithConfirmedUser(this ExtendedMembershipProvider provider)
         {
@@ -85,29 +54,6 @@
             var userName = prefix;
             var email = prefix + "@test.com";
             return new TestUser(userName, email, DefaultPassword);
-        }
-
-        private static void InitializeDatabase(string connectionString, string userTable)
-        {
-            using (var context = new MembershipContext(connectionString))
-            {
-                context.Database.CreateIfNotExists();
-                try
-                {
-                    context.Database.ExecuteSqlCommand("truncate table " + userTable);
-                }
-                catch (Exception)
-                {
-                }
-
-                try
-                {
-                    context.Database.ExecuteSqlCommand("truncate table webpages_Membership");
-                }
-                catch (Exception)
-                {
-                }
-            }
         }
     }
 }

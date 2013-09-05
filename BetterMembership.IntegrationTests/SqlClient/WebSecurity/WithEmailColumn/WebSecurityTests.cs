@@ -14,18 +14,12 @@
     [TestFixture]
     public class WebSecurityTests
     {
-        private const int ConfiguredAllowedPasswordAttempts = 3;
-
-        private const int ConfiguredPasswordLockoutTimeoutInSeconds = 1;
-
         private ExtendedMembershipProvider provider;
 
         [SetUp]
         public void SetUp()
         {
-            Helper.ClearDownDatabaseTables();
-
-            HttpContext.Current.SetupCurrentHttpContext();
+            HttpContext.Current.WithHttpContext().WithCleanDatabase();
 
             this.provider = Membership.Providers["defaultProviderWithEmailColumn"] as ExtendedMembershipProvider;
         }
@@ -50,12 +44,12 @@
         {
             // arrange
             var testUser =
-                this.provider.WithConfirmedUser().WithInvalidPasswordAttempts(ConfiguredAllowedPasswordAttempts + 1);
+                this.provider.WithConfirmedUser().WithInvalidPasswordAttempts(Constants.ConfiguredAllowedPasswordAttempts + 1);
 
             // act
-            Thread.Sleep(1000 * ConfiguredPasswordLockoutTimeoutInSeconds);
+            Thread.Sleep(1000 * Constants.ConfiguredPasswordLockoutTimeoutInSeconds);
             var webSecurityIsLockedOut = WebSecurity.IsAccountLockedOut(
-                testUser.UserName, ConfiguredAllowedPasswordAttempts, ConfiguredPasswordLockoutTimeoutInSeconds);
+                testUser.UserName, Constants.ConfiguredAllowedPasswordAttempts, Constants.ConfiguredPasswordLockoutTimeoutInSeconds);
 
             // assert
             Assert.That(webSecurityIsLockedOut, Is.False);
@@ -92,11 +86,11 @@
         {
             // arrange
             var testUser =
-                this.provider.WithUnconfirmedUser().WithInvalidPasswordAttempts(ConfiguredAllowedPasswordAttempts + 1);
+                this.provider.WithUnconfirmedUser().WithInvalidPasswordAttempts(Constants.ConfiguredAllowedPasswordAttempts + 1);
 
             // act
             var webSecurityIsLockedOut = this.provider.IsAccountLockedOut(
-                testUser.UserName, ConfiguredAllowedPasswordAttempts, ConfiguredPasswordLockoutTimeoutInSeconds);
+                testUser.UserName, Constants.ConfiguredAllowedPasswordAttempts, Constants.ConfiguredPasswordLockoutTimeoutInSeconds);
 
             // assert
             Assert.That(webSecurityIsLockedOut, Is.False);

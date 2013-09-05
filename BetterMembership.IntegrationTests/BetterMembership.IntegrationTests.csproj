@@ -61,12 +61,14 @@
     <Reference Include="WebMatrix.WebData, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Helpers\Constants.cs" />
+    <Compile Include="Helpers\HttpContextExtensions.cs" />
+    <Compile Include="Helpers\MembershipExtensions.cs" />
     <Compile Include="SqlClient\Membership\WithoutEmailColumn\MembershipWithoutEmailColumnTests.cs" />
     <Compile Include="SqlClient\WebSecurity\WithEmailColumn\WebSecurityTests.cs" />
     <Compile Include="Utils\DefaultProviderSwitcherTest.cs" />
     <Compile Include="SqlClient\Membership\WithEmailColumn\MembershipWithEmailColumnTests.cs" />
     <Compile Include="Helpers\TestUser.cs" />
-    <Compile Include="Helpers\Helper.cs" />
     <Compile Include="Helpers\MembershipUserCollectionExtensions.cs" />
     <Compile Include="Helpers\TestUserExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

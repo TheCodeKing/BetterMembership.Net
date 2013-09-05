@@ -5,7 +5,7 @@
 
     using BetterMembership.Dummy;
     using BetterMembership.IntegrationTests.Helpers;
-    using BetterMembership.Utils;
+    using BetterMembership.Web;
 
     using NUnit.Framework;
 
@@ -17,9 +17,7 @@
         [SetUp]
         public void SetUp()
         {
-            Helper.ClearDownDatabaseTables();
-
-            HttpContext.Current.SetupCurrentHttpContext();
+            HttpContext.Current.WithHttpContext().WithCleanDatabase();
         }
 
         [Test]

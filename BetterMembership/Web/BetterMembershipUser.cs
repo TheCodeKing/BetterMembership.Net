@@ -1,4 +1,4 @@
-﻿namespace BetterMembership.Utils
+﻿namespace BetterMembership.Web
 {
     using System;
     using System.Web.Security;
@@ -83,6 +83,14 @@
             get
             {
                 return this.isLockedOutDelegate();
+            }
+        }
+
+        public override bool IsOnline
+        {
+            get
+            {
+                throw new NotSupportedException();
             }
         }
     }

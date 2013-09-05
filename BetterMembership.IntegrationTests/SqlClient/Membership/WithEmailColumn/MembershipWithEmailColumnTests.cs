@@ -14,18 +14,12 @@
     [TestFixture]
     public class MembershipWithEmailColumnTests
     {
-        private const int ConfiguredAllowedPasswordAttempts = 3;
-
-        private const int ConfiguredPasswordLockoutTimeoutInSeconds = 1;
-
         private ExtendedMembershipProvider provider;
 
         [SetUp]
         public void SetUp()
         {
-            Helper.ClearDownDatabaseTables();
-
-            HttpContext.Current.SetupCurrentHttpContext();
+            HttpContext.Current.WithHttpContext().WithCleanDatabase();
 
             this.provider = Membership.Providers["defaultProviderWithEmailColumn"] as ExtendedMembershipProvider;
         }
@@ -35,7 +29,7 @@
         {
             // arrange
             var testUser =
-                this.provider.WithConfirmedUser().WithInvalidPasswordAttempts(ConfiguredAllowedPasswordAttempts);
+                this.provider.WithConfirmedUser().WithInvalidPasswordAttempts(Constants.ConfiguredAllowedPasswordAttempts);
 
             // act
             var user = this.provider.GetUser(testUser.UserName, false);
@@ -120,10 +114,10 @@
         {
             // arrange
             var testUser =
-                this.provider.WithConfirmedUser().WithInvalidPasswordAttempts(ConfiguredAllowedPasswordAttempts + 1);
+                this.provider.WithConfirmedUser().WithInvalidPasswordAttempts(Constants.ConfiguredAllowedPasswordAttempts + 1);
 
             // act
-            Thread.Sleep(1000 * ConfiguredPasswordLockoutTimeoutInSeconds + 1);
+            Thread.Sleep(1000 * Constants.ConfiguredPasswordLockoutTimeoutInSeconds + 1);
             var user = this.provider.GetUser(testUser.UserName, false);
 
             // assert
@@ -136,7 +130,7 @@
         {
             // arrange
             var testUser =
-                this.provider.WithConfirmedUser().WithInvalidPasswordAttempts(ConfiguredAllowedPasswordAttempts + 1);
+                this.provider.WithConfirmedUser().WithInvalidPasswordAttempts(Constants.ConfiguredAllowedPasswordAttempts + 1);
 
             // act
             var user = this.provider.GetUser(testUser.UserName, false);
@@ -305,7 +299,7 @@
         {
             // arrange
             var testUser =
-                this.provider.WithUnconfirmedUser().WithInvalidPasswordAttempts(ConfiguredAllowedPasswordAttempts + 1);
+                this.provider.WithUnconfirmedUser().WithInvalidPasswordAttempts(Constants.ConfiguredAllowedPasswordAttempts + 1);
 
             // act
             var user = this.provider.GetUser(testUser.UserName, false);

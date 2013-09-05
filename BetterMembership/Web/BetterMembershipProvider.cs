@@ -11,7 +11,6 @@
     using BetterMembership.Data;
     using BetterMembership.Extensions;
     using BetterMembership.Facades;
-    using BetterMembership.Utils;
 
     using CuttingEdge.Conditions;
 
@@ -206,6 +205,11 @@
         {
             Condition.Requires(username, "username").IsNotNullOrWhiteSpace();
 
+            if (userIsOnline)
+            {
+                throw new NotSupportedException("value provided for userIsOnline is not supported");
+            }
+
             using (var db = this.ConnectToDatabase())
             {
                 var row = db.QuerySingle(this.sqlHelper.GetUserQuery, username);
@@ -222,6 +226,11 @@
         {
             Condition.Requires(providerUserKey, "providerUserKey").IsNotNull();
             Condition.Requires(providerUserKey, "providerUserKey").IsOfType(typeof(int));
+
+            if (userIsOnline)
+            {
+                throw new NotSupportedException("value provided for userIsOnline is not supported");
+            }
 
             var userId = (int)providerUserKey;
 
