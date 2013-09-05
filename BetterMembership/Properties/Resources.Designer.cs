@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace BetterMembershipProvider.Properties {
+namespace BetterMembership.Properties {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace BetterMembershipProvider.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("BetterMembershipProvider.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("BetterMembership.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -191,6 +191,36 @@ namespace BetterMembershipProvider.Properties {
         internal static string sqlUnlockUser {
             get {
                 return ResourceManager.GetString("sqlUnlockUser", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Update p
+        ///Set	 p.[email] = @1
+        ///From [UserProfile] p
+        ///Where p.[email] != @1 AND UPPER(p.[userName]) = UPPER(@0);
+        ///Update m
+        ///Set	 m.IsConfirmed = @2
+        ///From [UserProfile] p
+        ///	  inner join [webpages_Membership] m on m.UserId=p.[UserId]
+        ///Where m.IsConfirmed != @2 And UPPER(p.[userName]) = UPPER(@0);.
+        /// </summary>
+        internal static string sqlUpdateUserWithEmail {
+            get {
+                return ResourceManager.GetString("sqlUpdateUserWithEmail", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Update m
+        ///Set	 m.IsConfirmed = @1
+        ///From [UserProfile] p
+        ///	  inner join [webpages_Membership] m on m.UserId=p.[UserId]
+        ///Where m.IsConfirmed != @1 And UPPER(p.[userName]) = UPPER(@0).
+        /// </summary>
+        internal static string sqlUpdateUserWithoutEmail {
+            get {
+                return ResourceManager.GetString("sqlUpdateUserWithoutEmail", resourceCulture);
             }
         }
     }

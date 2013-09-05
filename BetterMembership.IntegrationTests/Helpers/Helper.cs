@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.IO;
     using System.Web;
+    using System.Web.Security;
 
     using BetterMembership.Data;
 
@@ -40,33 +41,18 @@
             HttpContext.Current = new HttpContext(request, new HttpResponse(new StringWriter()));
         }
 
-        public static TestUser WithUnConfirmedUser()
+        public static TestUser WithConfirmedUser(this ExtendedMembershipProvider provider)
         {
             var prefix = Guid.NewGuid().ToString("N");
             var userName = prefix;
             var email = prefix + "@test.com";
-            WebSecurity.CreateUserAndAccount(userName, DefaultPassword, new { Email = email }, true);
+            provider.CreateUserAndAccount(
+                userName, DefaultPassword, new Dictionary<string, object> { { "Email", email } });
             return new TestUser(userName, email, DefaultPassword);
         }
 
-        public static TestUser WithConfirmedUser()
-        {
-            var prefix = Guid.NewGuid().ToString("N");
-            var userName = prefix;
-            var email = prefix + "@test.com";
-            WebSecurity.CreateUserAndAccount(userName, DefaultPassword, new { Email = email });
-            return new TestUser(userName, email, DefaultPassword);
-        }
-
-        public static TestUser WithUnregisteredUser()
-        {
-            var prefix = Guid.NewGuid().ToString("N");
-            var userName = prefix;
-            var email = prefix + "@test.com";
-            return new TestUser(userName, email, DefaultPassword);
-        }
-
-        public static IList<TestUser> WithConfirmedUsers(int count, out string prefix)
+        public static IList<TestUser> WithConfirmedUsers(
+            this ExtendedMembershipProvider provider, int count, out string prefix)
         {
             prefix = Guid.NewGuid().ToString("N");
             var users = new List<TestUser>();
@@ -75,11 +61,30 @@
                 var userName = prefix + "_" + i;
                 var email = prefix + i + "@test.com";
 
-                WebSecurity.CreateUserAndAccount(userName, DefaultPassword, new { Email = email });
+                provider.CreateUserAndAccount(
+                    userName, DefaultPassword, new Dictionary<string, object> { { "Email", email } });
                 users.Add(new TestUser(userName, email, DefaultPassword));
             }
 
             return users;
+        }
+
+        public static TestUser WithUnconfirmedUser(this ExtendedMembershipProvider provider)
+        {
+            var prefix = Guid.NewGuid().ToString("N");
+            var userName = prefix;
+            var email = prefix + "@test.com";
+            provider.CreateUserAndAccount(
+                userName, DefaultPassword, true, new Dictionary<string, object> { { "Email", email } });
+            return new TestUser(userName, email, DefaultPassword);
+        }
+
+        public static TestUser WithUnregisteredUser(this MembershipProvider provider)
+        {
+            var prefix = Guid.NewGuid().ToString("N");
+            var userName = prefix;
+            var email = prefix + "@test.com";
+            return new TestUser(userName, email, DefaultPassword);
         }
 
         private static void InitializeDatabase(string connectionString, string userTable)

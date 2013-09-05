@@ -1,11 +1,10 @@
-﻿namespace BetterMembership
+﻿namespace BetterMembership.Web
 {
     using System;
     using System.Collections.Generic;
     using System.Collections.Specialized;
     using System.Configuration;
     using System.Configuration.Provider;
-    using System.Diagnostics;
     using System.Linq;
     using System.Web.Security;
 
@@ -13,8 +12,6 @@
     using BetterMembership.Extensions;
     using BetterMembership.Facades;
     using BetterMembership.Utils;
-
-    using global::BetterMembershipProvider.Utils;
 
     using CuttingEdge.Conditions;
 
@@ -148,7 +145,7 @@
             Condition.Requires(pageIndex, "pageIndex").IsNotLessThan(0);
             Condition.Requires(pageSize, "pageSize").IsGreaterOrEqual(1);
 
-            if (!HasEmailColumnDefined)
+            if (!this.HasEmailColumnDefined)
             {
                 throw new ProviderException("userEmailColumn is not defined");
             }
@@ -205,11 +202,6 @@
             throw new NotSupportedException();
         }
 
-        public override bool ValidateUser(string username, string password)
-        {
-            return base.ValidateUser(username, password);
-        }
-
         public override MembershipUser GetUser(string username, bool userIsOnline)
         {
             Condition.Requires(username, "username").IsNotNullOrWhiteSpace();
@@ -254,7 +246,7 @@
         {
             Condition.Requires(email, "email").IsNotNullOrWhiteSpace();
 
-            if (!HasEmailColumnDefined)
+            if (!this.HasEmailColumnDefined)
             {
                 throw new ProviderException("userEmailColumn is not defined");
             }
@@ -316,12 +308,35 @@
 
             using (var db = this.ConnectToDatabase())
             {
-                return db.Execute(sqlHelper.UnlockUser, userName) > 0;
+                return db.Execute(this.sqlHelper.UnlockUser, userName) > 0;
             }
         }
 
         public override void UpdateUser(MembershipUser user)
         {
+            Condition.Requires(user, "user").IsNotNull();
+
+            using (var db = this.ConnectToDatabase())
+            {
+                if (this.HasEmailColumnDefined)
+                {
+                    db.Execute(this.sqlHelper.UpdateUserWithEmail, user.UserName, user.Email, user.IsApproved);
+                }
+                else
+                {
+                    db.Execute(this.sqlHelper.UpdateUserWithoutEmail, user.UserName, user.IsApproved);
+                }
+            }
+        }
+
+        public override bool ValidateUser(string username, string password)
+        {
+            return base.ValidateUser(username, password);
+        }
+
+        private static DateTime GetDateTime(object value)
+        {
+            return value == null ? DateTime.MinValue : (DateTime)value;
         }
 
         private static int GetPagingEndRow(int pageSize, int startRow)
@@ -349,14 +364,17 @@
             int userId = row[1];
             string name = row[2];
             bool isConfirmed = row[3];
-            DateTime lastPasswordFailureDate = this.GetDateTime(row[4]);
+            DateTime lastPasswordFailureDate = GetDateTime(row[4]);
 
             int passwordFailuresSinceLastSuccess = row[5];
-            DateTime creationDate = this.GetDateTime(row[6]);
-            DateTime passwordChangedDate = this.GetDateTime(row[7]);
-            string email = HasEmailColumnDefined ? row[8] : string.Empty;
-            Func<bool> isLockedOutDelegate = () => isConfirmed && passwordFailuresSinceLastSuccess > this.MaxInvalidPasswordAttempts
-                               && lastPasswordFailureDate.Add(TimeSpan.FromSeconds(this.passwordLockoutTimeoutInSeconds)) > DateTime.UtcNow;
+            DateTime creationDate = GetDateTime(row[6]);
+            DateTime passwordChangedDate = GetDateTime(row[7]);
+            string email = this.HasEmailColumnDefined ? row[8] : string.Empty;
+            Func<bool> isLockedOutDelegate =
+                () =>
+                isConfirmed && passwordFailuresSinceLastSuccess > this.MaxInvalidPasswordAttempts
+                && lastPasswordFailureDate.Add(TimeSpan.FromSeconds(this.passwordLockoutTimeoutInSeconds))
+                > DateTime.UtcNow;
 
             return new BetterMembershipUser(
                 this.Name, 
@@ -365,13 +383,14 @@
                 email, 
                 null, 
                 null, 
-                isConfirmed,
+                isConfirmed, 
                 isLockedOutDelegate, 
                 creationDate, 
                 DateTime.MinValue, 
                 DateTime.MinValue, 
                 passwordChangedDate, 
-                lastPasswordFailureDate);
+                lastPasswordFailureDate, 
+                this.HasEmailColumnDefined);
         }
 
         private MembershipUserCollection ExtractMembershipUsersFromRows(List<dynamic> rows, out int totalRecords)
@@ -385,11 +404,6 @@
             }
 
             return users;
-        }
-
-        private DateTime GetDateTime(object value)
-        {
-            return value == null ? DateTime.MinValue : (DateTime)value;
         }
 
         private void InitializeDatabaseConnection()

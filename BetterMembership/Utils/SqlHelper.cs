@@ -1,6 +1,6 @@
-﻿namespace BetterMembershipProvider.Utils
+﻿namespace BetterMembership.Utils
 {
-    using BetterMembershipProvider.Properties;
+    using BetterMembership.Properties;
 
     using CuttingEdge.Conditions;
 
@@ -27,6 +27,10 @@
         private string getUserQuery;
 
         private string unlockUserQuery;
+
+        private string updateUserWithEmailQuery;
+
+        private string updateUserWithoutEmailQuery;
 
         public SqlHelper(string userTableName, string userIdColumn, string userNameColumn, string userEmailColumn)
         {
@@ -98,6 +102,25 @@
             get
             {
                 return this.unlockUserQuery ?? (this.unlockUserQuery = this.PrepareSqlStatment(Resources.sqlUnlockUser));
+            }
+        }
+
+        public string UpdateUserWithEmail
+        {
+            get
+            {
+                return this.updateUserWithEmailQuery
+                       ?? (this.updateUserWithEmailQuery = this.PrepareSqlStatment(Resources.sqlUpdateUserWithEmail));
+            }
+        }
+
+        public string UpdateUserWithoutEmail
+        {
+            get
+            {
+                return this.updateUserWithoutEmailQuery
+                       ?? (this.updateUserWithoutEmailQuery =
+                           this.PrepareSqlStatment(Resources.sqlUpdateUserWithoutEmail));
             }
         }
 

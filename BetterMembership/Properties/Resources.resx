@@ -227,4 +227,22 @@ From	UserProfile p
 		inner join webpages_Membership m on m.UserId = p.[userId]
 Where	p.[userName] = @0</value>
   </data>
+  <data name="sqlUpdateUserWithEmail" xml:space="preserve">
+    <value>Update p
+Set	 p.[email] = @1
+From [UserProfile] p
+Where p.[email] != @1 AND UPPER(p.[userName]) = UPPER(@0);
+Update m
+Set	 m.IsConfirmed = @2
+From [UserProfile] p
+	  inner join [webpages_Membership] m on m.UserId=p.[UserId]
+Where m.IsConfirmed != @2 And UPPER(p.[userName]) = UPPER(@0);</value>
+  </data>
+  <data name="sqlUpdateUserWithoutEmail" xml:space="preserve">
+    <value>Update m
+Set	 m.IsConfirmed = @1
+From [UserProfile] p
+	  inner join [webpages_Membership] m on m.UserId=p.[UserId]
+Where m.IsConfirmed != @1 And UPPER(p.[userName]) = UPPER(@0)</value>
+  </data>
 </root>

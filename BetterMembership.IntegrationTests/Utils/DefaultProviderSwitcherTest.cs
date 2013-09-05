@@ -1,5 +1,6 @@
-﻿namespace BetterMembership.IntegrationTests
+﻿namespace BetterMembership.IntegrationTests.Utils
 {
+    using System.Web;
     using System.Web.Security;
 
     using BetterMembership.Dummy;
@@ -17,6 +18,8 @@
         public void SetUp()
         {
             Helper.ClearDownDatabaseTables();
+
+            HttpContext.Current.SetupCurrentHttpContext();
         }
 
         [Test]
@@ -59,7 +62,7 @@
         }
 
         [Test]
-        public void GivenWebSecurityThenInitializesProvidersThenSuccess()
+        public void GivenWebSecurityWhenInitializesProvidersThenSuccess()
         {
             // arrange //act //assert
             WebSecurity.Logout();
