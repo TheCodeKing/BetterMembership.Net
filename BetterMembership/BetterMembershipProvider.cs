@@ -5,6 +5,7 @@
     using System.Collections.Specialized;
     using System.Configuration;
     using System.Configuration.Provider;
+    using System.Diagnostics;
     using System.Linq;
     using System.Web.Security;
 
@@ -204,6 +205,11 @@
             throw new NotSupportedException();
         }
 
+        public override bool ValidateUser(string username, string password)
+        {
+            return base.ValidateUser(username, password);
+        }
+
         public override MembershipUser GetUser(string username, bool userIsOnline)
         {
             Condition.Requires(username, "username").IsNotNullOrWhiteSpace();
@@ -306,12 +312,17 @@
 
         public override bool UnlockUser(string userName)
         {
-            return base.UnlockUser(userName);
+            Condition.Requires(userName, "userName").IsNotNullOrWhiteSpace();
+
+            using (var db = this.ConnectToDatabase())
+            {
+                return db.Execute(sqlHelper.UnlockUser, userName) > 0;
+            }
         }
 
         public override void UpdateUser(MembershipUser user)
         {
-            }
+        }
 
         private static int GetPagingEndRow(int pageSize, int startRow)
         {
@@ -339,24 +350,23 @@
             string name = row[2];
             bool isConfirmed = row[3];
             DateTime lastPasswordFailureDate = this.GetDateTime(row[4]);
+
             int passwordFailuresSinceLastSuccess = row[5];
             DateTime creationDate = this.GetDateTime(row[6]);
             DateTime passwordChangedDate = this.GetDateTime(row[7]);
             string email = HasEmailColumnDefined ? row[8] : string.Empty;
+            Func<bool> isLockedOutDelegate = () => isConfirmed && passwordFailuresSinceLastSuccess > this.MaxInvalidPasswordAttempts
+                               && lastPasswordFailureDate.Add(TimeSpan.FromSeconds(this.passwordLockoutTimeoutInSeconds)) > DateTime.UtcNow;
 
-            bool isLockedOut = passwordFailuresSinceLastSuccess > this.MaxInvalidPasswordAttempts
-                               && lastPasswordFailureDate.Add(
-                                   TimeSpan.FromSeconds(this.passwordLockoutTimeoutInSeconds)) > DateTime.UtcNow;
-
-            return new MembershipUser(
+            return new BetterMembershipUser(
                 this.Name, 
                 name, 
                 userId, 
                 email, 
                 null, 
                 null, 
-                isConfirmed, 
-                isLockedOut, 
+                isConfirmed,
+                isLockedOutDelegate, 
                 creationDate, 
                 DateTime.MinValue, 
                 DateTime.MinValue, 

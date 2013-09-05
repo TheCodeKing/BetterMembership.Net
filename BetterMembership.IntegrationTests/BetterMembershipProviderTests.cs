@@ -1,8 +1,7 @@
 ﻿namespace BetterMembership.IntegrationTests
 {
-    using System;
-    using System.Collections.Generic;
     using System.Linq;
+    using System.Threading;
     using System.Web;
     using System.Web.Security;
 
@@ -15,6 +14,10 @@
     [TestFixture]
     public class BetterMembershipProviderTests
     {
+        private const int ConfiguredAllowedPasswordAttempts = 3;
+
+        private const int ConfiguredPasswordLockoutTimeoutInSeconds = 1;
+
         [SetUp]
         public void SetUp()
         {
@@ -24,66 +27,131 @@
         }
 
         [Test]
-        public void GivenAValidUserWhenGetUserThenMembershipUserSuccess()
+        public void GivenConfirmedUserWhenExactlyMaxNumberOfPasswordAttemptsThenAccountIsNotLockedOut()
         {
             // arrange
-            var userName = Guid.NewGuid().ToString("N");
-            const string Password = "Password1!";
-            WebSecurity.CreateUserAndAccount(userName, Password, null, true);
+            var testUser = Helper.WithConfirmedUser().WithInvalidPasswordAttempts(ConfiguredAllowedPasswordAttempts);
 
             // act
-            var user = Membership.GetUser(userName, false);
+            var user = Membership.GetUser(testUser.UserName);
+            var webSecurityIsLockedOut = WebSecurity.IsAccountLockedOut(
+                testUser.UserName, ConfiguredAllowedPasswordAttempts, ConfiguredPasswordLockoutTimeoutInSeconds);
+
+            // assert
+            Assert.That(user, Is.Not.Null);
+            Assert.That(webSecurityIsLockedOut, Is.False);
+            Assert.That(user.IsLockedOut, Is.False);
+        }
+
+        [Test]
+        public void GivenConfirmedUserWhenGetUserByIdThenUserIsFound()
+        {
+            // arrange
+            var testUser = Helper.WithConfirmedUser();
+            var membershipUser = Membership.GetUser(testUser.UserName);
+
+            // act
+            var user = Membership.GetUser(membershipUser.ProviderUserKey, false);
+
+            // assert
+            Assert.That(user, Is.Not.Null);
+            Assert.That(user.UserName, Is.EqualTo(testUser.UserName));
+        }
+
+        [Test]
+        public void GivenConfirmedUserWhenGetUserNameByEmailThenReturnUserName()
+        {
+            // arrange
+            var testUser = Helper.WithConfirmedUser();
+
+            // act
+            var userName = Membership.GetUserNameByEmail(testUser.Email);
+
+            // assert
+            Assert.That(userName, Is.Not.Null);
+            Assert.That(userName, Is.EqualTo(testUser.UserName));
+        }
+
+        [Test]
+        public void GivenConfirmedUserWhenGetUserThenReturnMembershipUser()
+        {
+            // arrange
+            var testUser = Helper.WithConfirmedUser();
+
+            // act
+            var user = Membership.GetUser(testUser.UserName, false);
 
             // assert
             Assert.That(user, Is.Not.Null);
         }
 
         [Test]
-        public void GivenMultipleProvidersWhenNonDefaultProviderCreateUserAndAccountThenReturnSuccess()
-        {
-            //// arrange
-            var userName = Guid.NewGuid().ToString("N");
-            const string Password = "Password1!";
-            var provider = (ExtendedMembershipProvider)Membership.Providers["nonDefaultProvider"];
-
-            // act
-            var result = provider.CreateUserAndAccount(userName, Password, true);
-
-            // assert
-            Assert.That(result, Is.Not.Null);
-        }
-
-        [Test]
-        public void GivenValidLoginCredentialsWhenLoginThenReturnSuccess()
-        {
-            //// arrange
-            var userName = Guid.NewGuid().ToString("N");
-            const string Password = "Password1!";
-            WebSecurity.CreateUserAndAccount(userName, Password);
-
-            // act
-            var result = WebSecurity.Login(userName, Password);
-
-            // assert
-            Assert.That(result, Is.True);
-        }
-
-        [Test]
-        public void GivenValidUserDetailsWhenCreateUserAndAccountThenSuccess()
+        public void GivenConfirmedUserWhenGetUserThenUserIsApproved()
         {
             // arrange
-            var userName = Guid.NewGuid().ToString("N");
-            const string Password = "Password1!";
+            var testUser = Helper.WithConfirmedUser();
 
             // act
-            var id = WebSecurity.CreateUserAndAccount(userName, Password, null, true);
+            var user = Membership.GetUser(testUser.UserName);
 
             // assert
-            Assert.That(id, Is.Not.Null);
+            Assert.That(user.IsApproved, Is.True);
         }
 
         [Test]
-        public void GivenValidUsersWhenFindUsersbyEmailThenResultsSuccess()
+        public void GivenConfirmedUserWhenLoginThenUserCanAuthenticate()
+        {
+            // arrange
+            var testUser = Helper.WithConfirmedUser();
+
+            // act
+            var webSecurityResult = WebSecurity.Login(testUser.UserName, testUser.Password);
+            var membershipResult = Membership.ValidateUser(testUser.UserName, testUser.Password);
+
+            // assert
+            Assert.That(webSecurityResult, Is.True);
+            Assert.That(membershipResult, Is.True);
+        }
+
+        [Test]
+        public void
+            GivenConfirmedUserWhenMoreThanMaxNumberOfPasswordAttemptsAndWaitLongerThanPasswordTimeoutThenAccountIsNotLockedOut
+            ()
+        {
+            // arrange
+            var testUser = Helper.WithConfirmedUser().WithInvalidPasswordAttempts(ConfiguredAllowedPasswordAttempts + 1);
+
+            // act
+            Thread.Sleep(1000 * ConfiguredPasswordLockoutTimeoutInSeconds);
+            var user = Membership.GetUser(testUser.UserName);
+            var webSecurityIsLockedOut = WebSecurity.IsAccountLockedOut(
+                testUser.UserName, ConfiguredAllowedPasswordAttempts, ConfiguredPasswordLockoutTimeoutInSeconds);
+
+            // assert
+            Assert.That(user, Is.Not.Null);
+            Assert.That(webSecurityIsLockedOut, Is.False);
+            Assert.That(user.IsLockedOut, Is.False);
+        }
+
+        [Test]
+        public void GivenConfirmedUserWhenMoreThanMaxNumberOfPasswordAttemptsThenAccountLockedOutSuccess()
+        {
+            // arrange
+            var testUser = Helper.WithConfirmedUser().WithInvalidPasswordAttempts(ConfiguredAllowedPasswordAttempts + 1);
+
+            // act
+            var user = Membership.GetUser(testUser.UserName);
+            var webSecurityIsLockedOut = WebSecurity.IsAccountLockedOut(
+                testUser.UserName, ConfiguredAllowedPasswordAttempts, ConfiguredPasswordLockoutTimeoutInSeconds);
+
+            // assert
+            Assert.That(user, Is.Not.Null);
+            Assert.That(webSecurityIsLockedOut, Is.True);
+            Assert.That(user.IsLockedOut, Is.True);
+        }
+
+        [Test]
+        public void GivenConfirmedUsersWhenFindUsersbyEmailThenPageResultsSuccessfully()
         {
             // arrange
             const int PageSize = 2;
@@ -92,8 +160,8 @@
             string preFix2;
             const int UserGroup1Count = 8;
             const int UserGroup2Count = 3;
-            var users1 = Helper.WithUsers(UserGroup1Count, out preFix1);
-            var users2 = Helper.WithUsers(UserGroup2Count, out preFix2);
+            var users1 = Helper.WithConfirmedUsers(UserGroup1Count, out preFix1);
+            var users2 = Helper.WithConfirmedUsers(UserGroup2Count, out preFix2);
 
             // act
             int totalRecords1;
@@ -118,7 +186,7 @@
         }
 
         [Test]
-        public void GivenValidUsersWhenFindUsersbyUserNameThenResultsSuccess()
+        public void GivenConfirmedUsersWhenFindUsersbyUserNameThenPageResultsSuccessFully()
         {
             // arrange
             const int PageSize = 2;
@@ -127,8 +195,8 @@
             string preFix2;
             const int UserGroup1Count = 8;
             const int UserGroup2Count = 3;
-            var users1 = Helper.WithUsers(UserGroup1Count, out preFix1);
-            var users2 = Helper.WithUsers(UserGroup2Count, out preFix2);
+            var users1 = Helper.WithConfirmedUsers(UserGroup1Count, out preFix1);
+            var users2 = Helper.WithConfirmedUsers(UserGroup2Count, out preFix2);
 
             // act
             int totalRecords1;
@@ -153,21 +221,14 @@
         }
 
         [Test]
-        public void GivenValidUsersWhenGetAllUsersThenResultsSuccess()
+        public void GivenConfirmedUsersWhenGetAllUsersThenReturnFirstPageUsersSuccessfully()
         {
             // arrange
             const int PageSize = 2;
             const int PageIndex = 0;
-            var preFix = Guid.NewGuid().ToString("N");
-            
-            var users = new List<string>();
-            for (var i = 0; i < 10; i++)
-            {
-                var userName = preFix + "_" + i;
-                const string Password = "Password1!";
-                WebSecurity.CreateUserAndAccount(userName, Password, null, true);
-                users.Add(userName);
-            }
+            string preFix1;
+            const int UserGroup1Count = 10;
+            var users1 = Helper.WithConfirmedUsers(UserGroup1Count, out preFix1);
 
             // act
             int totalRecords;
@@ -176,39 +237,98 @@
             // assert
             Assert.That(results, Is.Not.Null);
             Assert.That(results.Count, Is.EqualTo(PageSize));
-            Assert.That(results[users[0]].UserName, Is.Not.Null);
+            Assert.That(results.First().UserName, Is.EqualTo(users1.First().UserName));
             Assert.That(totalRecords, Is.EqualTo(10));
         }
 
         [Test]
-        public void GivenAValidUserWhenGetUserByIdThenReturnUserSuccess()
+        public void GivenMultipleProvidersWhenNonDefaultProviderUsedForCreateUserAndAccountThenUserAccountIsCreated()
         {
             // arrange
-            string prefix;
-            var testUser = Helper.WithUser(out prefix);
-            var membershipUser = Membership.GetUser(testUser.UserName);
+            var testUser = Helper.WithUnregisteredUser();
+            var provider = (ExtendedMembershipProvider)Membership.Providers["nonDefaultProvider"];
 
             // act
-            var user = Membership.GetUser(membershipUser.ProviderUserKey, false);
+            var result = provider.CreateUserAndAccount(testUser.UserName, testUser.Password, true);
 
             // assert
-            Assert.That(user, Is.Not.Null);
-            Assert.That(user.UserName, Is.StringStarting(prefix));
+            Assert.That(result, Is.Not.Null);
         }
 
         [Test]
-        public void GivenAValidUserWhenGetUserNameByEmailThenReturnUserNameSuccess()
+        public void GivenUnConfirmedUserWhenGetUserThenMembershipUserIsReturned()
         {
             // arrange
-            string prefix;
-            var testUser = Helper.WithUser(out prefix);
+            var testUser = Helper.WithUnConfirmedUser();
 
             // act
-            var userName = Membership.GetUserNameByEmail(testUser.Email);
+            var user = Membership.GetUser(testUser.UserName, false);
 
             // assert
-            Assert.That(userName, Is.Not.Null);
-            Assert.That(userName, Is.EqualTo(testUser.UserName));
+            Assert.That(user, Is.Not.Null);
+            Assert.That(user.UserName, Is.EqualTo(testUser.UserName));
+        }
+
+        [Test]
+        public void GivenUnConfirmedUserWhenGetUserThenUserIsNotApproved()
+        {
+            // arrange
+            var testUser = Helper.WithUnConfirmedUser();
+
+            // act
+            var user = Membership.GetUser(testUser.UserName);
+
+            // assert    
+            Assert.That(user, Is.Not.Null);
+            Assert.That(user.UserName, Is.EqualTo(testUser.UserName));
+            Assert.That(user.IsApproved, Is.False);
+        }
+
+        [Test]
+        public void GivenUnConfirmedUserWhenLoginThenUserCannotAuthenticate()
+        {
+            // arrange
+            var testUser = Helper.WithUnConfirmedUser();
+
+            // act
+            var webSecurityResult = WebSecurity.Login(testUser.UserName, testUser.Password);
+            var membershipResult = Membership.ValidateUser(testUser.UserName, testUser.Password);
+
+            // assert
+            Assert.That(webSecurityResult, Is.False);
+            Assert.That(membershipResult, Is.False);
+        }
+
+        [Test]
+        public void GivenUnConfirmedUserWhenMoreThanMaxNumberOfPasswordAttemptsThenAccountIsNotLockedOut()
+        {
+            // arrange
+            var testUser =
+                Helper.WithUnConfirmedUser().WithInvalidPasswordAttempts(ConfiguredAllowedPasswordAttempts + 1);
+
+            // act
+            var user = Membership.GetUser(testUser.UserName);
+            var webSecurityIsLockedOut = WebSecurity.IsAccountLockedOut(
+                testUser.UserName, ConfiguredAllowedPasswordAttempts, ConfiguredPasswordLockoutTimeoutInSeconds);
+
+            // assert
+            Assert.That(user, Is.Not.Null);
+            Assert.That(user.UserName, Is.EqualTo(testUser.UserName));
+            Assert.That(webSecurityIsLockedOut, Is.False);
+            Assert.That(user.IsLockedOut, Is.False);
+        }
+
+        [Test]
+        public void GivenUnregisteredUserWhenCreateUserAndAccountThenUserAccountIsCreated()
+        {
+            // arrange
+            var testUser = Helper.WithUnregisteredUser();
+
+            // act
+            var id = WebSecurity.CreateUserAndAccount(testUser.UserName, testUser.Password, null, true);
+
+            // assert
+            Assert.That(id, Is.Not.Null);
         }
     }
 }

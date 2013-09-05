@@ -219,4 +219,12 @@ From	[UserProfile] p
 		inner join [webpages_Membership] m on m.UserId=p.[userId]
 Where	p.[email] = @0</value>
   </data>
+  <data name="sqlUnlockUser" xml:space="preserve">
+    <value>Update  m
+Set		PasswordFailuresSinceLastSuccess = 0,
+		LastPasswordFailureDate = null
+From	UserProfile p
+		inner join webpages_Membership m on m.UserId = p.[userId]
+Where	p.[userName] = @0</value>
+  </data>
 </root>

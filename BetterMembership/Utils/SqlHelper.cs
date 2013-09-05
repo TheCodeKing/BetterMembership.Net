@@ -14,17 +14,19 @@
 
         private readonly string userTableName;
 
-        private string getUserQuery;
-
-        private string getAllUsersQuery;
+        private string findUsersByEmailQuery;
 
         private string findUsersByNameQuery;
 
-        private string findUsersByEmailQuery;
+        private string getAllUsersQuery;
 
         private string getUserByIdQuery;
 
         private string getUserNameByEmailQuery;
+
+        private string getUserQuery;
+
+        private string unlockUserQuery;
 
         public SqlHelper(string userTableName, string userIdColumn, string userNameColumn, string userEmailColumn)
         {
@@ -38,19 +40,12 @@
             this.userEmailColumn = userEmailColumn;
         }
 
-        public string GetUserQuery
+        public string FindUsersByEmailQuery
         {
             get
             {
-                return this.getUserQuery ?? (this.getUserQuery = this.PrepareSqlStatment(Resources.SqlGetUser));
-            }
-        }
-
-        public string GetAllUsersQuery
-        {
-            get
-            {
-                return this.getAllUsersQuery ?? (this.getAllUsersQuery = this.PrepareSqlStatment(Resources.SqlGetAllUsers)); 
+                return this.findUsersByEmailQuery
+                       ?? (this.findUsersByEmailQuery = this.PrepareSqlStatment(Resources.SqlFindUsersByEmail));
             }
         }
 
@@ -58,16 +53,17 @@
         {
             get
             {
-                return this.findUsersByNameQuery ?? (this.findUsersByNameQuery = this.PrepareSqlStatment(Resources.SqlFindUsersByName)); 
+                return this.findUsersByNameQuery
+                       ?? (this.findUsersByNameQuery = this.PrepareSqlStatment(Resources.SqlFindUsersByName));
             }
         }
 
-        public string FindUsersByEmailQuery
+        public string GetAllUsersQuery
         {
             get
             {
-                return this.findUsersByEmailQuery
-                       ?? (this.findUsersByEmailQuery = this.PrepareSqlStatment(Resources.SqlFindUsersByEmail));
+                return this.getAllUsersQuery
+                       ?? (this.getAllUsersQuery = this.PrepareSqlStatment(Resources.SqlGetAllUsers));
             }
         }
 
@@ -89,12 +85,29 @@
             }
         }
 
+        public string GetUserQuery
+        {
+            get
+            {
+                return this.getUserQuery ?? (this.getUserQuery = this.PrepareSqlStatment(Resources.SqlGetUser));
+            }
+        }
+
+        public string UnlockUser
+        {
+            get
+            {
+                return this.unlockUserQuery ?? (this.unlockUserQuery = this.PrepareSqlStatment(Resources.sqlUnlockUser));
+            }
+        }
+
         private string PrepareSqlStatment(string sqlQuery)
         {
-            return sqlQuery.Replace("[UserProfile]", this.userTableName)
-                          .Replace("[userName]", this.userNameColumn)
-                          .Replace("[userId]", this.userIdColumn)
-                          .Replace("[email]", this.userEmailColumn ?? userNameColumn);
+            return
+                sqlQuery.Replace("[UserProfile]", this.userTableName)
+                        .Replace("[userName]", this.userNameColumn)
+                        .Replace("[userId]", this.userIdColumn)
+                        .Replace("[email]", this.userEmailColumn ?? this.userNameColumn);
         }
     }
 }

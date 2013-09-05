@@ -4,24 +4,15 @@
     using System.Collections.Generic;
     using System.IO;
     using System.Web;
-    using System.Web.Security;
 
     using BetterMembership.Data;
 
     using WebMatrix.WebData;
 
-    internal static class MembershipUserCollectionExtensions
-    {
-        public static MembershipUser[] ToArray(this MembershipUserCollection collection)
-        {
-            var users = new MembershipUser[collection.Count];
-            collection.CopyTo(users, 0);
-            return users;
-        }
-    }
-
     internal static class Helper
     {
+        private const string DefaultPassword = "Password1!";
+
         public static void ClearDownDatabaseTables()
         {
             InitializeDatabase("SqlServer", "UserProfile");
@@ -49,7 +40,33 @@
             HttpContext.Current = new HttpContext(request, new HttpResponse(new StringWriter()));
         }
 
-        public static IList<TestUser> WithUsers(int count, out string prefix)
+        public static TestUser WithUnConfirmedUser()
+        {
+            var prefix = Guid.NewGuid().ToString("N");
+            var userName = prefix;
+            var email = prefix + "@test.com";
+            WebSecurity.CreateUserAndAccount(userName, DefaultPassword, new { Email = email }, true);
+            return new TestUser(userName, email, DefaultPassword);
+        }
+
+        public static TestUser WithConfirmedUser()
+        {
+            var prefix = Guid.NewGuid().ToString("N");
+            var userName = prefix;
+            var email = prefix + "@test.com";
+            WebSecurity.CreateUserAndAccount(userName, DefaultPassword, new { Email = email });
+            return new TestUser(userName, email, DefaultPassword);
+        }
+
+        public static TestUser WithUnregisteredUser()
+        {
+            var prefix = Guid.NewGuid().ToString("N");
+            var userName = prefix;
+            var email = prefix + "@test.com";
+            return new TestUser(userName, email, DefaultPassword);
+        }
+
+        public static IList<TestUser> WithConfirmedUsers(int count, out string prefix)
         {
             prefix = Guid.NewGuid().ToString("N");
             var users = new List<TestUser>();
@@ -57,23 +74,12 @@
             {
                 var userName = prefix + "_" + i;
                 var email = prefix + i + "@test.com";
-                const string Password = "Password1!";
-                WebSecurity.CreateUserAndAccount(userName, Password, new {Email = email}, true);
-                users.Add(new TestUser(userName, email));
+
+                WebSecurity.CreateUserAndAccount(userName, DefaultPassword, new { Email = email });
+                users.Add(new TestUser(userName, email, DefaultPassword));
             }
 
             return users;
-        }
-
-        public static TestUser WithUser(out string prefix)
-        {
-            prefix = Guid.NewGuid().ToString("N");
-            var i = 0;
-            var userName = prefix + "_" + i;
-            var email = prefix + i + "@test.com";
-            const string Password = "Password1!";
-            WebSecurity.CreateUserAndAccount(userName, Password, new { Email = email }, true);
-            return new TestUser(userName, email);
         }
 
         private static void InitializeDatabase(string connectionString, string userTable)
@@ -97,19 +103,6 @@
                 {
                 }
             }
-        }
-
-        public class TestUser
-        {
-            public TestUser(string userName, string email)
-            {
-                this.UserName = userName;
-                this.Email = email;
-            }
-
-            public string Email { get; private set; }
-
-            public string UserName { get; private set; }
         }
     }
 }

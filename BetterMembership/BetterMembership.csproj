@@ -60,6 +60,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Utils\BetterMembershipUser.cs" />
     <Compile Include="Utils\RoleProviderAccessor.cs" />
     <Compile Include="Utils\DefaultProviderSwitcher.cs" />
     <Compile Include="Dummy\DummyMembershipProvider.cs" />

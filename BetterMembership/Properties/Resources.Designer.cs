@@ -179,5 +179,19 @@ namespace BetterMembershipProvider.Properties {
                 return ResourceManager.GetString("sqlGetUserNameByEmail", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Update  m
+        ///Set		PasswordFailuresSinceLastSuccess = 0,
+        ///		LastPasswordFailureDate = null
+        ///From	UserProfile p
+        ///		inner join webpages_Membership m on m.UserId = p.[userId]
+        ///Where	p.[userName] = @0.
+        /// </summary>
+        internal static string sqlUnlockUser {
+            get {
+                return ResourceManager.GetString("sqlUnlockUser", resourceCulture);
+            }
+        }
     }
 }
