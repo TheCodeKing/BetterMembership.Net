@@ -11,6 +11,7 @@
     using BetterMembership.Data;
     using BetterMembership.Extensions;
     using BetterMembership.Facades;
+    using BetterMembership.Utils;
 
     using CuttingEdge.Conditions;
 
@@ -67,11 +68,27 @@
             this.sqlHelperFactory = sqlHelperFactory;
         }
 
+        public bool HasEmailColumnDefined
+        {
+            get
+            {
+                return !string.IsNullOrWhiteSpace(this.userEmailColumn);
+            }
+        }
+
         public override int MaxInvalidPasswordAttempts
         {
             get
             {
                 return this.maxInvalidPasswordAttempts;
+            }
+        }
+
+        public int PasswordLockoutTimeoutInSeconds
+        {
+            get
+            {
+                return this.passwordLockoutTimeoutInSeconds;
             }
         }
 
@@ -91,14 +108,6 @@
             }
         }
 
-        private bool HasEmailColumnDefined
-        {
-            get
-            {
-                return !string.IsNullOrWhiteSpace(this.userEmailColumn);
-            }
-        }
-
         public override MembershipUser CreateUser(
             string username, 
             string password, 
@@ -109,6 +118,8 @@
             object providerUserKey, 
             out MembershipCreateStatus status)
         {
+            Condition.Requires(email, "email").Evaluate(!RequiresUniqueEmail || string.IsNullOrWhiteSpace(email));
+
             var profile = new Dictionary<string, object>();
 
             if (this.RequiresUniqueEmail && this.HasEmailColumnDefined && !string.IsNullOrWhiteSpace(email))
@@ -119,7 +130,10 @@
                     status = MembershipCreateStatus.DuplicateEmail;
                     return null;
                 }
+            }
 
+            if (this.HasEmailColumnDefined)
+            {
                 profile.Add(this.userEmailColumn, email);
             }
 
@@ -246,11 +260,6 @@
             return null;
         }
 
-        public override int GetUserIdFromPasswordResetToken(string token)
-        {
-            return base.GetUserIdFromPasswordResetToken(token);
-        }
-
         public override string GetUserNameByEmail(string email)
         {
             Condition.Requires(email, "email").IsNotNullOrWhiteSpace();
@@ -271,6 +280,11 @@
             Condition.Requires(name, "name").IsNotNullOrWhiteSpace();
             Condition.Requires(config, "config").IsNotNull();
 
+            if (config.ContainsKey("requiresQuestionAndAnswer"))
+            {
+                throw new ProviderException("unrecognized attribute requiresQuestionAndAnswer");
+            }
+
             this.connectionStringName = config.GetString("connectionStringName", "DefaultConnection");
             this.userTableName = config.GetString("userTableName", "UserProfile");
             this.userIdColumn = config.GetString("userIdColumn", "UserId");
@@ -280,11 +294,11 @@
             var autoInitialize = config.GetBoolean("autoInitialize", true);
             this.maxInvalidPasswordAttempts = config.GetInteger("maxInvalidPasswordAttempts", int.MaxValue);
             this.passwordLockoutTimeoutInSeconds = config.GetInteger("passwordLockoutTimeoutInSeconds", int.MaxValue);
-            this.requiresUniqueEmail = config.GetBoolean("requiresUniqueEmail", false);
+            this.requiresUniqueEmail = config.GetBoolean("requiresUniqueEmail");
 
             if (this.requiresUniqueEmail && !this.HasEmailColumnDefined)
             {
-                throw new ConfigurationErrorsException("requiresUniqueEmail cannot be defined without userEmailColumn");
+                throw new ProviderException("requiresUniqueEmail cannot be defined without userEmailColumn");
             }
 
             config.Remove("userTableName");
@@ -382,7 +396,7 @@
             Func<bool> isLockedOutDelegate =
                 () =>
                 isConfirmed && passwordFailuresSinceLastSuccess > this.MaxInvalidPasswordAttempts
-                && lastPasswordFailureDate.Add(TimeSpan.FromSeconds(this.passwordLockoutTimeoutInSeconds))
+                && lastPasswordFailureDate.Add(TimeSpan.FromSeconds(this.PasswordLockoutTimeoutInSeconds))
                 > DateTime.UtcNow;
 
             return new BetterMembershipUser(

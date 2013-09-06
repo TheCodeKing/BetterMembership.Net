@@ -1,11 +1,27 @@
 ﻿namespace BetterMembership.Extensions
 {
     using System.Collections.Specialized;
+    using System.Linq;
 
     using CuttingEdge.Conditions;
 
     internal static class NameValueCollectionExtension
     {
+        public static bool ContainsKey(this NameValueCollection collection, string key)
+        {
+            if (collection == null)
+            {
+                return false;
+            }
+
+            if (collection.Get(key) == null)
+            {
+                return collection.AllKeys.Contains(key);
+            }
+
+            return true;
+        }
+
         public static bool GetBoolean(this NameValueCollection collection, string key, bool defaultValue = false)
         {
             Condition.Requires(key, "key").IsNotNullOrWhiteSpace();
@@ -22,12 +38,7 @@
             }
 
             bool returnValue;
-            if (bool.TryParse(value, out returnValue))
-            {
-                return returnValue;
-            }
-
-            return defaultValue;
+            return bool.TryParse(value, out returnValue) ? returnValue : defaultValue;
         }
 
         public static int GetInteger(this NameValueCollection collection, string key, int defaultValue = 0)
@@ -36,18 +47,17 @@
 
             if (collection == null)
             {
-                return 0;
+                return defaultValue;
             }
 
             var value = collection.GetString(key);
             if (string.IsNullOrWhiteSpace(value))
             {
-                return 0;
+                return defaultValue;
             }
 
             int returnValue;
-            int.TryParse(value, out returnValue);
-            return returnValue;
+            return int.TryParse(value, out returnValue) ? returnValue : defaultValue;
         }
 
         public static string GetString(this NameValueCollection collection, string key, string defaultValue = null)
@@ -56,7 +66,7 @@
 
             if (collection == null)
             {
-                return null;
+                return defaultValue;
             }
 
             return collection.Get(key) ?? defaultValue;

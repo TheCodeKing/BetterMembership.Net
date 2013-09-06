@@ -1,4 +1,4 @@
-﻿namespace BetterMembership.Web
+﻿namespace BetterMembership.Utils
 {
     using System;
     using System.Reflection;

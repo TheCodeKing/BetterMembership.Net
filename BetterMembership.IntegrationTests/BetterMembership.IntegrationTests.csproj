@@ -32,6 +32,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="CuttingEdge.Conditions, Version=1.2.0.11174, Culture=neutral, PublicKeyToken=984cb50dea722e99, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\BetterMembership.Website\Bin\CuttingEdge.Conditions.dll</HintPath>
+    </Reference>
     <Reference Include="EntityFramework">
       <HintPath>..\packages\EntityFramework.5.0.0\lib\net45\EntityFramework.dll</HintPath>
     </Reference>
@@ -61,16 +65,24 @@
     <Reference Include="WebMatrix.WebData, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Helpers\Constants.cs" />
+    <Compile Include="ExtendedMembershipProvider\IsAccountLockedOutTests.cs" />
+    <Compile Include="Helpers\FluentProvider.cs" />
     <Compile Include="Helpers\HttpContextExtensions.cs" />
     <Compile Include="Helpers\MembershipExtensions.cs" />
-    <Compile Include="SqlClient\Membership\WithoutEmailColumn\MembershipWithoutEmailColumnTests.cs" />
-    <Compile Include="SqlClient\WebSecurity\WithEmailColumn\WebSecurityTests.cs" />
+    <Compile Include="Helpers\BaseMembershipTests.cs" />
+    <Compile Include="MembershipProvider\CreateUserTests.cs" />
+    <Compile Include="MembershipProvider\UnlockUserTests.cs" />
+    <Compile Include="MembershipProvider\UpdateUserTests.cs" />
+    <Compile Include="MembershipProvider\ValidateUserTests.cs" />
+    <Compile Include="MembershipProvider\FindUsersByUserNameTests.cs" />
+    <Compile Include="MembershipProvider\FindUsersByEmailTests.cs" />
+    <Compile Include="MembershipProvider\GetAllUsersTests.cs" />
+    <Compile Include="MembershipProvider\GetUserTests.cs" />
+    <Compile Include="ExtendedMembershipProvider\WebSecurityTests.cs" />
     <Compile Include="Utils\DefaultProviderSwitcherTest.cs" />
-    <Compile Include="SqlClient\Membership\WithEmailColumn\MembershipWithEmailColumnTests.cs" />
     <Compile Include="Helpers\TestUser.cs" />
     <Compile Include="Helpers\MembershipUserCollectionExtensions.cs" />
-    <Compile Include="Helpers\TestUserExtensions.cs" />
+    <Compile Include="Helpers\FluentProviderExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -85,9 +97,7 @@
       <Name>BetterMembership</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="SqlClient\WebSecurity\WithoutEmailColumn\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

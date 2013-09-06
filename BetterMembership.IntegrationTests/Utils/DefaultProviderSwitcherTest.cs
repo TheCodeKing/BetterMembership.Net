@@ -5,6 +5,7 @@
 
     using BetterMembership.Dummy;
     using BetterMembership.IntegrationTests.Helpers;
+    using BetterMembership.Utils;
     using BetterMembership.Web;
 
     using NUnit.Framework;
@@ -56,6 +57,17 @@
             {
                 // assert
                 Assert.That(Membership.Provider, Is.EqualTo(DummyMembershipProvider.Default));
+            }
+        }
+
+        [Test]
+        public void GivenRoleProviderWhenSwitchedThenDefaultIsNewProvider()
+        {
+            // arrange // act
+            using (new DefaultProviderSwitcher(DummyRoleProvider.Default))
+            {
+                // assert
+                Assert.That(Roles.Provider, Is.EqualTo(DummyRoleProvider.Default));
             }
         }
 

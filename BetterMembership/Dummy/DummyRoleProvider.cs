@@ -1,8 +1,10 @@
 ﻿namespace BetterMembership.Dummy
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.Web.Security;
 
+    [ExcludeFromCodeCoverage]
     internal sealed class DummyRoleProvider : RoleProvider
     {
         private static RoleProvider defaultInstance;
