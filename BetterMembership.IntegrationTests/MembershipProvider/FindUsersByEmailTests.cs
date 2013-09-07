@@ -10,6 +10,7 @@
     public class FindUsersByEmailTests : BaseMembershipTests
     {
         [TestCase(SqlClientProviderNameWithEmail)]
+        [TestCase(SqlClientProviderWithUniqueEmail)]
         [TestCase(SqlClientProviderNameWithoutEmail)]
         public void GivenConfirmedUserWhenGetUserNameByEmailThenReturnUserName(string providerName)
         {
@@ -32,6 +33,7 @@
         }
 
         [TestCase(SqlClientProviderNameWithEmail)]
+        [TestCase(SqlClientProviderWithUniqueEmail)]
         [TestCase(SqlClientProviderNameWithoutEmail)]
         public void GivenConfirmedUsersWhenFindUsersbyEmailThenPageResultsSuccessfully(string providerName)
         {

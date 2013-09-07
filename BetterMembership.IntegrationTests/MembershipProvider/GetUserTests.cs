@@ -1,8 +1,5 @@
 ﻿namespace BetterMembership.IntegrationTests.MembershipProvider
 {
-    using System.Threading;
-    using System.Web.Security;
-
     using BetterMembership.IntegrationTests.Helpers;
 
     using NUnit.Framework;
@@ -11,23 +8,8 @@
     public class GetUserTests : BaseMembershipTests
     {
         [TestCase(SqlClientProviderNameWithEmail)]
-        [TestCase(SqlClientProviderNameWithoutEmail)]
-        public void GivenConfirmedUserWhenExactlyMaxNumberOfPasswordAttemptsThenAccountIsNotLockedOut(
-            string providerName)
-        {
-            // arrange
-            var testClass = this.WithProvider(providerName);
-            var testUser = testClass.WithConfirmedUser().WithInvalidPasswordAttempts(testClass.MaxInvalidPasswordAttempts).Value;
-
-            // act
-            var user = testClass.GetUser(testUser.UserName, false);
-
-            // assert
-            Assert.That(user, Is.Not.Null);
-            Assert.That(user.IsLockedOut, Is.False);
-        }
-
-        [TestCase(SqlClientProviderNameWithEmail)]
+        [TestCase(SqlClientProviderWithUniqueEmail)]
+        [TestCase(SqlClientProviderWithUniqueEmail)]
         [TestCase(SqlClientProviderNameWithoutEmail)]
         public void GivenConfirmedUserWhenGetUserByIdThenUserIsFound(string providerName)
         {
@@ -45,6 +27,7 @@
         }
 
         [TestCase(SqlClientProviderNameWithEmail)]
+        [TestCase(SqlClientProviderWithUniqueEmail)]
         [TestCase(SqlClientProviderNameWithoutEmail)]
         public void GivenConfirmedUserWhenGetUserThenReturnMembershipUser(string providerName)
         {
@@ -60,6 +43,7 @@
         }
 
         [TestCase(SqlClientProviderNameWithEmail)]
+        [TestCase(SqlClientProviderWithUniqueEmail)]
         [TestCase(SqlClientProviderNameWithoutEmail)]
         public void GivenConfirmedUserWhenGetUserThenUserIsApproved(string providerName)
         {
@@ -75,44 +59,7 @@
         }
 
         [TestCase(SqlClientProviderNameWithEmail)]
-        [TestCase(SqlClientProviderNameWithoutEmail)]
-        public void
-            GivenConfirmedUserWhenMoreThanMaxNumberOfPasswordAttemptsAndWaitLongerThanPasswordTimeoutThenAccountIsNotLockedOut
-            (string providerName)
-        {
-            // arrange
-            var testClass = this.WithProvider(providerName);
-            var testUser =
-                testClass.WithConfirmedUser().WithInvalidPasswordAttempts(testClass.MaxInvalidPasswordAttempts + 1).Value;
-
-            // act
-            Thread.Sleep((1000 * testClass.PasswordLockoutTimeoutInSeconds()) + 500);
-            var user = testClass.GetUser(testUser.UserName, false);
-
-            // assert
-            Assert.That(user, Is.Not.Null);
-            Assert.That(user.IsLockedOut, Is.False);
-        }
-
-        [TestCase(SqlClientProviderNameWithEmail)]
-        [TestCase(SqlClientProviderNameWithoutEmail)]
-        public void GivenConfirmedUserWhenMoreThanMaxNumberOfPasswordAttemptsThenAccountLockedOutSuccess(
-            string providerName)
-        {
-            // arrange
-            var testClass = this.WithProvider(providerName);
-            var testUser =
-                testClass.WithConfirmedUser().WithInvalidPasswordAttempts(testClass.MaxInvalidPasswordAttempts + 1).Value;
-
-            // act
-            var user = testClass.GetUser(testUser.UserName, false);
-
-            // assert
-            Assert.That(user, Is.Not.Null);
-            Assert.That(user.IsLockedOut, Is.True);
-        }
-
-        [TestCase(SqlClientProviderNameWithEmail)]
+        [TestCase(SqlClientProviderWithUniqueEmail)]
         [TestCase(SqlClientProviderNameWithoutEmail)]
         public void GivenUnConfirmedUserWhenGetUserThenMembershipUserIsReturned(string providerName)
         {
@@ -129,6 +76,7 @@
         }
 
         [TestCase(SqlClientProviderNameWithEmail)]
+        [TestCase(SqlClientProviderWithUniqueEmail)]
         [TestCase(SqlClientProviderNameWithoutEmail)]
         public void GivenUnConfirmedUserWhenGetUserThenUserIsNotApproved(string providerName)
         {
@@ -146,25 +94,39 @@
         }
 
         [TestCase(SqlClientProviderNameWithEmail)]
+        [TestCase(SqlClientProviderWithUniqueEmail)]
         [TestCase(SqlClientProviderNameWithoutEmail)]
-        public void GivenUnConfirmedUserWhenMoreThanMaxNumberOfPasswordAttemptsThenAccountIsNotLockedOut(
-            string providerName)
+        public void GivenUnregisteredUserWhenGetUserThenMembershipUserIsNull(string providerName)
         {
             // arrange
             var testClass = this.WithProvider(providerName);
-            var testUser =
-                testClass.WithUnconfirmedUser().WithInvalidPasswordAttempts(testClass.MaxInvalidPasswordAttempts + 1).Value;
+            var testUser = testClass.WithUnregisteredUser().Value;
 
             // act
             var user = testClass.GetUser(testUser.UserName, false);
 
             // assert
-            Assert.That(user, Is.Not.Null);
-            Assert.That(user.UserName, Is.EqualTo(testUser.UserName));
-            Assert.That(user.IsLockedOut, Is.False);
+            Assert.That(user, Is.Null);
         }
 
         [TestCase(SqlClientProviderNameWithEmail)]
+        [TestCase(SqlClientProviderWithUniqueEmail)]
+        [TestCase(SqlClientProviderNameWithoutEmail)]
+        public void GivenUnregisteredUserWhenGetUserByIdThenMembershipUserIsNull(string providerName)
+        {
+            // arrange
+            var testClass = this.WithProvider(providerName);
+
+            // act
+            var user = testClass.GetUser((object)int.MaxValue, false);
+
+            // assert
+            Assert.That(user, Is.Null);
+        }
+
+        [TestCase(SqlClientProviderNameWithEmail)]
+        [TestCase(SqlClientProviderWithUniqueEmail)]
+        [TestCase(SqlClientProviderWithUniqueEmail)]
         [TestCase(SqlClientProviderNameWithoutEmail)]
         public void GivenUnReqisteredUserWhenGetUserThenUserIsNull(string providerName)
         {

@@ -34,7 +34,6 @@
             Assert.Throws<NotSupportedException>(() => result = user.IsOnline);
         }
 
-
         [Test]
         public void GivenMembershipUserWhenGetCommentThenEmptyString()
         {

@@ -8,6 +8,7 @@
     public class FindUsersByUserNameTests : BaseMembershipTests
     {
         [TestCase(SqlClientProviderNameWithEmail)]
+        [TestCase(SqlClientProviderWithUniqueEmail)]
         [TestCase(SqlClientProviderNameWithoutEmail)]
         public void GivenConfirmedUsersWhenFindUsersbyUserNameThenPageResultsSuccessFully(string providerName)
         {

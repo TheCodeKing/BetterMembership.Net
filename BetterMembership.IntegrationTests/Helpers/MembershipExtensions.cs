@@ -77,12 +77,11 @@
             return new FluentProvider<TestUser>(provider, new TestUser(userName, email, DefaultPassword));
         }
 
-        public static FluentProvider<TestUser> WithUnregisteredUser(this MembershipProvider provider)
+        public static FluentProvider<TestUser> WithUnregisteredUser(this MembershipProvider provider, string userName = null, string email = null)
         {
-            var prefix = Guid.NewGuid().ToString("N");
-            var userName = prefix;
-            var email = prefix + "@test.com";
-            return new FluentProvider<TestUser>(provider, new TestUser(userName, email, DefaultPassword));
+            var userNameParam = userName ?? Guid.NewGuid().ToString("N");
+            var emailParam = email ?? userNameParam + "@test.com";
+            return new FluentProvider<TestUser>(provider, new TestUser(userNameParam, emailParam, DefaultPassword));
         }
     }
 }

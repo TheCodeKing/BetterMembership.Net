@@ -112,6 +112,16 @@
         }
 
         [Test]
+        public void GivenProviderWhenResetPasswordThenNotSupportedException()
+        {
+            // arrange
+            var provider = new BetterMembershipProvider();
+
+            // act // assert
+            Assert.Throws<NotSupportedException>(() => provider.ResetPassword(null, null));
+        }
+
+        [Test]
         public void GivenRequiresUniqueEmailWhenInitializeThenRequiresUniqueEmailIsCorrectValue()
         {
             // arrange

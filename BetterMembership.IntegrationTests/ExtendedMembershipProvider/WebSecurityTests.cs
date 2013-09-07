@@ -9,6 +9,7 @@
     public class WebSecurityTests : BaseMembershipTests
     {
         [TestCase(SqlClientProviderNameWithEmail)]
+        [TestCase(SqlClientProviderWithUniqueEmail)]
         [TestCase(SqlClientProviderNameWithoutEmail)]
         public void GivenMultipleProvidersWhenNonDefaultProviderUsedForCreateUserAndAccountThenUserAccountIsCreated(
             string providerName)
@@ -25,6 +26,7 @@
         }
 
         [TestCase(SqlClientProviderNameWithEmail)]
+        [TestCase(SqlClientProviderWithUniqueEmail)]
         [TestCase(SqlClientProviderNameWithoutEmail)]
         public void GivenUnConfirmedUserWhenLoginThenUserCannotAuthenticate(string providerName)
         {
@@ -40,6 +42,7 @@
         }
 
         [TestCase(SqlClientProviderNameWithEmail)]
+        [TestCase(SqlClientProviderWithUniqueEmail)]
         [TestCase(SqlClientProviderNameWithoutEmail)]
         public void GivenUnConfirmedUserWhenMoreThanMaxNumberOfPasswordAttemptsThenAccountIsNotLockedOut(
             string providerName)
@@ -60,6 +63,7 @@
         }
 
         [TestCase(SqlClientProviderNameWithEmail)]
+        [TestCase(SqlClientProviderWithUniqueEmail)]
         [TestCase(SqlClientProviderNameWithoutEmail)]
         public void GivenUnregisteredUserWhenCreateUserAndAccountThenUserAccountIsCreated(string providerName)
         {

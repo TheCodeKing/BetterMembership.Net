@@ -13,6 +13,7 @@
     public class IsAccountLockedOutTests : BaseMembershipTests
     {
         [TestCase(SqlClientProviderNameWithEmail)]
+        [TestCase(SqlClientProviderWithUniqueEmail)]
         [TestCase(SqlClientProviderNameWithoutEmail)]
         public void
             GivenConfirmedUserWhenMoreThanMaxNumberOfPasswordAttemptsAndWaitLongerThanPasswordTimeoutThenAccountIsNotLockedOut
@@ -33,6 +34,7 @@
         }
 
         [TestCase(SqlClientProviderNameWithEmail)]
+        [TestCase(SqlClientProviderWithUniqueEmail)]
         [TestCase(SqlClientProviderNameWithoutEmail)]
         public void GivenUnConfirmedUserWhenMoreThanMaxNumberOfPasswordAttemptsThenAccountIsNotLockedOut(
             string providerName)
@@ -52,6 +54,7 @@
 
 
         [TestCase(SqlClientProviderNameWithEmail)]
+        [TestCase(SqlClientProviderWithUniqueEmail)]
         [TestCase(SqlClientProviderNameWithoutEmail)]
         public void GivenConfirmedUserWhenLessThanMaxNumberOfPasswordAttemptsThenAccountIsNotLockedOut(
             string providerName)

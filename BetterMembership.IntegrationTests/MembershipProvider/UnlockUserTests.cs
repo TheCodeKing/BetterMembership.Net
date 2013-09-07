@@ -9,6 +9,7 @@
     public class UnlockUserTests : BaseMembershipTests
     {
         [TestCase(SqlClientProviderNameWithEmail)]
+        [TestCase(SqlClientProviderWithUniqueEmail)]
         [TestCase(SqlClientProviderNameWithoutEmail)]
         public void GivenConfirmedLockedOutUserWhenUnlockUserThenUserCanAuthenticate(string providerName)
         {

@@ -12,6 +12,7 @@
         private const string NewEmail = "newemail@test.com";
 
         [TestCase(SqlClientProviderNameWithEmail)]
+        [TestCase(SqlClientProviderWithUniqueEmail)]
         [TestCase(SqlClientProviderNameWithoutEmail)]
         public void GivenConfirmedUserWhenLoginThenUserCanAuthenticate(string providerName)
         {
@@ -27,6 +28,7 @@
         }
 
         [TestCase(SqlClientProviderNameWithEmail)]
+        [TestCase(SqlClientProviderWithUniqueEmail)]
         [TestCase(SqlClientProviderNameWithoutEmail)]
         public void GivenUnConfirmedUserWhenLoginThenUserCannotAuthenticate(string providerName)
         {
@@ -42,6 +44,7 @@
         }
 
         [TestCase(SqlClientProviderNameWithEmail)]
+        [TestCase(SqlClientProviderWithUniqueEmail)]
         [TestCase(SqlClientProviderNameWithoutEmail)]
         public void GivenConfirmedUserWhenUpdateUserThenUserIsUpdated(string providerName)
         {
@@ -70,6 +73,7 @@
         }
 
         [TestCase(SqlClientProviderNameWithEmail)]
+        [TestCase(SqlClientProviderWithUniqueEmail)]
         [TestCase(SqlClientProviderNameWithoutEmail)]
         public void GivenUnConfirmedUserWhenUpdateUserThenUserIsUpdated(string providerName)
         {

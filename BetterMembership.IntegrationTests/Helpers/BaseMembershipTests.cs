@@ -11,6 +11,8 @@
     {
         protected const string SqlClientProviderNameWithEmail = "SqlClientProviderWithEmailColumn";
 
+        protected const string SqlClientProviderWithUniqueEmail = "SqlClientProviderWithUniqueEmail";
+
         protected const string SqlClientProviderNameWithoutEmail = "SqlClientProviderWithoutEmailColumn";
 
         [SetUp]

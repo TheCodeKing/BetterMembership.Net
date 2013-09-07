@@ -10,6 +10,7 @@
     public class GetAllUsersTests : BaseMembershipTests
     {
         [TestCase(SqlClientProviderNameWithEmail)]
+        [TestCase(SqlClientProviderWithUniqueEmail)]
         [TestCase(SqlClientProviderNameWithoutEmail)]
         public void GivenConfirmedUsersWhenGetAllUsersThenReturnFirstPageUsersSuccessfully(string providerName)
         {

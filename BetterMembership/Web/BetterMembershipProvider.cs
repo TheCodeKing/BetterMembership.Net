@@ -118,14 +118,14 @@
             object providerUserKey, 
             out MembershipCreateStatus status)
         {
-            Condition.Requires(email, "email").Evaluate(!RequiresUniqueEmail || string.IsNullOrWhiteSpace(email));
+            Condition.Requires(email, "email").Evaluate(!(RequiresUniqueEmail && string.IsNullOrWhiteSpace(email)));
 
             var profile = new Dictionary<string, object>();
 
             if (this.RequiresUniqueEmail && this.HasEmailColumnDefined && !string.IsNullOrWhiteSpace(email))
             {
                 var user = this.GetUserNameByEmail(email);
-                if (string.Compare(user, username, StringComparison.OrdinalIgnoreCase) != 0)
+                if (user != null)
                 {
                     status = MembershipCreateStatus.DuplicateEmail;
                     return null;
@@ -322,7 +322,7 @@
 
         public override string ResetPassword(string username, string answer)
         {
-            return base.ResetPassword(username, answer);
+            throw new NotSupportedException();
         }
 
         public override bool UnlockUser(string userName)
