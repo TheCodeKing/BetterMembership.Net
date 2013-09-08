@@ -1,6 +1,5 @@
 ﻿namespace BetterMembership.IntegrationTests.Helpers
 {
-    using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
@@ -50,12 +49,18 @@
             {
                 context.Database.CreateIfNotExists();
 
-                if (context.Database.SqlQuery<int?>("SELECT 1 from INFORMATION_SCHEMA.TABLES where TABLE_NAME = 'webpages_Membership'").SingleOrDefault() != null)
+                if (
+                    context.Database.SqlQuery<int?>(
+                        "SELECT 1 from INFORMATION_SCHEMA.TABLES where TABLE_NAME = 'webpages_Membership'")
+                           .SingleOrDefault() != null)
                 {
                     context.Database.ExecuteSqlCommand("Delete From webpages_Membership");
                 }
 
-                if (context.Database.SqlQuery<int?>("SELECT 1 from INFORMATION_SCHEMA.TABLES where TABLE_NAME = {0}", userTable).SingleOrDefault() != null)
+                if (
+                    context.Database.SqlQuery<int?>(
+                        "SELECT 1 from INFORMATION_SCHEMA.TABLES where TABLE_NAME = {0}", userTable).SingleOrDefault()
+                    != null)
                 {
                     context.Database.ExecuteSqlCommand("Delete From " + userTable);
                 }

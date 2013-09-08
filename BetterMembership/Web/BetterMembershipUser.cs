@@ -5,6 +5,7 @@
 
     using CuttingEdge.Conditions;
 
+    [Serializable]
     internal class BetterMembershipUser : MembershipUser
     {
         private readonly bool isEmailSupported;
