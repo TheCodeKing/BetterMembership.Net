@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using System.Linq;
     using System.Web;
 
     using BetterMembership.Data;
@@ -49,9 +50,15 @@
             {
                 context.Database.CreateIfNotExists();
 
-                context.Database.ExecuteSqlCommand("Delete From webpages_Membership");
+                if (context.Database.SqlQuery<int?>("SELECT 1 from INFORMATION_SCHEMA.TABLES where TABLE_NAME = 'webpages_Membership'").SingleOrDefault() != null)
+                {
+                    context.Database.ExecuteSqlCommand("Delete From webpages_Membership");
+                }
 
-                context.Database.ExecuteSqlCommand("Delete From " + userTable);
+                if (context.Database.SqlQuery<int?>("SELECT 1 from INFORMATION_SCHEMA.TABLES where TABLE_NAME = {0}", userTable).SingleOrDefault() != null)
+                {
+                    context.Database.ExecuteSqlCommand("Delete From " + userTable);
+                }
             }
         }
     }
