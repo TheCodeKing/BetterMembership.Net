@@ -15,6 +15,12 @@
 
         protected const string SqlClientProviderNameWithoutEmail = "SqlClientProviderWithoutEmailColumn";
 
+        protected const string SqlClientCeProviderNameWithEmail = "SqlClientCeProviderWithEmailColumn";
+
+        protected const string SqlClientCeProviderWithUniqueEmail = "SqlClientCeProviderWithUniqueEmail";
+
+        protected const string SqlClientCeProviderNameWithoutEmail = "SqlClientCeProviderWithoutEmailColumn";
+
         [SetUp]
         public virtual void SetUp()
         {

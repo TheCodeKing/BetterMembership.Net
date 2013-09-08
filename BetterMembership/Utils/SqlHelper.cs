@@ -1,11 +1,13 @@
 ﻿namespace BetterMembership.Utils
 {
-    using BetterMembership.Properties;
-
     using CuttingEdge.Conditions;
 
     internal sealed class SqlHelper
     {
+        private readonly string sqlProvider;
+
+        private readonly SqlResourceFinder sqlResourceFinder;
+
         private readonly string userEmailColumn;
 
         private readonly string userIdColumn;
@@ -28,16 +30,26 @@
 
         private string unlockUserQuery;
 
-        private string updateUserWithEmailQuery;
+        private string updateUserMembershipQuery;
 
-        private string updateUserWithoutEmailQuery;
+        private string updateUserProfileQuery;
 
-        public SqlHelper(string userTableName, string userIdColumn, string userNameColumn, string userEmailColumn)
+        public SqlHelper(
+            SqlResourceFinder sqlResourceFinder, 
+            string sqlProvider, 
+            string userTableName, 
+            string userIdColumn, 
+            string userNameColumn, 
+            string userEmailColumn)
         {
+            Condition.Requires(sqlResourceFinder, "sqlResourceFinder").IsNotNull();
+            Condition.Requires(sqlProvider, "sqlProvider").IsNotNullOrWhiteSpace();
             Condition.Requires(userTableName, "userTableName").IsNotNullOrWhiteSpace();
             Condition.Requires(userIdColumn, "userIdColumn").IsNotNullOrWhiteSpace();
             Condition.Requires(userNameColumn, "userNameColumn").IsNotNullOrWhiteSpace();
 
+            this.sqlResourceFinder = sqlResourceFinder;
+            this.sqlProvider = sqlProvider;
             this.userTableName = userTableName;
             this.userIdColumn = userIdColumn;
             this.userNameColumn = userNameColumn;
@@ -49,7 +61,7 @@
             get
             {
                 return this.findUsersByEmailQuery
-                       ?? (this.findUsersByEmailQuery = this.PrepareSqlStatment(Resources.SqlFindUsersByEmail));
+                       ?? (this.findUsersByEmailQuery = this.PrepareSqlStatment("sqlFindUsersByEmail"));
             }
         }
 
@@ -58,7 +70,7 @@
             get
             {
                 return this.findUsersByNameQuery
-                       ?? (this.findUsersByNameQuery = this.PrepareSqlStatment(Resources.SqlFindUsersByName));
+                       ?? (this.findUsersByNameQuery = this.PrepareSqlStatment("sqlFindUsersByName"));
             }
         }
 
@@ -66,8 +78,7 @@
         {
             get
             {
-                return this.getAllUsersQuery
-                       ?? (this.getAllUsersQuery = this.PrepareSqlStatment(Resources.SqlGetAllUsers));
+                return this.getAllUsersQuery ?? (this.getAllUsersQuery = this.PrepareSqlStatment("sqlGetAllUsers"));
             }
         }
 
@@ -75,8 +86,7 @@
         {
             get
             {
-                return this.getUserByIdQuery
-                       ?? (this.getUserByIdQuery = this.PrepareSqlStatment(Resources.sqlGetUserById));
+                return this.getUserByIdQuery ?? (this.getUserByIdQuery = this.PrepareSqlStatment("sqlGetUserById"));
             }
         }
 
@@ -85,7 +95,7 @@
             get
             {
                 return this.getUserNameByEmailQuery
-                       ?? (this.getUserNameByEmailQuery = this.PrepareSqlStatment(Resources.sqlGetUserNameByEmail));
+                       ?? (this.getUserNameByEmailQuery = this.PrepareSqlStatment("sqlGetUserNameByEmail"));
             }
         }
 
@@ -93,7 +103,7 @@
         {
             get
             {
-                return this.getUserQuery ?? (this.getUserQuery = this.PrepareSqlStatment(Resources.SqlGetUser));
+                return this.getUserQuery ?? (this.getUserQuery = this.PrepareSqlStatment("sqlGetUser"));
             }
         }
 
@@ -101,31 +111,32 @@
         {
             get
             {
-                return this.unlockUserQuery ?? (this.unlockUserQuery = this.PrepareSqlStatment(Resources.sqlUnlockUser));
+                return this.unlockUserQuery ?? (this.unlockUserQuery = this.PrepareSqlStatment("sqlUnlockUser"));
             }
         }
 
-        public string UpdateUserWithEmail
+        public string UpdateUserMembership
         {
             get
             {
-                return this.updateUserWithEmailQuery
-                       ?? (this.updateUserWithEmailQuery = this.PrepareSqlStatment(Resources.sqlUpdateUserWithEmail));
+                return this.updateUserMembershipQuery
+                       ?? (this.updateUserMembershipQuery = this.PrepareSqlStatment("sqlUpdateUserMembership"));
             }
         }
 
-        public string UpdateUserWithoutEmail
+        public string UpdateUserProfile
         {
             get
             {
-                return this.updateUserWithoutEmailQuery
-                       ?? (this.updateUserWithoutEmailQuery =
-                           this.PrepareSqlStatment(Resources.sqlUpdateUserWithoutEmail));
+                return this.updateUserProfileQuery
+                       ?? (this.updateUserProfileQuery = this.PrepareSqlStatment("sqlUpdateUserProfile"));
             }
         }
 
-        private string PrepareSqlStatment(string sqlQuery)
+        private string PrepareSqlStatment(string sqlQueryName)
         {
+            var sqlQuery = this.sqlResourceFinder.LocateScript(sqlQueryName, this.sqlProvider);
+
             return
                 sqlQuery.Replace("[UserProfile]", this.userTableName)
                         .Replace("[userName]", this.userNameColumn)

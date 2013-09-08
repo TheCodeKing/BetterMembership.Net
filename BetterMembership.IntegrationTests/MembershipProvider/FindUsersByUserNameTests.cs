@@ -9,7 +9,9 @@
     {
         [TestCase(SqlClientProviderNameWithEmail)]
         [TestCase(SqlClientProviderWithUniqueEmail)]
-        [TestCase(SqlClientProviderNameWithoutEmail)]
+        [TestCase(SqlClientCeProviderNameWithEmail)]
+        [TestCase(SqlClientCeProviderWithUniqueEmail)]
+        [TestCase(SqlClientCeProviderNameWithoutEmail)]
         public void GivenConfirmedUsersWhenFindUsersbyUserNameThenPageResultsSuccessFully(string providerName)
         {
             // arrange

@@ -12,7 +12,10 @@
         public static HttpContext WithCleanDatabase(this HttpContext context)
         {
             InitializeDatabase("SqlServer", "UserProfile");
-            InitializeDatabase("SqlServerCE2", "CustomUserTable");
+            InitializeDatabase("SqlServer", "CustomUserTable");
+            InitializeDatabase("SqlServerCe1", "UserProfile");
+            InitializeDatabase("SqlServerCe2", "CustomUserTable");
+            InitializeDatabase("SqlServerCe3", "UserProfile");
 
             return context;
         }
@@ -45,21 +48,10 @@
             using (var context = new MembershipContext(connectionString))
             {
                 context.Database.CreateIfNotExists();
-                try
-                {
-                    context.Database.ExecuteSqlCommand("truncate table " + userTable);
-                }
-                catch (Exception)
-                {
-                }
 
-                try
-                {
-                    context.Database.ExecuteSqlCommand("truncate table webpages_Membership");
-                }
-                catch (Exception)
-                {
-                }
+                context.Database.ExecuteSqlCommand("Delete From webpages_Membership");
+
+                context.Database.ExecuteSqlCommand("Delete From " + userTable);
             }
         }
     }

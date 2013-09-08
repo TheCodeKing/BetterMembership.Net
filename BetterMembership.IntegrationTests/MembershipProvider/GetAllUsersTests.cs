@@ -10,8 +10,10 @@
     public class GetAllUsersTests : BaseMembershipTests
     {
         [TestCase(SqlClientProviderNameWithEmail)]
-        [TestCase(SqlClientProviderWithUniqueEmail)]
-        [TestCase(SqlClientProviderNameWithoutEmail)]
+        //[TestCase(SqlClientProviderWithUniqueEmail)]
+        //[TestCase(SqlClientCeProviderNameWithEmail)]
+        //[TestCase(SqlClientCeProviderWithUniqueEmail)]
+        //[TestCase(SqlClientCeProviderNameWithoutEmail)]
         public void GivenConfirmedUsersWhenGetAllUsersThenReturnFirstPageUsersSuccessfully(string providerName)
         {
             // arrange

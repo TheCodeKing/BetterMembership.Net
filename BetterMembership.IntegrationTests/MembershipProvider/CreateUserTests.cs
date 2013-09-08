@@ -11,7 +11,8 @@
     {
         [TestCase(SqlClientProviderNameWithEmail)]
         [TestCase(SqlClientProviderWithUniqueEmail)]
-        [TestCase(SqlClientProviderNameWithoutEmail)]
+        [TestCase(SqlClientCeProviderNameWithEmail)]
+        [TestCase(SqlClientCeProviderWithUniqueEmail)]
         public void GivenUnregisteredUserWhenCreateUserThenMembershipUserReturned(string providerName)
         {
             // arrange
@@ -39,6 +40,7 @@
         }
 
         [TestCase(SqlClientProviderWithUniqueEmail)]
+        [TestCase(SqlClientCeProviderWithUniqueEmail)]
         public void GivenUnregisteredUserWhenCreateUserWithDuplicateEmailThenMembershipUserReturned(string providerName)
         {
             // arrange
@@ -58,7 +60,9 @@
 
         [TestCase(SqlClientProviderNameWithEmail)]
         [TestCase(SqlClientProviderWithUniqueEmail)]
-        [TestCase(SqlClientProviderNameWithoutEmail)]
+        [TestCase(SqlClientCeProviderNameWithEmail)]
+        [TestCase(SqlClientCeProviderWithUniqueEmail)]
+        [TestCase(SqlClientCeProviderNameWithoutEmail)]
         public void GivenUnregisteredUserWhenCreateUserWithDuplicateUserNameThenStatusDuplicateUserName(string providerName)
         {
             // arrange

@@ -9,7 +9,9 @@
     {
         [TestCase(SqlClientProviderNameWithEmail)]
         [TestCase(SqlClientProviderWithUniqueEmail)]
-        [TestCase(SqlClientProviderNameWithoutEmail)]
+        [TestCase(SqlClientCeProviderNameWithEmail)]
+        [TestCase(SqlClientCeProviderWithUniqueEmail)]
+        [TestCase(SqlClientCeProviderNameWithoutEmail)]
         public void GivenConfirmedUserWhenLoginThenUserCanAuthenticate(string providerName)
         {
             // arrange
@@ -25,7 +27,9 @@
 
         [TestCase(SqlClientProviderNameWithEmail)]
         [TestCase(SqlClientProviderWithUniqueEmail)]
-        [TestCase(SqlClientProviderNameWithoutEmail)]
+        [TestCase(SqlClientCeProviderNameWithEmail)]
+        [TestCase(SqlClientCeProviderWithUniqueEmail)]
+        [TestCase(SqlClientCeProviderNameWithoutEmail)]
         public void GivenUnConfirmedUserWhenLoginThenUserCannotAuthenticate(string providerName)
         {
             // arrange

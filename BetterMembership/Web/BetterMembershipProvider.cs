@@ -22,7 +22,7 @@
     {
         private readonly Func<string, IDatabase> databaseFactory;
 
-        private readonly Func<string, string, string, string, SqlHelper> sqlHelperFactory;
+        private readonly Func<string, string, string, string, string, SqlHelper> sqlHelperFactory;
 
         private readonly WebSecurityFacade webSecurityFacade;
 
@@ -50,14 +50,16 @@
             : this(
                 new WebSecurityFacade(), 
                 s => new DatabaseProxy(Database.Open(s)), 
-                (a, b, c, d) => new SqlHelper(a, b, c, d))
+                (a, b, c, d, e) =>
+                new SqlHelper(
+                    new SqlResourceFinder(new ResourceManifestFacade(typeof(BetterMembershipProvider).Assembly)), a, b, c, d, e))
         {
         }
 
         internal BetterMembershipProvider(
             WebSecurityFacade webSecurityFacade, 
             Func<string, IDatabase> databaseFactory, 
-            Func<string, string, string, string, SqlHelper> sqlHelperFactory)
+            Func<string, string, string, string, string, SqlHelper> sqlHelperFactory)
         {
             Condition.Requires(webSecurityFacade, "webSecurityFacade").IsNotNull();
             Condition.Requires(databaseFactory, "databaseFactory").IsNotNull();
@@ -108,6 +110,14 @@
             }
         }
 
+        public string UserEmailColumn
+        {
+            get
+            {
+                return this.userEmailColumn;
+            }
+        }
+
         public override MembershipUser CreateUser(
             string username, 
             string password, 
@@ -118,7 +128,7 @@
             object providerUserKey, 
             out MembershipCreateStatus status)
         {
-            Condition.Requires(email, "email").Evaluate(!(RequiresUniqueEmail && string.IsNullOrWhiteSpace(email)));
+            Condition.Requires(email, "email").Evaluate(!(this.RequiresUniqueEmail && string.IsNullOrWhiteSpace(email)));
 
             var profile = new Dictionary<string, object>();
 
@@ -164,11 +174,11 @@
             }
 
             var startRow = GetPagingStartRow(pageIndex, pageSize);
-            var endRow = GetPagingEndRow(pageSize, startRow);
 
             using (var db = this.ConnectToDatabase())
             {
-                var rows = db.Query(this.sqlHelper.FindUsersByEmailQuery, startRow, endRow, emailToMatch).ToList();
+                emailToMatch = AppendWildcardToSearchTerm(emailToMatch);
+                var rows = db.Query(this.sqlHelper.FindUsersByEmailQuery, startRow, pageSize, emailToMatch).ToList();
                 return this.ExtractMembershipUsersFromRows(rows, out totalRecords);
             }
         }
@@ -181,11 +191,11 @@
             Condition.Requires(pageSize, "pageSize").IsGreaterOrEqual(1);
 
             var startRow = GetPagingStartRow(pageIndex, pageSize);
-            var endRow = GetPagingEndRow(pageSize, startRow);
 
             using (var db = this.ConnectToDatabase())
             {
-                var rows = db.Query(this.sqlHelper.FindUsersByNameQuery, startRow, endRow, usernameToMatch).ToList();
+                usernameToMatch = AppendWildcardToSearchTerm(usernameToMatch);
+                var rows = db.Query(this.sqlHelper.FindUsersByNameQuery, startRow, pageSize, usernameToMatch).ToList();
                 return this.ExtractMembershipUsersFromRows(rows, out totalRecords);
             }
         }
@@ -196,11 +206,10 @@
             Condition.Requires(pageSize, "pageSize").IsGreaterOrEqual(1);
 
             var startRow = GetPagingStartRow(pageIndex, pageSize);
-            var endRow = GetPagingEndRow(pageSize, startRow);
 
             using (var db = this.ConnectToDatabase())
             {
-                var rows = db.Query(this.sqlHelper.GetAllUsersQuery, startRow, endRow).ToList();
+                var rows = db.Query(this.sqlHelper.GetAllUsersQuery, startRow, pageSize).ToList();
                 return this.ExtractMembershipUsersFromRows(rows, out totalRecords);
             }
         }
@@ -309,14 +318,26 @@
             config.Remove("autoInitialize");
             config.Remove("passwordLockoutTimeoutInSeconds");
 
+            var providerName = string.Empty;
+            var connectionString = ConfigurationManager.ConnectionStrings[this.connectionStringName];
+            if (connectionString != null)
+            {
+                providerName = connectionString.ProviderName;
+            }
+
             this.sqlHelper = this.sqlHelperFactory(
-                this.userTableName, this.userIdColumn, this.userNameColumn, this.userEmailColumn);
+                providerName, this.userTableName, this.userIdColumn, this.userNameColumn, this.userEmailColumn);
 
             base.Initialize(name, config);
 
             if (autoInitialize)
             {
                 this.InitializeDatabaseConnection();
+            }
+
+            if (this.HasEmailColumnDefined)
+            {
+                this.CreateUserEmailColumn();
             }
         }
 
@@ -341,20 +362,28 @@
 
             using (var db = this.ConnectToDatabase())
             {
+                db.Execute(this.sqlHelper.UpdateUserMembership, user.UserName, user.IsApproved);
+
                 if (this.HasEmailColumnDefined)
                 {
-                    db.Execute(this.sqlHelper.UpdateUserWithEmail, user.UserName, user.Email, user.IsApproved);
-                }
-                else
-                {
-                    db.Execute(this.sqlHelper.UpdateUserWithoutEmail, user.UserName, user.IsApproved);
+                    db.Execute(this.sqlHelper.UpdateUserProfile, user.UserName, user.Email);
                 }
             }
         }
 
-        public override bool ValidateUser(string username, string password)
+        private static string AppendWildcardToSearchTerm(string emailToMatch)
         {
-            return base.ValidateUser(username, password);
+            return string.Concat("%", emailToMatch, "%");
+        }
+
+        private static bool CheckEmailColumnExists(IDatabase db, string tableName, string columnName)
+        {
+            var query =
+                db.QuerySingle(
+                    @"SELECT * from INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = @0 and COLUMN_NAME = @1", 
+                    tableName, 
+                    columnName);
+            return query != null;
         }
 
         private static DateTime GetDateTime(object value)
@@ -362,14 +391,9 @@
             return value == null ? DateTime.MinValue : (DateTime)value;
         }
 
-        private static int GetPagingEndRow(int pageSize, int startRow)
-        {
-            return (startRow + pageSize) - 1;
-        }
-
         private static int GetPagingStartRow(int pageIndex, int pageSize)
         {
-            return (pageIndex * pageSize) + 1;
+            return pageIndex * pageSize;
         }
 
         private static int GetTotalRecords(IList<dynamic> rows)
@@ -414,6 +438,49 @@
                 passwordChangedDate, 
                 lastPasswordFailureDate, 
                 this.HasEmailColumnDefined);
+        }
+
+        private void CreateUserEmailColumn()
+        {
+            using (var db = this.ConnectToDatabase())
+            {
+                if (!CheckEmailColumnExists(db, this.userTableName, this.userEmailColumn))
+                {
+                    if (this.RequiresUniqueEmail)
+                    {
+                        try
+                        {
+                            db.Execute(
+                                @"ALTER TABLE [" + this.userTableName + "] ADD [" + this.userEmailColumn
+                                + "] nvarchar(56) NOT NULL UNIQUE");
+                        }
+                        catch (Exception e)
+                        {
+                            try
+                            {
+                                db.Execute(
+                                    @"ALTER TABLE [" + this.userTableName + "] ADD [" + this.userEmailColumn
+                                    + "] nvarchar(56) NULL");
+                            }
+                            catch
+                            {
+                            }
+                        }
+                    }
+                    else
+                    {
+                        try
+                        {
+                            db.Execute(
+                                @"ALTER TABLE [" + this.userTableName + "] ADD [" + this.userEmailColumn
+                                + "] nvarchar(56) NULL");
+                        }
+                        catch (Exception e)
+                        {
+                        }
+                    }
+                }
+            }
         }
 
         private MembershipUserCollection ExtractMembershipUsersFromRows(List<dynamic> rows, out int totalRecords)

@@ -1,6 +1,7 @@
 ﻿namespace BetterMembership.Web
 {
     using System;
+    using System.Diagnostics;
 
     using WebMatrix.WebData;
 

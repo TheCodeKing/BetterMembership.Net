@@ -10,7 +10,9 @@
     {
         [TestCase(SqlClientProviderNameWithEmail)]
         [TestCase(SqlClientProviderWithUniqueEmail)]
-        [TestCase(SqlClientProviderNameWithoutEmail)]
+        [TestCase(SqlClientCeProviderNameWithEmail)]
+        [TestCase(SqlClientCeProviderWithUniqueEmail)]
+        [TestCase(SqlClientCeProviderNameWithoutEmail)]
         public void GivenConfirmedLockedOutUserWhenUnlockUserThenUserCanAuthenticate(string providerName)
         {
             // arrange
@@ -18,7 +20,7 @@
             var testUser = testClass.WithConfirmedUser().WithPasswordLockout().Value;
             var lockedOut = testClass.IsAccountLockedOut(
                 testUser.UserName, testClass.MaxInvalidPasswordAttempts, testClass.PasswordLockoutTimeoutInSeconds());
-            Assert.That(lockedOut, Is.True);
+            Assert.That(lockedOut, Is.True, "Failed to lockout account");
 
             // act
             var result = testClass.UnlockUser(testUser.UserName);
