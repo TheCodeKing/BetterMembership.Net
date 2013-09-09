@@ -39,31 +39,13 @@
             }
         }
 
-        [TestCase(SqlClientProviderWithUniqueEmail)]
-        [TestCase(SqlClientCeProviderWithUniqueEmail)]
-        public void GivenUnregisteredUserWhenCreateUserWithDuplicateEmailThenMembershipUserReturned(string providerName)
-        {
-            // arrange
-            var testClass = this.WithProvider(providerName);
-
-            var testUser1 = testClass.WithConfirmedUser().Value;
-            var testUser2 = testClass.WithUnregisteredUser(email: testUser1.Email).Value;
-
-            // act
-            MembershipCreateStatus status;
-            var user = testClass.CreateUser(testUser2.UserName, testUser2.Password, testUser2.Email, null, null, true, null, out status);
-
-            // assert
-            Assert.That(user, Is.Null);
-            Assert.That(status, Is.EqualTo(MembershipCreateStatus.DuplicateEmail));
-        }
-
         [TestCase(SqlClientProviderNameWithEmail)]
         [TestCase(SqlClientProviderWithUniqueEmail)]
         [TestCase(SqlClientCeProviderNameWithEmail)]
         [TestCase(SqlClientCeProviderWithUniqueEmail)]
         [TestCase(SqlClientCeProviderNameWithoutEmail)]
-        public void GivenUnregisteredUserWhenCreateUserWithDuplicateUserNameThenStatusDuplicateUserName(string providerName)
+        public void GivenUnregisteredUserWhenCreateUserWithDuplicateUserNameThenStatusDuplicateUserName(
+            string providerName)
         {
             // arrange
             var testClass = this.WithProvider(providerName);
@@ -78,11 +60,84 @@
 
             // act
             MembershipCreateStatus status;
-            var user = testClass.CreateUser(testUser2.UserName, testUser2.Password, testUser2.Email, null, null, true, null, out status);
+            var user = testClass.CreateUser(
+                testUser2.UserName, testUser2.Password, testUser2.Email, null, null, true, null, out status);
 
             // assert
             Assert.That(user, Is.Null);
             Assert.That(status, Is.EqualTo(MembershipCreateStatus.DuplicateUserName));
+        }
+
+        [TestCase(SqlClientProviderWithUniqueEmail)]
+        [TestCase(SqlClientCeProviderWithUniqueEmail)]
+        public void GivenUnregisteredUserWhenCreateUserWithDuplicateEmailThenMembershipUserReturned(string providerName)
+        {
+            // arrange
+            var testClass = this.WithProvider(providerName);
+
+            var testUser1 = testClass.WithConfirmedUser().Value;
+            var testUser2 = testClass.WithUnregisteredUser(email: testUser1.Email).Value;
+
+            // act
+            MembershipCreateStatus status;
+            var user = testClass.CreateUser(
+                testUser2.UserName, testUser2.Password, testUser2.Email, null, null, true, null, out status);
+
+            // assert
+            Assert.That(user, Is.Null);
+            Assert.That(status, Is.EqualTo(MembershipCreateStatus.DuplicateEmail));
+        }
+
+        [TestCase(SqlClientProviderNameWithEmail)]
+        [TestCase(SqlClientProviderWithUniqueEmail)]
+        [TestCase(SqlClientCeProviderNameWithEmail)]
+        [TestCase(SqlClientCeProviderWithUniqueEmail)]
+        [TestCase(SqlClientCeProviderNameWithoutEmail)]
+        public void GivenUnregisteredUserWhenCreateUserWithUnApprovedFlagThenUserUnconfirmed(string providerName)
+        {
+            // arrange
+            var testClass = this.WithProvider(providerName);
+
+            var testUser1 = testClass.WithUnregisteredUser().Value;
+            if (!testClass.HasEmailColumnDefined())
+            {
+                testUser1.Email = null;
+            }
+
+            // act
+            MembershipCreateStatus status;
+            var user = testClass.CreateUser(
+                testUser1.UserName, testUser1.Password, testUser1.Email, null, null, false, null, out status);
+
+            // assert
+            Assert.That(user.IsApproved, Is.False);
+            Assert.That(testClass.AsBetter().IsConfirmed(testUser1.UserName), Is.False);
+        }
+
+        [TestCase(SqlClientProviderNameWithEmail)]
+        [TestCase(SqlClientProviderWithUniqueEmail)]
+        [TestCase(SqlClientCeProviderNameWithEmail)]
+        [TestCase(SqlClientCeProviderWithUniqueEmail)]
+        [TestCase(SqlClientCeProviderNameWithoutEmail)]
+        public void GivenUnregisteredUserWhenCreateUserWithApprovedFlagThenUserConfirmed(string providerName)
+        {
+            // arrange
+            var testClass = this.WithProvider(providerName);
+
+            var testUser1 = testClass.WithUnregisteredUser().Value;
+            if (!testClass.HasEmailColumnDefined())
+            {
+                testUser1.Email = null;
+            }
+
+            // act
+            MembershipCreateStatus status;
+            var user = testClass.CreateUser(
+                testUser1.UserName, testUser1.Password, testUser1.Email, null, null, true, null, out status);
+
+            // assert
+            Assert.That(user.IsApproved, Is.True);
+            Assert.That(testClass.AsBetter().IsConfirmed(testUser1.UserName), Is.True);
         }
     }
 }

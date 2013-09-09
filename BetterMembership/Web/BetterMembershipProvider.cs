@@ -163,7 +163,7 @@
 
             try
             {
-                this.CreateUserAndAccount(username, password, isApproved, profile);
+                this.CreateUserAndAccount(username, password, !isApproved, profile);
             }
             catch (MembershipCreateUserException e)
             {
@@ -454,24 +454,22 @@
                     passwordChangedDate, 
                     DateTime.MinValue);
             }
-            else
-            {
-                return new BetterMembershipUser(
-                    this.Name, 
-                    name, 
-                    userId, 
-                    email, 
-                    null, 
-                    null, 
-                    isConfirmed, 
-                    isLockedOutDelegate, 
-                    creationDate, 
-                    DateTime.MinValue, 
-                    DateTime.MinValue, 
-                    passwordChangedDate, 
-                    lastPasswordFailureDate, 
-                    this.HasEmailColumnDefined);
-            }
+
+            return new BetterMembershipUser(
+                this.Name, 
+                name, 
+                userId, 
+                email, 
+                null, 
+                null, 
+                isConfirmed, 
+                isLockedOutDelegate, 
+                creationDate, 
+                DateTime.MinValue, 
+                DateTime.MinValue, 
+                passwordChangedDate, 
+                lastPasswordFailureDate, 
+                this.HasEmailColumnDefined);
         }
 
         private void CreateUserEmailColumn()
@@ -488,7 +486,7 @@
                                 @"ALTER TABLE [" + this.userTableName + "] ADD [" + this.userEmailColumn
                                 + "] nvarchar(56) NOT NULL UNIQUE");
                         }
-                        catch (Exception e)
+                        catch (Exception)
                         {
                             try
                             {
@@ -509,7 +507,7 @@
                                 @"ALTER TABLE [" + this.userTableName + "] ADD [" + this.userEmailColumn
                                 + "] nvarchar(56) NULL");
                         }
-                        catch (Exception e)
+                        catch
                         {
                         }
                     }
