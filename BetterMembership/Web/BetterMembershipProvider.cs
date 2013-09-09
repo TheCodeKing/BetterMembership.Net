@@ -6,6 +6,7 @@
     using System.Configuration;
     using System.Configuration.Provider;
     using System.Linq;
+    using System.Runtime.Remoting.Messaging;
     using System.Web.Security;
 
     using BetterMembership.Data;
@@ -52,7 +53,12 @@
                 s => new DatabaseProxy(Database.Open(s)), 
                 (a, b, c, d, e) =>
                 new SqlHelper(
-                    new SqlResourceFinder(new ResourceManifestFacade(typeof(BetterMembershipProvider).Assembly)), a, b, c, d, e))
+                    new SqlResourceFinder(new ResourceManifestFacade(typeof(BetterMembershipProvider).Assembly)), 
+                    a, 
+                    b, 
+                    c, 
+                    d, 
+                    e))
         {
         }
 
@@ -115,6 +121,14 @@
             get
             {
                 return this.userEmailColumn;
+            }
+        }
+
+        private static bool HasHostContext
+        {
+            get
+            {
+                return CallContext.HostContext != null;
             }
         }
 
@@ -423,21 +437,41 @@
                 && lastPasswordFailureDate.Add(TimeSpan.FromSeconds(this.PasswordLockoutTimeoutInSeconds))
                 > DateTime.UtcNow;
 
-            return new BetterMembershipUser(
-                this.Name, 
-                name, 
-                userId, 
-                email, 
-                null, 
-                null, 
-                isConfirmed, 
-                isLockedOutDelegate, 
-                creationDate, 
-                DateTime.MinValue, 
-                DateTime.MinValue, 
-                passwordChangedDate, 
-                lastPasswordFailureDate, 
-                this.HasEmailColumnDefined);
+            if (!HasHostContext)
+            {
+                return new MembershipUser(
+                    this.Name, 
+                    name, 
+                    userId, 
+                    email, 
+                    null, 
+                    null, 
+                    isConfirmed, 
+                    isLockedOutDelegate(), 
+                    creationDate, 
+                    DateTime.MinValue, 
+                    DateTime.MinValue, 
+                    passwordChangedDate, 
+                    DateTime.MinValue);
+            }
+            else
+            {
+                return new BetterMembershipUser(
+                    this.Name, 
+                    name, 
+                    userId, 
+                    email, 
+                    null, 
+                    null, 
+                    isConfirmed, 
+                    isLockedOutDelegate, 
+                    creationDate, 
+                    DateTime.MinValue, 
+                    DateTime.MinValue, 
+                    passwordChangedDate, 
+                    lastPasswordFailureDate, 
+                    this.HasEmailColumnDefined);
+            }
         }
 
         private void CreateUserEmailColumn()

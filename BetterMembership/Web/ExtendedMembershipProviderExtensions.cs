@@ -1,11 +1,10 @@
 ﻿namespace BetterMembership.Web
 {
     using System;
-    using System.Diagnostics;
 
     using WebMatrix.WebData;
 
-    public static class ExtendedMembershipProviderExtensions
+    internal static class ExtendedMembershipProviderExtensions
     {
         public static bool IsAccountLockedOut(
             this ExtendedMembershipProvider provider, string userName, int allowedPasswordAttempts, TimeSpan interval)

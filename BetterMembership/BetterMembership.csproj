@@ -31,6 +31,13 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="CuttingEdge.Conditions">
       <HintPath>..\packages\CuttingEdge.Conditions.1.2.0.0\lib\NET35\CuttingEdge.Conditions.dll</HintPath>
@@ -58,8 +65,8 @@
     <Compile Include="Facades\IResourceManifestFacade.cs" />
     <Compile Include="Facades\ResourceManifestFacade.cs" />
     <Compile Include="Utils\SqlResourceFinder.cs" />
-    <Compile Include="Web\ExtendedMembershipProviderExtensions.cs" />
     <Compile Include="Web\BetterMembershipUser.cs" />
+    <Compile Include="Web\ExtendedMembershipProviderExtensions.cs" />
     <Compile Include="Utils\RoleProviderAccessor.cs" />
     <Compile Include="Utils\DefaultProviderSwitcher.cs" />
     <Compile Include="Dummy\DummyMembershipProvider.cs" />
