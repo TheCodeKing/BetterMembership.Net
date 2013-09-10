@@ -49,11 +49,22 @@
             {
                 context.Database.CreateIfNotExists();
 
+
+                if (
+                    context.Database.SqlQuery<int?>(
+                        "SELECT 1 from INFORMATION_SCHEMA.TABLES where TABLE_NAME = 'webpages_UsersInRoles'")
+                           .SingleOrDefault() != null)
+                {
+                    context.Database.ExecuteSqlCommand("Delete From webpages_UsersInRoles");
+                    context.Database.ExecuteSqlCommand("Delete From webpages_Roles");
+                }
+
                 if (
                     context.Database.SqlQuery<int?>(
                         "SELECT 1 from INFORMATION_SCHEMA.TABLES where TABLE_NAME = 'webpages_Membership'")
                            .SingleOrDefault() != null)
                 {
+
                     context.Database.ExecuteSqlCommand("Delete From webpages_Membership");
                 }
 

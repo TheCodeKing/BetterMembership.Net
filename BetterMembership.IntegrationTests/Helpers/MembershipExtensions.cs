@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Web.Security;
 
     using BetterMembership.Web;
@@ -35,11 +36,8 @@
             {
                 profile.Add(GetEmailColumn(provider.AsBetter()), email);
             }
-            provider.AsBetter()
-                    .CreateUserAndAccount(
-                        userName, 
-                        DefaultPassword, 
-                       profile);
+
+            provider.AsBetter().CreateUserAndAccount(userName, DefaultPassword, profile);
             return new FluentProvider<TestUser>(provider, new TestUser(userName, email, DefaultPassword));
         }
 
@@ -58,11 +56,7 @@
                     profile.Add(GetEmailColumn(provider.AsBetter()), email);
                 }
 
-                provider.AsBetter()
-                        .CreateUserAndAccount(
-                            userName, 
-                            DefaultPassword,
-                            profile);
+                provider.AsBetter().CreateUserAndAccount(userName, DefaultPassword, profile);
                 users.Add(new TestUser(userName, email, DefaultPassword));
             }
 
@@ -79,6 +73,22 @@
             return provider;
         }
 
+        public static string[] WithUserInRoles(this RoleProvider roleProvider, string userName, params string[] roles)
+        {
+            roles.ToList().ForEach(
+                x =>
+                    {
+                        if (!roleProvider.RoleExists(x))
+                        {
+                            roleProvider.CreateRole(x);
+                        }
+
+                        roleProvider.AddUsersToRoles(new[] { userName }, new[] { x });
+                    });
+
+            return roles;
+        }
+
         public static FluentProvider<TestUser> WithUnconfirmedUser(this MembershipProvider provider)
         {
             var profile = new Dictionary<string, object>();
@@ -90,12 +100,7 @@
                 profile.Add(GetEmailColumn(provider.AsBetter()), email);
             }
 
-            provider.AsBetter()
-                    .CreateUserAndAccount(
-                        userName, 
-                        DefaultPassword, 
-                        true,
-                        profile);
+            provider.AsBetter().CreateUserAndAccount(userName, DefaultPassword, true, profile);
             return new FluentProvider<TestUser>(provider, new TestUser(userName, email, DefaultPassword));
         }
 
