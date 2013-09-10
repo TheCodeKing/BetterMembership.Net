@@ -65,7 +65,6 @@
     <Compile Include="Facades\IResourceManifestFacade.cs" />
     <Compile Include="Facades\ResourceManifestFacade.cs" />
     <Compile Include="Utils\SqlResourceFinder.cs" />
-    <Compile Include="Web\BetterMembershipUser.cs" />
     <Compile Include="Web\ExtendedMembershipProviderExtensions.cs" />
     <Compile Include="Utils\RoleProviderAccessor.cs" />
     <Compile Include="Utils\DefaultProviderSwitcher.cs" />

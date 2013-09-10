@@ -426,36 +426,16 @@
             string name = row[2];
             bool isConfirmed = row[3];
             DateTime lastPasswordFailureDate = GetDateTime(row[4]);
-
             int passwordFailuresSinceLastSuccess = row[5];
             DateTime creationDate = GetDateTime(row[6]);
             DateTime passwordChangedDate = GetDateTime(row[7]);
             string email = this.HasEmailColumnDefined ? row[8] : string.Empty;
-            Func<bool> isLockedOutDelegate =
-                () =>
+            var isLockedOut =
                 isConfirmed && passwordFailuresSinceLastSuccess > this.MaxInvalidPasswordAttempts
                 && lastPasswordFailureDate.Add(TimeSpan.FromSeconds(this.PasswordLockoutTimeoutInSeconds))
                 > DateTime.UtcNow;
 
-            if (!HasHostContext)
-            {
-                return new MembershipUser(
-                    this.Name, 
-                    name, 
-                    userId, 
-                    email, 
-                    null, 
-                    null, 
-                    isConfirmed, 
-                    isLockedOutDelegate(), 
-                    creationDate, 
-                    DateTime.MinValue, 
-                    DateTime.MinValue, 
-                    passwordChangedDate, 
-                    DateTime.MinValue);
-            }
-
-            return new BetterMembershipUser(
+            return new MembershipUser(
                 this.Name, 
                 name, 
                 userId, 
@@ -463,13 +443,12 @@
                 null, 
                 null, 
                 isConfirmed, 
-                isLockedOutDelegate, 
+                isLockedOut, 
                 creationDate, 
                 DateTime.MinValue, 
                 DateTime.MinValue, 
                 passwordChangedDate, 
-                lastPasswordFailureDate, 
-                this.HasEmailColumnDefined);
+                DateTime.MinValue);
         }
 
         private void CreateUserEmailColumn()
