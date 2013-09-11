@@ -156,6 +156,15 @@
             }
         }
 
+        public override bool ChangePassword(string username, string oldPassword, string newPassword)
+        {
+            Condition.Requires(username, "username").Evaluate(this.ValidateUserName(username));
+            Condition.Requires(oldPassword, "oldPassword").IsNotNullOrWhiteSpace();
+            Condition.Requires(newPassword, "newPassword").Evaluate(this.ValidatePassword(newPassword, username));
+
+            return base.ChangePassword(username, oldPassword, newPassword);
+        }
+
         public override MembershipUser CreateUser(
             string username, 
             string password, 
@@ -170,34 +179,25 @@
             Condition.Requires(passwordQuestion, "passwordQuestion").IsNullOrWhiteSpace("not supported, expected null");
             Condition.Requires(passwordAnswer, "passwordAnswer").IsNullOrWhiteSpace("not supported, expected null");
 
-            if (string.IsNullOrWhiteSpace(username) || username.Length > 112)
+            if (!this.ValidateUserName(username))
             {
                 status = MembershipCreateStatus.InvalidUserName;
                 return null;
             }
 
-            if (!this.ValidatePassword(password))
+            if (!this.ValidatePassword(password, username))
             {
                 status = MembershipCreateStatus.InvalidPassword;
                 return null;
             }
 
-            var validatePasswordArgs = new ValidatePasswordEventArgs(username, password, true);
-            OnValidatingPassword(validatePasswordArgs);
-
-            if (validatePasswordArgs.Cancel)
-            {
-                status = MembershipCreateStatus.InvalidPassword;
-                return null;
-            }
-
-            if (providerUserKey != null)
+            if (!this.ValidateProviderUserKey(providerUserKey))
             {
                 status = MembershipCreateStatus.InvalidProviderUserKey;
                 return null;
             }
 
-            if ((string.IsNullOrWhiteSpace(email) && RequiresUniqueEmail) || (!string.IsNullOrWhiteSpace(email) && email.Length > 112))
+            if (!this.ValidateEmail(email))
             {
                 status = MembershipCreateStatus.InvalidEmail;
                 return null;
@@ -470,6 +470,10 @@
         public override void UpdateUser(MembershipUser user)
         {
             Condition.Requires(user, "user").IsNotNull();
+            Condition.Requires(user.UserName, "user.UserName").Evaluate(this.ValidateUserName(user.UserName));
+            Condition.Requires(user.ProviderUserKey, "user.ProviderUserKey")
+                     .Evaluate(this.ValidateProviderUserKey(user.ProviderUserKey));
+            Condition.Requires(user.Email, "user.Email").Evaluate(this.ValidateEmail(user.Email));
 
             using (var db = this.ConnectToDatabase())
             {
@@ -616,22 +620,22 @@
             }
         }
 
-        private bool ValidatePassword(string password)
+        private bool ValidateEmail(string email)
         {
-            if (string.IsNullOrWhiteSpace(password) || password.Length < this.MinRequiredPasswordLength || password.Length > 256)
+            return
+                !((string.IsNullOrWhiteSpace(email) && this.RequiresUniqueEmail)
+                  || (!string.IsNullOrWhiteSpace(email) && email.Length > 112));
+        }
+
+        private bool ValidatePassword(string password, string username)
+        {
+            if (string.IsNullOrWhiteSpace(password) || password.Length < this.MinRequiredPasswordLength
+                || password.Length > 256)
             {
                 return false;
             }
 
-            int count = 0;
-
-            for (int i = 0; i < password.Length; i++)
-            {
-                if (!char.IsLetterOrDigit(password, i))
-                {
-                    count++;
-                }
-            }
+            var count = password.Where((t, i) => !char.IsLetterOrDigit(password, i)).Count();
 
             if (count < this.MinRequiredNonAlphanumericCharacters)
             {
@@ -646,7 +650,25 @@
                 }
             }
 
+            var validatePasswordArgs = new ValidatePasswordEventArgs(username, password, true);
+            this.OnValidatingPassword(validatePasswordArgs);
+
+            if (validatePasswordArgs.Cancel)
+            {
+                return false;
+            }
+
             return true;
+        }
+
+        private bool ValidateProviderUserKey(object providerUserKey)
+        {
+            return providerUserKey == null || providerUserKey is int;
+        }
+
+        private bool ValidateUserName(string username)
+        {
+            return !string.IsNullOrWhiteSpace(username) && username.Length <= 112;
         }
     }
 }
