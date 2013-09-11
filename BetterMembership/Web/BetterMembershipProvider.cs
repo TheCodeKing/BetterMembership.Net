@@ -6,6 +6,7 @@
     using System.Configuration;
     using System.Configuration.Provider;
     using System.Linq;
+    using System.Text.RegularExpressions;
     using System.Web.Security;
 
     using BetterMembership.Data;
@@ -115,6 +116,14 @@
             }
         }
 
+        public override MembershipPasswordFormat PasswordFormat
+        {
+            get
+            {
+                return MembershipPasswordFormat.Hashed;
+            }
+        }
+
         public override bool RequiresQuestionAndAnswer
         {
             get
@@ -158,6 +167,41 @@
             out MembershipCreateStatus status)
         {
             Condition.Requires(email, "email").Evaluate(!(this.RequiresUniqueEmail && string.IsNullOrWhiteSpace(email)));
+            Condition.Requires(passwordQuestion, "passwordQuestion").IsNullOrWhiteSpace("not supported, expected null");
+            Condition.Requires(passwordAnswer, "passwordAnswer").IsNullOrWhiteSpace("not supported, expected null");
+
+            if (string.IsNullOrWhiteSpace(username) || username.Length > 112)
+            {
+                status = MembershipCreateStatus.InvalidUserName;
+                return null;
+            }
+
+            if (!this.ValidatePassword(password))
+            {
+                status = MembershipCreateStatus.InvalidPassword;
+                return null;
+            }
+
+            var validatePasswordArgs = new ValidatePasswordEventArgs(username, password, true);
+            OnValidatingPassword(validatePasswordArgs);
+
+            if (validatePasswordArgs.Cancel)
+            {
+                status = MembershipCreateStatus.InvalidPassword;
+                return null;
+            }
+
+            if (providerUserKey != null)
+            {
+                status = MembershipCreateStatus.InvalidProviderUserKey;
+                return null;
+            }
+
+            if ((string.IsNullOrWhiteSpace(email) && RequiresUniqueEmail) || (!string.IsNullOrWhiteSpace(email) && email.Length > 112))
+            {
+                status = MembershipCreateStatus.InvalidEmail;
+                return null;
+            }
 
             var profile = new Dictionary<string, object>();
 
@@ -333,6 +377,11 @@
                 throw new ProviderException("unrecognized attribute enablePasswordReset");
             }
 
+            if (config.ContainsKey("passwordFormat"))
+            {
+                throw new ProviderException("unrecognized attribute passwordFormat");
+            }
+
             this.connectionStringName = config.GetString("connectionStringName", "DefaultConnection");
             this.userTableName = config.GetString("userTableName", "UserProfile");
             this.userIdColumn = config.GetString("userIdColumn", "UserId");
@@ -345,7 +394,8 @@
 
             if (config.ContainsKey("passwordAttemptWindowInSeconds") && config.ContainsKey("passwordAttemptWindow"))
             {
-                throw new ProviderException("passwordAttemptWindowInSeconds and passwordAttemptWindow cannot both be set");
+                throw new ProviderException(
+                    "passwordAttemptWindowInSeconds and passwordAttemptWindow cannot both be set");
             }
 
             if (config.ContainsKey("passwordAttemptWindowInSeconds"))
@@ -564,6 +614,39 @@
                     this.userNameColumn, 
                     this.autoCreateTables);
             }
+        }
+
+        private bool ValidatePassword(string password)
+        {
+            if (string.IsNullOrWhiteSpace(password) || password.Length < this.MinRequiredPasswordLength || password.Length > 256)
+            {
+                return false;
+            }
+
+            int count = 0;
+
+            for (int i = 0; i < password.Length; i++)
+            {
+                if (!char.IsLetterOrDigit(password, i))
+                {
+                    count++;
+                }
+            }
+
+            if (count < this.MinRequiredNonAlphanumericCharacters)
+            {
+                return false;
+            }
+
+            if (this.PasswordStrengthRegularExpression.Length > 0)
+            {
+                if (!Regex.IsMatch(password, this.PasswordStrengthRegularExpression))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
     }
 }
