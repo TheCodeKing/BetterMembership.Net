@@ -1,5 +1,6 @@
 ﻿namespace BetterMembership.IntegrationTests.MembershipProvider
 {
+    using System;
     using System.Threading;
 
     using BetterMembership.IntegrationTests.Helpers;
@@ -47,7 +48,7 @@
                          .Value;
 
             // act
-            Thread.Sleep((1000 * testClass.PasswordLockoutTimeoutInSeconds()) + 500);
+            Thread.Sleep((testClass.PasswordAttemptWindowInSeconds() * 1000) + 500);
             var user = testClass.GetUser(testUser.UserName, false);
 
             // assert

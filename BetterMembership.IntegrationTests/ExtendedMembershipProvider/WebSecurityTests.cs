@@ -10,12 +10,12 @@
     [TestFixture]
     public class WebSecurityTests : BaseMembershipTests
     {
-        //[TestCase(SqlClientProviderNameWithEmail)]
+        [TestCase(SqlClientProviderNameWithEmail)]
         [TestCase(SqlClientProviderWithUniqueEmail)]
-        //[TestCase(SqlClientProviderNameWithoutEmail)]
-        //[TestCase(SqlClientCeProviderNameWithEmail)]
-        //[TestCase(SqlClientCeProviderWithUniqueEmail)]
-        //[TestCase(SqlClientCeProviderNameWithoutEmail)]
+        [TestCase(SqlClientProviderNameWithoutEmail)]
+        [TestCase(SqlClientCeProviderNameWithEmail)]
+        [TestCase(SqlClientCeProviderWithUniqueEmail)]
+        [TestCase(SqlClientCeProviderNameWithoutEmail)]
         public void GivenMultipleProvidersWhenProviderUsedForCreateUserAndAccountThenUserAccountIsCreated(
             string providerName)
         {
@@ -72,7 +72,7 @@
 
             // act
             var webSecurityIsLockedOut = testClass.IsAccountLockedOut(
-                testUser.UserName, testClass.MaxInvalidPasswordAttempts, testClass.PasswordLockoutTimeoutInSeconds());
+                testUser.UserName, testClass.MaxInvalidPasswordAttempts, testClass.PasswordAttemptWindowInSeconds());
 
             // assert
             Assert.That(webSecurityIsLockedOut, Is.False);

@@ -21,9 +21,9 @@
             return provider.AsBetter().HasEmailColumnDefined;
         }
 
-        public static int PasswordLockoutTimeoutInSeconds(this MembershipProvider provider)
+        public static int PasswordAttemptWindowInSeconds(this MembershipProvider provider)
         {
-            return provider.AsBetter().PasswordLockoutTimeoutInSeconds;
+            return provider.AsBetter().PasswordAttemptWindowInSeconds;
         }
 
         public static FluentProvider<TestUser> WithConfirmedUser(this MembershipProvider provider)

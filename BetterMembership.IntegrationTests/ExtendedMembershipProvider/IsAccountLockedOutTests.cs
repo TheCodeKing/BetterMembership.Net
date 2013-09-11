@@ -7,8 +7,6 @@
 
     using NUnit.Framework;
 
-    using WebMatrix.WebData;
-
     [TestFixture]
     public class IsAccountLockedOutTests : BaseMembershipTests
     {
@@ -23,14 +21,17 @@
             (string providerName)
         {
             // arrange
+            const int PasswordAttemptWindowInSeconds = 1;
             var testClass = this.WithExtendedProvider(providerName);
             var testUser =
-                testClass.WithConfirmedUser().WithInvalidPasswordAttempts(testClass.MaxInvalidPasswordAttempts + 1).Value;
+                testClass.WithConfirmedUser()
+                         .WithInvalidPasswordAttempts(testClass.MaxInvalidPasswordAttempts + 1)
+                         .Value;
 
             // act
-            Thread.Sleep((1000 * testClass.PasswordLockoutTimeoutInSeconds()) + 500);
+            Thread.Sleep((PasswordAttemptWindowInSeconds * 1000) + 500);
             var webSecurityIsLockedOut = testClass.IsAccountLockedOut(
-                testUser.UserName, testClass.MaxInvalidPasswordAttempts, testClass.PasswordLockoutTimeoutInSeconds());
+                testUser.UserName, testClass.MaxInvalidPasswordAttempts, PasswordAttemptWindowInSeconds);
 
             // assert
             Assert.That(webSecurityIsLockedOut, Is.False);
@@ -46,18 +47,20 @@
             string providerName)
         {
             // arrange
+            const int PasswordAttemptWindowInSeconds = 1;
             var testClass = this.WithExtendedProvider(providerName);
             var testUser =
-                testClass.WithUnconfirmedUser().WithInvalidPasswordAttempts(testClass.MaxInvalidPasswordAttempts + 1).Value;
+                testClass.WithUnconfirmedUser()
+                         .WithInvalidPasswordAttempts(testClass.MaxInvalidPasswordAttempts + 1)
+                         .Value;
 
             // act
             var webSecurityIsLockedOut = testClass.IsAccountLockedOut(
-                testUser.UserName, testClass.MaxInvalidPasswordAttempts, testClass.PasswordLockoutTimeoutInSeconds());
+                testUser.UserName, testClass.MaxInvalidPasswordAttempts, PasswordAttemptWindowInSeconds);
 
             // assert
             Assert.That(webSecurityIsLockedOut, Is.False);
         }
-
 
         [TestCase(SqlClientProviderNameWithEmail)]
         [TestCase(SqlClientProviderWithUniqueEmail)]
@@ -69,13 +72,16 @@
             string providerName)
         {
             // arrange
+            const int PasswordAttemptWindowInSeconds = 1;
             var testClass = this.WithExtendedProvider(providerName);
             var testUser =
-                testClass.WithUnconfirmedUser().WithInvalidPasswordAttempts(testClass.MaxInvalidPasswordAttempts + 1).Value;
+                testClass.WithUnconfirmedUser()
+                         .WithInvalidPasswordAttempts(testClass.MaxInvalidPasswordAttempts + 1)
+                         .Value;
 
             // act
             var webSecurityIsLockedOut = testClass.IsAccountLockedOut(
-                testUser.UserName, testClass.MaxInvalidPasswordAttempts, testClass.PasswordLockoutTimeoutInSeconds());
+                testUser.UserName, testClass.MaxInvalidPasswordAttempts, PasswordAttemptWindowInSeconds);
 
             // assert
             Assert.That(webSecurityIsLockedOut, Is.False);

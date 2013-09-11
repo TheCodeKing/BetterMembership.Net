@@ -6,7 +6,6 @@
     using System.Configuration;
     using System.Configuration.Provider;
     using System.Linq;
-    using System.Runtime.Remoting.Messaging;
     using System.Web.Security;
 
     using BetterMembership.Data;
@@ -33,7 +32,7 @@
 
         private int maxInvalidPasswordAttempts;
 
-        private int passwordLockoutTimeoutInSeconds;
+        private int passwordAttemptWindowInSeconds;
 
         private bool requiresUniqueEmail;
 
@@ -76,6 +75,22 @@
             this.sqlHelperFactory = sqlHelperFactory;
         }
 
+        public override bool EnablePasswordReset
+        {
+            get
+            {
+                return false;
+            }
+        }
+
+        public override bool EnablePasswordRetrieval
+        {
+            get
+            {
+                return false;
+            }
+        }
+
         public bool HasEmailColumnDefined
         {
             get
@@ -92,11 +107,11 @@
             }
         }
 
-        public int PasswordLockoutTimeoutInSeconds
+        public override int PasswordAttemptWindow
         {
             get
             {
-                return this.passwordLockoutTimeoutInSeconds;
+                return this.passwordAttemptWindowInSeconds / 60;
             }
         }
 
@@ -124,11 +139,11 @@
             }
         }
 
-        private static bool HasHostContext
+        internal int PasswordAttemptWindowInSeconds
         {
             get
             {
-                return CallContext.HostContext != null;
+                return this.passwordAttemptWindowInSeconds;
             }
         }
 
@@ -308,6 +323,16 @@
                 throw new ProviderException("unrecognized attribute requiresQuestionAndAnswer");
             }
 
+            if (config.ContainsKey("enablePasswordRetrieval"))
+            {
+                throw new ProviderException("unrecognized attribute enablePasswordRetrieval");
+            }
+
+            if (config.ContainsKey("enablePasswordReset"))
+            {
+                throw new ProviderException("unrecognized attribute enablePasswordReset");
+            }
+
             this.connectionStringName = config.GetString("connectionStringName", "DefaultConnection");
             this.userTableName = config.GetString("userTableName", "UserProfile");
             this.userIdColumn = config.GetString("userIdColumn", "UserId");
@@ -316,8 +341,29 @@
             this.autoCreateTables = config.GetBoolean("autoCreateTables", true);
             var autoInitialize = config.GetBoolean("autoInitialize", true);
             this.maxInvalidPasswordAttempts = config.GetInteger("maxInvalidPasswordAttempts", int.MaxValue);
-            this.passwordLockoutTimeoutInSeconds = config.GetInteger("passwordLockoutTimeoutInSeconds", int.MaxValue);
             this.requiresUniqueEmail = config.GetBoolean("requiresUniqueEmail");
+
+            if (config.ContainsKey("passwordAttemptWindowInSeconds") && config.ContainsKey("passwordAttemptWindow"))
+            {
+                throw new ProviderException("passwordAttemptWindowInSeconds and passwordAttemptWindow cannot both be set");
+            }
+
+            if (config.ContainsKey("passwordAttemptWindowInSeconds"))
+            {
+                this.passwordAttemptWindowInSeconds = config.GetInteger("passwordAttemptWindowInSeconds", int.MaxValue);
+            }
+            else
+            {
+                var passwordAttemptWindowInMinutes = config.GetInteger("passwordAttemptWindow", -1);
+                if (passwordAttemptWindowInMinutes < 0)
+                {
+                    this.passwordAttemptWindowInSeconds = int.MaxValue;
+                }
+                else
+                {
+                    this.passwordAttemptWindowInSeconds = passwordAttemptWindowInMinutes * 60;
+                }
+            }
 
             if (this.requiresUniqueEmail && !this.HasEmailColumnDefined)
             {
@@ -330,7 +376,8 @@
             config.Remove("userEmailColumn");
             config.Remove("autoCreateTables");
             config.Remove("autoInitialize");
-            config.Remove("passwordLockoutTimeoutInSeconds");
+            config.Remove("passwordAttemptWindow");
+            config.Remove("passwordAttemptWindowInSeconds");
 
             var providerName = string.Empty;
             var connectionString = ConfigurationManager.ConnectionStrings[this.connectionStringName];
@@ -430,10 +477,9 @@
             DateTime creationDate = GetDateTime(row[6]);
             DateTime passwordChangedDate = GetDateTime(row[7]);
             string email = this.HasEmailColumnDefined ? row[8] : string.Empty;
-            var isLockedOut =
-                isConfirmed && passwordFailuresSinceLastSuccess > this.MaxInvalidPasswordAttempts
-                && lastPasswordFailureDate.Add(TimeSpan.FromSeconds(this.PasswordLockoutTimeoutInSeconds))
-                > DateTime.UtcNow;
+            var isLockedOut = isConfirmed && passwordFailuresSinceLastSuccess > this.MaxInvalidPasswordAttempts
+                              && lastPasswordFailureDate.Add(TimeSpan.FromSeconds(this.PasswordAttemptWindowInSeconds))
+                              > DateTime.UtcNow;
 
             return new MembershipUser(
                 this.Name, 
