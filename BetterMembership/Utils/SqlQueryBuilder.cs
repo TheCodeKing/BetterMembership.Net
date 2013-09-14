@@ -2,7 +2,7 @@
 {
     using CuttingEdge.Conditions;
 
-    internal sealed class SqlHelper
+    internal sealed class SqlQueryBuilder : ISqlQueryBuilder
     {
         private readonly string sqlProvider;
 
@@ -34,7 +34,7 @@
 
         private string updateUserProfileQuery;
 
-        public SqlHelper(
+        public SqlQueryBuilder(
             SqlResourceFinder sqlResourceFinder, 
             string sqlProvider, 
             string userTableName, 

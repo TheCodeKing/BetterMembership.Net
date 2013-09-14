@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Text;
     using System.Web.Security;
 
     using BetterMembership.Web;
@@ -32,13 +33,18 @@
             var profile = new Dictionary<string, object>();
             var userName = prefix;
             var email = prefix + "@test.com";
-            if (provider.HasEmailColumnDefined())
-            {
-                profile.Add(GetEmailColumn(provider.AsBetter()), email);
-            }
 
-            provider.AsBetter().CreateUserAndAccount(userName, DefaultPassword, profile);
-            return new FluentProvider<TestUser>(provider, new TestUser(userName, email, DefaultPassword));
+            Action<TestUser> lazyCreate = t =>
+                {
+                    if (provider.HasEmailColumnDefined())
+                    {
+                        profile.Add(provider.AsBetter().UserEmailColumn, t.Email);
+                    }
+
+                    provider.AsBetter().CreateUserAndAccount(t.UserName, t.Password, t.Profile);
+                };
+            var testUser = new TestUser(userName, email, DefaultPassword, profile);
+            return new FluentProvider<TestUser>(provider, testUser, lazyCreate);
         }
 
         public static FluentProvider<IList<TestUser>> WithConfirmedUsers(
@@ -51,16 +57,50 @@
                 var profile = new Dictionary<string, object>();
                 var userName = prefix + "_" + i;
                 var email = prefix + i + "@test.com";
-                if (provider.HasEmailColumnDefined())
-                {
-                    profile.Add(GetEmailColumn(provider.AsBetter()), email);
-                }
-
-                provider.AsBetter().CreateUserAndAccount(userName, DefaultPassword, profile);
-                users.Add(new TestUser(userName, email, DefaultPassword));
+                var testUser = new TestUser(userName, email, DefaultPassword, profile);
+                users.Add(testUser);
             }
 
-            return new FluentProvider<IList<TestUser>>(provider, users);
+            Action<IList<TestUser>> lazyCreate = t => t.ToList().ForEach(u =>
+                {
+                    if (provider.HasEmailColumnDefined())
+                    {
+                        u.Profile.Add(provider.AsBetter().UserEmailColumn, u.Email);
+                    }
+
+                    provider.AsBetter().CreateUserAndAccount(u.UserName, u.Password, u.Profile);
+                });
+            return new FluentProvider<IList<TestUser>>(provider, users, lazyCreate);
+        }
+
+        public static FluentProvider<TestUser> WithPasswordLength(this FluentProvider<TestUser> provider, int count)
+        {
+            var builder = new StringBuilder();
+            for (var i = 0; i < provider.Provider.MinRequiredNonAlphanumericCharacters; i++)
+            {
+                builder.Append("!");
+            }
+
+            provider.UpdateValue.Password = builder.ToString().PadRight(count, 'x');
+            return provider;
+        }
+
+        public static FluentProvider<TestUser> WithUserNameLength(this FluentProvider<TestUser> provider, int count)
+        {
+            provider.UpdateValue.UserName = string.Empty.PadRight(count, 'x');
+            return provider;
+        }
+
+        public static MembershipUser AsMembershipUser(this FluentProvider<TestUser> provider)
+        {
+            var testUser = provider.Value;
+            return provider.Provider.GetUser(testUser.UserName, false);
+        }
+
+        public static FluentProvider<TestUser> WithEmailLength(this FluentProvider<TestUser> provider, int count)
+        {
+            provider.UpdateValue.Email = "@a.com".PadLeft(count, 'x');
+            return provider;
         }
 
         public static FluentProvider<TestUser> WithPasswordLockout(this FluentProvider<TestUser> provider)
@@ -95,13 +135,29 @@
             var prefix = Guid.NewGuid().ToString("N");
             var userName = prefix;
             var email = prefix + "@test.com";
-            if (provider.HasEmailColumnDefined())
+ 
+            Action<TestUser> lazyCreate = t =>
+                {
+                    if (provider.HasEmailColumnDefined())
+                    {
+                        profile.Add(provider.AsBetter().UserEmailColumn, t.Email);
+                    }
+                    provider.AsBetter().CreateUserAndAccount(t.UserName, t.Password, true, t.Profile);
+                };
+            var testUser = new TestUser(userName, email, DefaultPassword, profile);
+            return new FluentProvider<TestUser>(provider, testUser, lazyCreate);
+        }
+
+        public static FluentProvider<TestUser> WithNonAlphaNumericCharsInPassword(this FluentProvider<TestUser> provider, int chars)
+        {
+            var builder = new StringBuilder();
+            for (var i = 0; i < chars; i++)
             {
-                profile.Add(GetEmailColumn(provider.AsBetter()), email);
+                builder.Append("!");
             }
 
-            provider.AsBetter().CreateUserAndAccount(userName, DefaultPassword, true, profile);
-            return new FluentProvider<TestUser>(provider, new TestUser(userName, email, DefaultPassword));
+            provider.UpdateValue.Password = builder.ToString().PadRight(provider.Provider.MinRequiredPasswordLength, 'x');
+            return provider;
         }
 
         public static FluentProvider<TestUser> WithUnregisteredUser(
@@ -109,12 +165,13 @@
         {
             var userNameParam = userName ?? Guid.NewGuid().ToString("N");
             var emailParam = email ?? userNameParam + "@test.com";
-            return new FluentProvider<TestUser>(provider, new TestUser(userNameParam, emailParam, DefaultPassword));
-        }
+            if (!provider.AsBetter().HasEmailColumnDefined)
+            {
+                emailParam = null;
+            }
 
-        private static string GetEmailColumn(BetterMembershipProvider provider)
-        {
-            return provider.AsBetter().UserEmailColumn ?? "Email";
+            return new FluentProvider<TestUser>(
+                provider, new TestUser(userNameParam, emailParam, DefaultPassword, new Dictionary<string, object>()), t => { });
         }
     }
 }

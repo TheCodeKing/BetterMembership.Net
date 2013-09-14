@@ -4,7 +4,7 @@
 
     using WebMatrix.WebData;
 
-    internal sealed class WebSecurityFacade
+    internal sealed class WebSecurityFacade : IWebSecurityFacade
     {
         public void InitializeDatabaseConnection(
             string connectionStringName, 
