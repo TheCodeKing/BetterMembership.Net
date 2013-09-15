@@ -1,0 +1,15 @@
+<configuration>
+  <system.web>
+    <membership defaultProvider="betterProvider">
+      <providers>
+        <add name="betterProvider" type="BetterMembership.Web.BetterMembershipProvider, BetterMembership, Version=1.0.0.0, Culture=neutral, PublicKeyToken=737bc70442f2c4af" connectionStringName="DefaultConnection" autoInitialize="true" />
+      </providers>
+    </membership>
+    <roleManager defaultProvider="betterProvider" enabled="true">
+      <providers>
+        <clear />
+        <add name="betterProvider" type="BetterMembership.Web.BetterRoleProvider, BetterMembership, Version=1.0.0.0, Culture=neutral, PublicKeyToken=737bc70442f2c4af" connectionStringName="DefaultConnection" autoInitialize="true" />
+      </providers>
+    </roleManager>
+  </system.web>
+</configuration>

@@ -1,0 +1,70 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{E363B425-C033-4155-880A-000CA0B72766}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\NuGet.Config = .nuget\NuGet.Config
+		.nuget\NuGet.exe = .nuget\NuGet.exe
+		.nuget\NuGet.targets = .nuget\NuGet.targets
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BetterMembership", "BetterMembership\BetterMembership.csproj", "{D1B320DF-3E01-4422-ACC8-219C8FF41EDA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BetterMembership.Website", "BetterMembership.Website\BetterMembership.Website.csproj", "{0CC5BCD4-96D9-4F32-A88E-1AEE645D28E0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BetterMembership.IntegrationTests", "BetterMembership.IntegrationTests\BetterMembership.IntegrationTests.csproj", "{F0FDAE90-52AC-423A-924F-BAC9D1B36987}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BetterMembership.Tests", "BetterMembership.Tests\BetterMembership.Tests.csproj", "{03AEF574-4A4F-4C42-B9AB-18C31F2D2A76}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{70D38E31-7C32-4D00-8954-10D47C72E9BC}"
+	ProjectSection(SolutionItems) = preProject
+		..\Nuget\BetterMembershipProvider.nuspec = ..\Nuget\BetterMembershipProvider.nuspec
+		CommonAssemblyInfo.cs = CommonAssemblyInfo.cs
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Nuget", "Nuget", "{45C48895-5FB2-492A-8539-A88DD191A952}"
+	ProjectSection(SolutionItems) = preProject
+		..\Nuget\BetterMembershipProvider.nuspec = ..\Nuget\BetterMembershipProvider.nuspec
+		..\Nuget\pack-nuget.bat = ..\Nuget\pack-nuget.bat
+		..\Nuget\web.config.transform = ..\Nuget\web.config.transform
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+		Signed|Any CPU = Signed|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D1B320DF-3E01-4422-ACC8-219C8FF41EDA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D1B320DF-3E01-4422-ACC8-219C8FF41EDA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D1B320DF-3E01-4422-ACC8-219C8FF41EDA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D1B320DF-3E01-4422-ACC8-219C8FF41EDA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D1B320DF-3E01-4422-ACC8-219C8FF41EDA}.Signed|Any CPU.ActiveCfg = Signed|Any CPU
+		{D1B320DF-3E01-4422-ACC8-219C8FF41EDA}.Signed|Any CPU.Build.0 = Signed|Any CPU
+		{0CC5BCD4-96D9-4F32-A88E-1AEE645D28E0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0CC5BCD4-96D9-4F32-A88E-1AEE645D28E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0CC5BCD4-96D9-4F32-A88E-1AEE645D28E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0CC5BCD4-96D9-4F32-A88E-1AEE645D28E0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0CC5BCD4-96D9-4F32-A88E-1AEE645D28E0}.Signed|Any CPU.ActiveCfg = Signed|Any CPU
+		{0CC5BCD4-96D9-4F32-A88E-1AEE645D28E0}.Signed|Any CPU.Build.0 = Signed|Any CPU
+		{F0FDAE90-52AC-423A-924F-BAC9D1B36987}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F0FDAE90-52AC-423A-924F-BAC9D1B36987}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F0FDAE90-52AC-423A-924F-BAC9D1B36987}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F0FDAE90-52AC-423A-924F-BAC9D1B36987}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F0FDAE90-52AC-423A-924F-BAC9D1B36987}.Signed|Any CPU.ActiveCfg = Signed|Any CPU
+		{F0FDAE90-52AC-423A-924F-BAC9D1B36987}.Signed|Any CPU.Build.0 = Signed|Any CPU
+		{03AEF574-4A4F-4C42-B9AB-18C31F2D2A76}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{03AEF574-4A4F-4C42-B9AB-18C31F2D2A76}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{03AEF574-4A4F-4C42-B9AB-18C31F2D2A76}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{03AEF574-4A4F-4C42-B9AB-18C31F2D2A76}.Release|Any CPU.Build.0 = Release|Any CPU
+		{03AEF574-4A4F-4C42-B9AB-18C31F2D2A76}.Signed|Any CPU.ActiveCfg = Signed|Any CPU
+		{03AEF574-4A4F-4C42-B9AB-18C31F2D2A76}.Signed|Any CPU.Build.0 = Signed|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{45C48895-5FB2-492A-8539-A88DD191A952} = {70D38E31-7C32-4D00-8954-10D47C72E9BC}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<package>
+	<metadata>
+		<id>BetterMembershipProvider</id>
+		<version>1.0.0</version>
+		<title>BetterMembershipProvider</title>
+		<authors>TheCodeKing</authors>
+		<owners>TheCodeKing</owners>
+		<licenseUrl>https://github.com/TheCodeKing/BetterMembershipProvider/blob/develop/LICENSE</licenseUrl>
+		<projectUrl>https://github.com/TheCodeKing/BetterMembershipProvider/</projectUrl>
+		<requireLicenseAcceptance>false</requireLicenseAcceptance>
+		<description>A better implementation of ExtendedMembershipProvider with support for legacy MembershipProvider APIs.</description>
+		<copyright>Copyright 2013</copyright>
+		<tags>membershipprovider extendedmembershipprovider providers authentication sqlserverce sqlserver sqlmembershipprovider simplemembershipprovider</tags>
+		<references>
+			<reference file="BetterMembership.dll" />
+		</references>
+		<dependencies> 
+			<dependency id="CuttingEdge.Conditions" />
+			<dependency id="EntityFramework" version="4.3.1" />
+		</dependencies>
+	</metadata>
+	<files>
+    <file src="Install.ps1" target="tools" />
+		<file src="web.config.transform" target="content" />
+		<file src="..\Source\BetterMembership\bin\Signed\BetterMembership.dll" target="lib\net40\" />
+	</files>
+</package>
