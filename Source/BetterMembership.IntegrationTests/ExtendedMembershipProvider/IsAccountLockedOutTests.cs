@@ -10,12 +10,12 @@
     [TestFixture]
     public class IsAccountLockedOutTests : BaseMembershipTests
     {
-        [TestCase(SqlClientProviderNameWithEmail)]
+        [TestCase(SqlClientProviderWithEmail)]
         [TestCase(SqlClientProviderWithUniqueEmail)]
-        [TestCase(SqlClientProviderNameWithoutEmail)]
-        [TestCase(SqlClientCeProviderNameWithEmail)]
+        [TestCase(SqlClientProviderWithoutEmail)]
+        [TestCase(SqlClientCeProviderWithEmail)]
         [TestCase(SqlClientCeProviderWithUniqueEmail)]
-        [TestCase(SqlClientCeProviderNameWithoutEmail)]
+        [TestCase(SqlClientCeProviderWithoutEmail)]
         public void
             GivenConfirmedUserWhenMoreThanMaxNumberOfPasswordAttemptsAndWaitLongerThanPasswordTimeoutThenAccountIsNotLockedOut
             (string providerName)
@@ -37,12 +37,12 @@
             Assert.That(webSecurityIsLockedOut, Is.False);
         }
 
-        [TestCase(SqlClientProviderNameWithEmail)]
+        [TestCase(SqlClientProviderWithEmail)]
         [TestCase(SqlClientProviderWithUniqueEmail)]
-        [TestCase(SqlClientProviderNameWithoutEmail)]
-        [TestCase(SqlClientCeProviderNameWithEmail)]
+        [TestCase(SqlClientProviderWithoutEmail)]
+        [TestCase(SqlClientCeProviderWithEmail)]
         [TestCase(SqlClientCeProviderWithUniqueEmail)]
-        [TestCase(SqlClientCeProviderNameWithoutEmail)]
+        [TestCase(SqlClientCeProviderWithoutEmail)]
         public void GivenUnConfirmedUserWhenMoreThanMaxNumberOfPasswordAttemptsThenAccountIsNotLockedOut(
             string providerName)
         {
@@ -62,12 +62,12 @@
             Assert.That(webSecurityIsLockedOut, Is.False);
         }
 
-        [TestCase(SqlClientProviderNameWithEmail)]
+        [TestCase(SqlClientProviderWithEmail)]
         [TestCase(SqlClientProviderWithUniqueEmail)]
-        [TestCase(SqlClientProviderNameWithoutEmail)]
-        [TestCase(SqlClientCeProviderNameWithEmail)]
+        [TestCase(SqlClientProviderWithoutEmail)]
+        [TestCase(SqlClientCeProviderWithEmail)]
         [TestCase(SqlClientCeProviderWithUniqueEmail)]
-        [TestCase(SqlClientCeProviderNameWithoutEmail)]
+        [TestCase(SqlClientCeProviderWithoutEmail)]
         public void GivenConfirmedUserWhenLessThanMaxNumberOfPasswordAttemptsThenAccountIsNotLockedOut(
             string providerName)
         {

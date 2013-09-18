@@ -9,11 +9,11 @@
     [TestFixture]
     public class GetAllUsersTests : BaseMembershipTests
     {
-        [TestCase(SqlClientProviderNameWithEmail)]
-        //[TestCase(SqlClientProviderWithUniqueEmail)]
-        //[TestCase(SqlClientCeProviderNameWithEmail)]
-        //[TestCase(SqlClientCeProviderWithUniqueEmail)]
-        //[TestCase(SqlClientCeProviderNameWithoutEmail)]
+        [TestCase(SqlClientProviderWithEmail)]
+        [TestCase(SqlClientProviderWithUniqueEmail)]
+        [TestCase(SqlClientCeProviderWithEmail)]
+        [TestCase(SqlClientCeProviderWithUniqueEmail)]
+        [TestCase(SqlClientCeProviderWithoutEmail)]
         public void GivenConfirmedUsersWhenGetAllUsersThenReturnFirstPageUsersSuccessfully(string providerName)
         {
             // arrange

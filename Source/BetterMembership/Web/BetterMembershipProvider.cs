@@ -33,6 +33,8 @@
 
         private bool autoCreateTables;
 
+        private bool autoInitialize;
+
         private string connectionStringName;
 
         private string emailStrengthRegularExpression;
@@ -209,6 +211,30 @@
             get
             {
                 return this.userEmailColumn;
+            }
+        }
+
+        internal bool AutoCreateTables
+        {
+            get
+            {
+                return this.autoCreateTables;
+            }
+        }
+
+        internal bool AutoInitialize
+        {
+            get
+            {
+                return this.autoInitialize;
+            }
+        }
+
+        internal string ConnectionStringName
+        {
+            get
+            {
+                return this.connectionStringName;
             }
         }
 
@@ -518,7 +544,7 @@
             this.userNameColumn = config.GetString("userNameColumn", "UserName");
             this.userEmailColumn = config.GetString("userEmailColumn");
             this.autoCreateTables = config.GetBoolean("autoCreateTables", true);
-            var autoInitialize = config.GetBoolean("autoInitialize", true);
+            this.autoInitialize = config.GetBoolean("autoInitialize", true);
             this.maxInvalidPasswordAttempts = config.GetInteger("maxInvalidPasswordAttempts", int.MaxValue);
             this.minRequiredNonalphanumericCharacters = config.GetInteger("minRequiredNonalphanumericCharacters");
             this.minRequiredPasswordLength = config.GetInteger("minRequiredPasswordLength", 1);
@@ -580,7 +606,7 @@
             config.Remove("emailStrengthRegularExpression");
 
             var providerName = string.Empty;
-            var connectionString = ConfigurationManager.ConnectionStrings[this.connectionStringName];
+            var connectionString = ConfigurationManager.ConnectionStrings[this.ConnectionStringName];
             if (connectionString != null)
             {
                 providerName = connectionString.ProviderName;
@@ -591,14 +617,14 @@
 
             base.Initialize(name, config);
 
-            if (autoInitialize)
+            if (this.AutoInitialize)
             {
                 this.InitializeDatabaseConnection();
-            }
 
-            if (this.HasEmailColumnDefined)
-            {
-                this.CreateUserEmailColumn();
+                if (this.HasEmailColumnDefined)
+                {
+                    this.CreateUserEmailColumn();
+                }
             }
         }
 
@@ -640,7 +666,7 @@
 
                 if (this.HasEmailColumnDefined)
                 {
-                    db.Execute(this.sqlQueryBuilder.UpdateUserProfile, user.ProviderUserKey, user.Email);
+                    db.Execute(this.sqlQueryBuilder.UpdateUserEmail, user.ProviderUserKey, user.Email);
                 }
             }
         }
@@ -677,7 +703,7 @@
 
         private IDatabase ConnectToDatabase()
         {
-            return this.databaseFactory(this.connectionStringName);
+            return this.databaseFactory(this.ConnectionStringName);
         }
 
         private MembershipUser CreateMembershipUser(dynamic row)
@@ -770,7 +796,7 @@
         {
             using (new DefaultProviderSwitcher(this))
             {
-                using (var context = new DbContext(this.connectionStringName))
+                using (var context = new DbContext(this.ConnectionStringName))
                 {
                     if (!context.Database.Exists())
                     {
@@ -779,7 +805,7 @@
                 }
 
                 this.webSecurityFacade.InitializeDatabaseConnection(
-                    this.connectionStringName, 
+                    this.ConnectionStringName, 
                     this.userTableName, 
                     this.userIdColumn, 
                     this.userNameColumn, 

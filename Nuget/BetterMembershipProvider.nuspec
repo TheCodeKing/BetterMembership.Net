@@ -17,12 +17,14 @@
 		</references>
 		<dependencies> 
 			<dependency id="CuttingEdge.Conditions" />
-			<dependency id="EntityFramework" version="4.3.1" />
+			<dependency id="EntityFramework" version="5.0.0" />
 		</dependencies>
 	</metadata>
 	<files>
-    <file src="Install.ps1" target="tools" />
+		<file src="Install.ps1" target="tools" />
+		<file src="Uninstall.ps1" target="tools" />
 		<file src="web.config.transform" target="content" />
+		<file src="app.config.transform" target="content" />
 		<file src="..\Source\BetterMembership\bin\Signed\BetterMembership.dll" target="lib\net40\" />
 	</files>
 </package>

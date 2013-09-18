@@ -1,5 +1,10 @@
 ﻿namespace BetterMembership.Utils
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Configuration;
+    using System.Text;
+
     using CuttingEdge.Conditions;
 
     internal sealed class SqlQueryBuilder : ISqlQueryBuilder
@@ -26,13 +31,15 @@
 
         private string getUserNameByEmailQuery;
 
+        private string getUserProfileQuery;
+
         private string getUserQuery;
 
         private string unlockUserQuery;
 
         private string updateUserMembershipQuery;
 
-        private string updateUserProfileQuery;
+        private string updateUserEmailQuery;
 
         public SqlQueryBuilder(
             SqlResourceFinder sqlResourceFinder, 
@@ -99,6 +106,15 @@
             }
         }
 
+        public string GetUserProfile
+        {
+            get
+            {
+                return this.getUserProfileQuery
+                       ?? (this.getUserProfileQuery = this.PrepareSqlStatment("sqlGetUserProfile"));
+            }
+        }
+
         public string GetUserQuery
         {
             get
@@ -124,13 +140,33 @@
             }
         }
 
-        public string UpdateUserProfile
+        public string UpdateUserEmail
         {
             get
             {
-                return this.updateUserProfileQuery
-                       ?? (this.updateUserProfileQuery = this.PrepareSqlStatment("sqlUpdateUserProfile"));
+                return this.updateUserEmailQuery
+                       ?? (this.updateUserEmailQuery = this.PrepareSqlStatment("sqlUpdateUserEmail"));
             }
+        }
+
+        public string UpdateUserProfile(IEnumerable<SettingsPropertyValue> properties, string userName, out object[] values)
+        {
+            var builder = new StringBuilder("Update ").Append(this.userTableName).Append(" Set ");
+            var sets = new List<string>();
+            var propertyValues = new List<object>();
+            var i = 1;
+            propertyValues.Add(userName);
+            foreach (SettingsPropertyValue property in properties)
+            {
+                sets.Add(string.Format("{0} = @{1}", property.Name, i));
+                propertyValues.Add(property.PropertyValue);
+                i++;
+            }
+
+            values = propertyValues.ToArray();
+            builder.Append(string.Join(",", sets));
+            builder.Append(" Where ").Append(this.userNameColumn).Append(" = @0");
+            return builder.ToString();
         }
 
         private string PrepareSqlStatment(string sqlQueryName)

@@ -11,11 +11,11 @@
     {
         private const string NewEmail = "newemail@test.com";
 
-        [TestCase(SqlClientProviderNameWithEmail)]
+        [TestCase(SqlClientProviderWithEmail)]
         [TestCase(SqlClientProviderWithUniqueEmail)]
-        [TestCase(SqlClientCeProviderNameWithEmail)]
+        [TestCase(SqlClientCeProviderWithEmail)]
         [TestCase(SqlClientCeProviderWithUniqueEmail)]
-        [TestCase(SqlClientCeProviderNameWithoutEmail)]
+        [TestCase(SqlClientCeProviderWithoutEmail)]
         public void GivenConfirmedUserWhenUpdateUserThenUserIsUpdated(string providerName)
         {
             // arrange
@@ -41,11 +41,11 @@
             }
         }
 
-        [TestCase(SqlClientProviderNameWithEmail)]
+        [TestCase(SqlClientProviderWithEmail)]
         [TestCase(SqlClientProviderWithUniqueEmail)]
-        [TestCase(SqlClientCeProviderNameWithEmail)]
+        [TestCase(SqlClientCeProviderWithEmail)]
         [TestCase(SqlClientCeProviderWithUniqueEmail)]
-        [TestCase(SqlClientCeProviderNameWithoutEmail)]
+        [TestCase(SqlClientCeProviderWithoutEmail)]
         public void GivenUnConfirmedUserWhenUpdateUserThenUserIsUpdated(string providerName)
         {
             // arrange
@@ -71,11 +71,11 @@
             }
         }
 
-        [TestCase(SqlClientProviderNameWithEmail)]
+        [TestCase(SqlClientProviderWithEmail)]
         [TestCase(SqlClientProviderWithUniqueEmail)]
-        [TestCase(SqlClientCeProviderNameWithEmail)]
+        [TestCase(SqlClientCeProviderWithEmail)]
         [TestCase(SqlClientCeProviderWithUniqueEmail)]
-        [TestCase(SqlClientCeProviderNameWithoutEmail)]
+        [TestCase(SqlClientCeProviderWithoutEmail)]
         public void GivenConfirmedUserWithInvalidEmailWhenUpdateUserThenArgumentException(string providerName)
         {
             // arrange
@@ -87,9 +87,9 @@
             Assert.Throws<ArgumentException>(() => testClass.UpdateUser(testUser));
         }
 
-        [TestCase(SqlClientProviderNameWithEmail)]
+        [TestCase(SqlClientProviderWithEmail)]
         [TestCase(SqlClientProviderWithUniqueEmail)]
-        [TestCase(SqlClientCeProviderNameWithEmail)]
+        [TestCase(SqlClientCeProviderWithEmail)]
         [TestCase(SqlClientCeProviderWithUniqueEmail)]
         public void GivenConfirmedUserWithEmailTooLongWhenUpdateUserThenArgumentException(string providerName)
         {
@@ -102,8 +102,8 @@
             Assert.Throws<ArgumentException>(() => testClass.UpdateUser(testUser));
         }
 
-        [TestCase(SqlClientProviderNameWithEmail)]
-        [TestCase(SqlClientCeProviderNameWithEmail)]
+        [TestCase(SqlClientProviderWithEmail)]
+        [TestCase(SqlClientCeProviderWithEmail)]
         public void GivenConfirmedUserWithEmailNullWhenUpdateUserThenArgumentException(string providerName)
         {
             // arrange
@@ -128,8 +128,8 @@
             Assert.Throws<ArgumentNullException>(() => testClass.UpdateUser(testUser));
         }
 
-        [TestCase(SqlClientProviderNameWithEmail)]
-        [TestCase(SqlClientCeProviderNameWithEmail)]
+        [TestCase(SqlClientProviderWithEmail)]
+        [TestCase(SqlClientCeProviderWithEmail)]
         public void GivenConfirmedUserWithEmailEmptyWhenUpdateUserThenArgumentException(string providerName)
         {
             // arrange
@@ -154,9 +154,9 @@
             Assert.Throws<ArgumentException>(() => testClass.UpdateUser(testUser));
         }
 
-        [TestCase(SqlClientProviderNameWithEmail)]
+        [TestCase(SqlClientProviderWithEmail)]
         [TestCase(SqlClientProviderWithUniqueEmail)]
-        [TestCase(SqlClientCeProviderNameWithEmail)]
+        [TestCase(SqlClientCeProviderWithEmail)]
         [TestCase(SqlClientCeProviderWithUniqueEmail)]
         public void GivenUnregisteredUserWithEmailMaxLengthWhenCreateUserThenSuccessStatus(string providerName)
         {

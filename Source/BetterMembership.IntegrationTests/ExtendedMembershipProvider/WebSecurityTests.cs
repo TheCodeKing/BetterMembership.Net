@@ -10,12 +10,12 @@
     [TestFixture]
     public class WebSecurityTests : BaseMembershipTests
     {
-        [TestCase(SqlClientProviderNameWithEmail)]
+        [TestCase(SqlClientProviderWithEmail)]
         [TestCase(SqlClientProviderWithUniqueEmail)]
-        [TestCase(SqlClientProviderNameWithoutEmail)]
-        [TestCase(SqlClientCeProviderNameWithEmail)]
+        [TestCase(SqlClientProviderWithoutEmail)]
+        [TestCase(SqlClientCeProviderWithEmail)]
         [TestCase(SqlClientCeProviderWithUniqueEmail)]
-        [TestCase(SqlClientCeProviderNameWithoutEmail)]
+        [TestCase(SqlClientCeProviderWithoutEmail)]
         public void GivenMultipleProvidersWhenProviderUsedForCreateUserAndAccountThenUserAccountIsCreated(
             string providerName)
         {
@@ -35,12 +35,12 @@
             Assert.That(result, Is.Not.Null);
         }
 
-        [TestCase(SqlClientProviderNameWithEmail)]
+        [TestCase(SqlClientProviderWithEmail)]
         [TestCase(SqlClientProviderWithUniqueEmail)]
-        [TestCase(SqlClientProviderNameWithoutEmail)]
-        [TestCase(SqlClientCeProviderNameWithEmail)]
+        [TestCase(SqlClientProviderWithoutEmail)]
+        [TestCase(SqlClientCeProviderWithEmail)]
         [TestCase(SqlClientCeProviderWithUniqueEmail)]
-        [TestCase(SqlClientCeProviderNameWithoutEmail)]
+        [TestCase(SqlClientCeProviderWithoutEmail)]
         public void GivenUnConfirmedUserWhenLoginThenUserCannotAuthenticate(string providerName)
         {
             // arrange
@@ -54,12 +54,12 @@
             Assert.That(webSecurityResult, Is.False);
         }
 
-        [TestCase(SqlClientProviderNameWithEmail)]
+        [TestCase(SqlClientProviderWithEmail)]
         [TestCase(SqlClientProviderWithUniqueEmail)]
-        [TestCase(SqlClientProviderNameWithoutEmail)]
-        [TestCase(SqlClientCeProviderNameWithEmail)]
+        [TestCase(SqlClientProviderWithoutEmail)]
+        [TestCase(SqlClientCeProviderWithEmail)]
         [TestCase(SqlClientCeProviderWithUniqueEmail)]
-        [TestCase(SqlClientCeProviderNameWithoutEmail)]
+        [TestCase(SqlClientCeProviderWithoutEmail)]
         public void GivenUnConfirmedUserWhenMoreThanMaxNumberOfPasswordAttemptsThenAccountIsNotLockedOut(
             string providerName)
         {
@@ -78,12 +78,12 @@
             Assert.That(webSecurityIsLockedOut, Is.False);
         }
 
-        [TestCase(SqlClientProviderNameWithEmail)]
+        [TestCase(SqlClientProviderWithEmail)]
         [TestCase(SqlClientProviderWithUniqueEmail)]
-        [TestCase(SqlClientProviderNameWithoutEmail)]
-        [TestCase(SqlClientCeProviderNameWithEmail)]
+        [TestCase(SqlClientProviderWithoutEmail)]
+        [TestCase(SqlClientCeProviderWithEmail)]
         [TestCase(SqlClientCeProviderWithUniqueEmail)]
-        [TestCase(SqlClientCeProviderNameWithoutEmail)]
+        [TestCase(SqlClientCeProviderWithoutEmail)]
         public void GivenUnregisteredUserWhenCreateUserAndAccountThenUserAccountIsCreated(string providerName)
         {
             // arrange

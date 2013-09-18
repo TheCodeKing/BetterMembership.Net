@@ -7,11 +7,11 @@
     [TestFixture]
     public class GetUserTests : BaseMembershipTests
     {
-        [TestCase(SqlClientProviderNameWithEmail)]
+        [TestCase(SqlClientProviderWithEmail)]
         [TestCase(SqlClientProviderWithUniqueEmail)]
-        [TestCase(SqlClientCeProviderNameWithEmail)]
+        [TestCase(SqlClientCeProviderWithEmail)]
         [TestCase(SqlClientCeProviderWithUniqueEmail)]
-        [TestCase(SqlClientCeProviderNameWithoutEmail)]
+        [TestCase(SqlClientCeProviderWithoutEmail)]
         public void GivenConfirmedUserWhenGetUserByIdThenUserIsFound(string providerName)
         {
             // arrange
@@ -27,11 +27,11 @@
             Assert.That(user.UserName, Is.EqualTo(testUser.UserName));
         }
 
-        [TestCase(SqlClientProviderNameWithEmail)]
+        [TestCase(SqlClientProviderWithEmail)]
         [TestCase(SqlClientProviderWithUniqueEmail)]
-        [TestCase(SqlClientCeProviderNameWithEmail)]
+        [TestCase(SqlClientCeProviderWithEmail)]
         [TestCase(SqlClientCeProviderWithUniqueEmail)]
-        [TestCase(SqlClientCeProviderNameWithoutEmail)]
+        [TestCase(SqlClientCeProviderWithoutEmail)]
         public void GivenConfirmedUserWhenGetUserThenReturnMembershipUser(string providerName)
         {
             // arrange
@@ -45,11 +45,11 @@
             Assert.That(user, Is.Not.Null);
         }
 
-        [TestCase(SqlClientProviderNameWithEmail)]
+        [TestCase(SqlClientProviderWithEmail)]
         [TestCase(SqlClientProviderWithUniqueEmail)]
-        [TestCase(SqlClientCeProviderNameWithEmail)]
+        [TestCase(SqlClientCeProviderWithEmail)]
         [TestCase(SqlClientCeProviderWithUniqueEmail)]
-        [TestCase(SqlClientCeProviderNameWithoutEmail)]
+        [TestCase(SqlClientCeProviderWithoutEmail)]
         public void GivenConfirmedUserWhenGetUserThenUserIsApproved(string providerName)
         {
             // arrange
@@ -63,11 +63,11 @@
             Assert.That(user.IsApproved, Is.True);
         }
 
-        [TestCase(SqlClientProviderNameWithEmail)]
+        [TestCase(SqlClientProviderWithEmail)]
         [TestCase(SqlClientProviderWithUniqueEmail)]
-        [TestCase(SqlClientCeProviderNameWithEmail)]
+        [TestCase(SqlClientCeProviderWithEmail)]
         [TestCase(SqlClientCeProviderWithUniqueEmail)]
-        [TestCase(SqlClientCeProviderNameWithoutEmail)]
+        [TestCase(SqlClientCeProviderWithoutEmail)]
         public void GivenUnConfirmedUserWhenGetUserThenMembershipUserIsReturned(string providerName)
         {
             // arrange
@@ -82,11 +82,11 @@
             Assert.That(user.UserName, Is.EqualTo(testUser.UserName));
         }
 
-        [TestCase(SqlClientProviderNameWithEmail)]
+        [TestCase(SqlClientProviderWithEmail)]
         [TestCase(SqlClientProviderWithUniqueEmail)]
-        [TestCase(SqlClientCeProviderNameWithEmail)]
+        [TestCase(SqlClientCeProviderWithEmail)]
         [TestCase(SqlClientCeProviderWithUniqueEmail)]
-        [TestCase(SqlClientCeProviderNameWithoutEmail)]
+        [TestCase(SqlClientCeProviderWithoutEmail)]
         public void GivenUnConfirmedUserWhenGetUserThenUserIsNotApproved(string providerName)
         {
             // arrange
@@ -102,11 +102,11 @@
             Assert.That(user.IsApproved, Is.False);
         }
 
-        [TestCase(SqlClientProviderNameWithEmail)]
+        [TestCase(SqlClientProviderWithEmail)]
         [TestCase(SqlClientProviderWithUniqueEmail)]
-        [TestCase(SqlClientCeProviderNameWithEmail)]
+        [TestCase(SqlClientCeProviderWithEmail)]
         [TestCase(SqlClientCeProviderWithUniqueEmail)]
-        [TestCase(SqlClientCeProviderNameWithoutEmail)]
+        [TestCase(SqlClientCeProviderWithoutEmail)]
         public void GivenUnregisteredUserWhenGetUserThenMembershipUserIsNull(string providerName)
         {
             // arrange
@@ -120,11 +120,11 @@
             Assert.That(user, Is.Null);
         }
 
-        [TestCase(SqlClientProviderNameWithEmail)]
+        [TestCase(SqlClientProviderWithEmail)]
         [TestCase(SqlClientProviderWithUniqueEmail)]
-        [TestCase(SqlClientCeProviderNameWithEmail)]
+        [TestCase(SqlClientCeProviderWithEmail)]
         [TestCase(SqlClientCeProviderWithUniqueEmail)]
-        [TestCase(SqlClientCeProviderNameWithoutEmail)]
+        [TestCase(SqlClientCeProviderWithoutEmail)]
         public void GivenUnregisteredUserWhenGetUserByIdThenMembershipUserIsNull(string providerName)
         {
             // arrange
@@ -137,11 +137,11 @@
             Assert.That(user, Is.Null);
         }
 
-        [TestCase(SqlClientProviderNameWithEmail)]
+        [TestCase(SqlClientProviderWithEmail)]
         [TestCase(SqlClientProviderWithUniqueEmail)]
-        [TestCase(SqlClientCeProviderNameWithEmail)]
+        [TestCase(SqlClientCeProviderWithEmail)]
         [TestCase(SqlClientCeProviderWithUniqueEmail)]
-        [TestCase(SqlClientCeProviderNameWithoutEmail)]
+        [TestCase(SqlClientCeProviderWithoutEmail)]
         public void GivenUnReqisteredUserWhenGetUserThenUserIsNull(string providerName)
         {
             // arrange

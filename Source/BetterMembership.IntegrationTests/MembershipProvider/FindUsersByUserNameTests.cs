@@ -7,11 +7,11 @@
     [TestFixture]
     public class FindUsersByUserNameTests : BaseMembershipTests
     {
-        [TestCase(SqlClientProviderNameWithEmail)]
+        [TestCase(SqlClientProviderWithEmail)]
         [TestCase(SqlClientProviderWithUniqueEmail)]
-        [TestCase(SqlClientCeProviderNameWithEmail)]
+        [TestCase(SqlClientCeProviderWithEmail)]
         [TestCase(SqlClientCeProviderWithUniqueEmail)]
-        [TestCase(SqlClientCeProviderNameWithoutEmail)]
+        [TestCase(SqlClientCeProviderWithoutEmail)]
         public void GivenConfirmedUsersWhenFindUsersbyUserNameThenPageResultsSuccessFully(string providerName)
         {
             // arrange

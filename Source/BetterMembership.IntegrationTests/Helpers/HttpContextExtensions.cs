@@ -4,18 +4,18 @@
     using System.IO;
     using System.Linq;
     using System.Web;
+    using System.Web.Security;
 
-    using BetterMembership.Data;
+    using BetterMembership.Web;
 
     internal static class HttpContextExtensions
     {
         public static HttpContext WithCleanDatabase(this HttpContext context)
         {
-            InitializeDatabase("SqlServer", "UserProfile");
-            InitializeDatabase("SqlServer", "CustomUserTable");
-            InitializeDatabase("SqlServerCe1", "UserProfile");
-            InitializeDatabase("SqlServerCe2", "CustomUserTable");
-            InitializeDatabase("SqlServerCe3", "UserProfile");
+            foreach (var betterProvider in Membership.Providers.OfType<BetterMembershipProvider>())
+            {
+                InitializeDatabase(betterProvider.ConnectionStringName, betterProvider.UserTableName);
+            }
 
             return context;
         }
@@ -49,7 +49,6 @@
             {
                 context.Database.CreateIfNotExists();
 
-
                 if (
                     context.Database.SqlQuery<int?>(
                         "SELECT 1 from INFORMATION_SCHEMA.TABLES where TABLE_NAME = 'webpages_UsersInRoles'")
@@ -64,7 +63,6 @@
                         "SELECT 1 from INFORMATION_SCHEMA.TABLES where TABLE_NAME = 'webpages_Membership'")
                            .SingleOrDefault() != null)
                 {
-
                     context.Database.ExecuteSqlCommand("Delete From webpages_Membership");
                 }
 

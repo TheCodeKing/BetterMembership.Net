@@ -11,11 +11,11 @@
     [TestFixture]
     public class CreateUserTests : BaseMembershipTests
     {
-        [TestCase(SqlClientProviderNameWithEmail)]
+        [TestCase(SqlClientProviderWithEmail)]
         [TestCase(SqlClientProviderWithUniqueEmail)]
-        [TestCase(SqlClientCeProviderNameWithEmail)]
+        [TestCase(SqlClientCeProviderWithEmail)]
         [TestCase(SqlClientCeProviderWithUniqueEmail)]
-        [TestCase(SqlClientCeProviderNameWithoutEmail)]
+        [TestCase(SqlClientCeProviderWithoutEmail)]
         public void GivenUnregisteredUserWhenCreateUserThenMembershipUserReturned(string providerName)
         {
             // arrange
@@ -37,11 +37,11 @@
             }
         }
 
-        [TestCase(SqlClientProviderNameWithEmail)]
+        [TestCase(SqlClientProviderWithEmail)]
         [TestCase(SqlClientProviderWithUniqueEmail)]
-        [TestCase(SqlClientCeProviderNameWithEmail)]
+        [TestCase(SqlClientCeProviderWithEmail)]
         [TestCase(SqlClientCeProviderWithUniqueEmail)]
-        [TestCase(SqlClientCeProviderNameWithoutEmail)]
+        [TestCase(SqlClientCeProviderWithoutEmail)]
         public void GivenUnregisteredUserWhenCreateUserWithDuplicateUserNameThenStatusDuplicateUserName(
             string providerName)
         {
@@ -81,11 +81,11 @@
             Assert.That(status, Is.EqualTo(MembershipCreateStatus.DuplicateEmail));
         }
 
-        [TestCase(SqlClientProviderNameWithEmail)]
+        [TestCase(SqlClientProviderWithEmail)]
         [TestCase(SqlClientProviderWithUniqueEmail)]
-        [TestCase(SqlClientCeProviderNameWithEmail)]
+        [TestCase(SqlClientCeProviderWithEmail)]
         [TestCase(SqlClientCeProviderWithUniqueEmail)]
-        [TestCase(SqlClientCeProviderNameWithoutEmail)]
+        [TestCase(SqlClientCeProviderWithoutEmail)]
         public void GivenUnregisteredUserWhenCreateUserWithUnApprovedFlagThenUserUnconfirmed(string providerName)
         {
             // arrange
@@ -102,11 +102,11 @@
             Assert.That(testClass.AsBetter().IsConfirmed(testUser1.UserName), Is.False);
         }
 
-        [TestCase(SqlClientProviderNameWithEmail)]
+        [TestCase(SqlClientProviderWithEmail)]
         [TestCase(SqlClientProviderWithUniqueEmail)]
-        [TestCase(SqlClientCeProviderNameWithEmail)]
+        [TestCase(SqlClientCeProviderWithEmail)]
         [TestCase(SqlClientCeProviderWithUniqueEmail)]
-        [TestCase(SqlClientCeProviderNameWithoutEmail)]
+        [TestCase(SqlClientCeProviderWithoutEmail)]
         public void GivenUnregisteredUserWhenCreateUserWithApprovedFlagThenUserConfirmed(string providerName)
         {
             // arrange
@@ -123,11 +123,11 @@
             Assert.That(testClass.AsBetter().IsConfirmed(testUser1.UserName), Is.True);
         }
 
-        [TestCase(SqlClientProviderNameWithEmail)]
+        [TestCase(SqlClientProviderWithEmail)]
         [TestCase(SqlClientProviderWithUniqueEmail)]
-        [TestCase(SqlClientCeProviderNameWithEmail)]
+        [TestCase(SqlClientCeProviderWithEmail)]
         [TestCase(SqlClientCeProviderWithUniqueEmail)]
-        [TestCase(SqlClientCeProviderNameWithoutEmail)]
+        [TestCase(SqlClientCeProviderWithoutEmail)]
         public void GivenUnregisteredUserWithNotMinNonAlphaNumericPasswordWhenCreateUserThenInvalidPasswordStatus(string providerName)
         {
             // arrange
@@ -144,11 +144,11 @@
             Assert.That(status, Is.EqualTo(MembershipCreateStatus.InvalidPassword));
         }
 
-        [TestCase(SqlClientProviderNameWithEmail)]
+        [TestCase(SqlClientProviderWithEmail)]
         [TestCase(SqlClientProviderWithUniqueEmail)]
-        [TestCase(SqlClientCeProviderNameWithEmail)]
+        [TestCase(SqlClientCeProviderWithEmail)]
         [TestCase(SqlClientCeProviderWithUniqueEmail)]
-        [TestCase(SqlClientCeProviderNameWithoutEmail)]
+        [TestCase(SqlClientCeProviderWithoutEmail)]
         public void GivenUnregisteredUserWithMoreThanMinNonAlphaNumbericPasswordWhenCreateUserThenSuccessStatus(string providerName)
         {
             // arrange
@@ -164,11 +164,11 @@
             Assert.That(status, Is.EqualTo(MembershipCreateStatus.Success));
         }
 
-        [TestCase(SqlClientProviderNameWithEmail)]
+        [TestCase(SqlClientProviderWithEmail)]
         [TestCase(SqlClientProviderWithUniqueEmail)]
-        [TestCase(SqlClientCeProviderNameWithEmail)]
+        [TestCase(SqlClientCeProviderWithEmail)]
         [TestCase(SqlClientCeProviderWithUniqueEmail)]
-        [TestCase(SqlClientCeProviderNameWithoutEmail)]
+        [TestCase(SqlClientCeProviderWithoutEmail)]
         public void GivenUnregisteredUserWithExactMinNonAlphaNumbericPasswordWhenCreateUserThenSuccessStatus(string providerName)
         {
             // arrange
@@ -186,11 +186,11 @@
             Assert.That(status, Is.EqualTo(MembershipCreateStatus.Success));
         }
 
-        [TestCase(SqlClientProviderNameWithEmail)]
+        [TestCase(SqlClientProviderWithEmail)]
         [TestCase(SqlClientProviderWithUniqueEmail)]
-        [TestCase(SqlClientCeProviderNameWithEmail)]
+        [TestCase(SqlClientCeProviderWithEmail)]
         [TestCase(SqlClientCeProviderWithUniqueEmail)]
-        [TestCase(SqlClientCeProviderNameWithoutEmail)]
+        [TestCase(SqlClientCeProviderWithoutEmail)]
         public void GivenUnregisteredUserWithTooLongPasswordWhenCreateUserThenInvalidPasswordStatus(string providerName)
         {
             // arrange
@@ -208,11 +208,11 @@
             Assert.That(status, Is.EqualTo(MembershipCreateStatus.InvalidPassword));
         }
 
-        [TestCase(SqlClientProviderNameWithEmail)]
+        [TestCase(SqlClientProviderWithEmail)]
         [TestCase(SqlClientProviderWithUniqueEmail)]
-        [TestCase(SqlClientCeProviderNameWithEmail)]
+        [TestCase(SqlClientCeProviderWithEmail)]
         [TestCase(SqlClientCeProviderWithUniqueEmail)]
-        [TestCase(SqlClientCeProviderNameWithoutEmail)]
+        [TestCase(SqlClientCeProviderWithoutEmail)]
         public void GivenUnregisteredUserWithExactMinPasswordWhenCreateUserThenSuccesStatus(string providerName)
         {
             // arrange
@@ -230,11 +230,11 @@
             Assert.That(status, Is.EqualTo(MembershipCreateStatus.Success));
         }
 
-        [TestCase(SqlClientProviderNameWithEmail)]
+        [TestCase(SqlClientProviderWithEmail)]
         [TestCase(SqlClientProviderWithUniqueEmail)]
-        [TestCase(SqlClientCeProviderNameWithEmail)]
+        [TestCase(SqlClientCeProviderWithEmail)]
         [TestCase(SqlClientCeProviderWithUniqueEmail)]
-        [TestCase(SqlClientCeProviderNameWithoutEmail)]
+        [TestCase(SqlClientCeProviderWithoutEmail)]
         public void GivenUnregisteredUserWithTooFewCharsWhenCreateUserThenInvalidPasswordStatus(string providerName)
         {
             // arrange
@@ -252,11 +252,11 @@
             Assert.That(status, Is.EqualTo(MembershipCreateStatus.InvalidPassword));
         }
 
-        [TestCase(SqlClientProviderNameWithEmail)]
+        [TestCase(SqlClientProviderWithEmail)]
         [TestCase(SqlClientProviderWithUniqueEmail)]
-        [TestCase(SqlClientCeProviderNameWithEmail)]
+        [TestCase(SqlClientCeProviderWithEmail)]
         [TestCase(SqlClientCeProviderWithUniqueEmail)]
-        [TestCase(SqlClientCeProviderNameWithoutEmail)]
+        [TestCase(SqlClientCeProviderWithoutEmail)]
         public void GivenUnregisteredUserWithExactPasswordLengthWhenCreateUserThenSuccessStatus(string providerName)
         {
             // arrange
@@ -274,11 +274,11 @@
             Assert.That(status, Is.EqualTo(MembershipCreateStatus.Success));
         }
 
-        [TestCase(SqlClientProviderNameWithEmail)]
+        [TestCase(SqlClientProviderWithEmail)]
         [TestCase(SqlClientProviderWithUniqueEmail)]
-        [TestCase(SqlClientCeProviderNameWithEmail)]
+        [TestCase(SqlClientCeProviderWithEmail)]
         [TestCase(SqlClientCeProviderWithUniqueEmail)]
-        [TestCase(SqlClientCeProviderNameWithoutEmail)]
+        [TestCase(SqlClientCeProviderWithoutEmail)]
         public void GivenUnregisteredUserWithInvalidUserNameWhenCreateUserThenInvalidUserNameStatus(string providerName)
         {
             // arrange
@@ -296,11 +296,11 @@
             Assert.That(status, Is.EqualTo(MembershipCreateStatus.InvalidUserName));
         }
 
-        [TestCase(SqlClientProviderNameWithEmail)]
+        [TestCase(SqlClientProviderWithEmail)]
         [TestCase(SqlClientProviderWithUniqueEmail)]
-        [TestCase(SqlClientCeProviderNameWithEmail)]
+        [TestCase(SqlClientCeProviderWithEmail)]
         [TestCase(SqlClientCeProviderWithUniqueEmail)]
-        [TestCase(SqlClientCeProviderNameWithoutEmail)]
+        [TestCase(SqlClientCeProviderWithoutEmail)]
         public void GivenUnregisteredUserWithUserNameTooLongWhenCreateUserThenInvalidUserNameStatus(string providerName)
         {
             // arrange
@@ -318,11 +318,11 @@
             Assert.That(status, Is.EqualTo(MembershipCreateStatus.InvalidUserName));
         }
 
-        [TestCase(SqlClientProviderNameWithEmail)]
+        [TestCase(SqlClientProviderWithEmail)]
         [TestCase(SqlClientProviderWithUniqueEmail)]
-        [TestCase(SqlClientCeProviderNameWithEmail)]
+        [TestCase(SqlClientCeProviderWithEmail)]
         [TestCase(SqlClientCeProviderWithUniqueEmail)]
-        [TestCase(SqlClientCeProviderNameWithoutEmail)]
+        [TestCase(SqlClientCeProviderWithoutEmail)]
         public void GivenUnregisteredUserWithUserNameNullWhenCreateUserThenInvalidUserNameStatus(string providerName)
         {
             // arrange
@@ -340,11 +340,11 @@
             Assert.That(status, Is.EqualTo(MembershipCreateStatus.InvalidUserName));
         }
 
-        [TestCase(SqlClientProviderNameWithEmail)]
+        [TestCase(SqlClientProviderWithEmail)]
         [TestCase(SqlClientProviderWithUniqueEmail)]
-        [TestCase(SqlClientCeProviderNameWithEmail)]
+        [TestCase(SqlClientCeProviderWithEmail)]
         [TestCase(SqlClientCeProviderWithUniqueEmail)]
-        [TestCase(SqlClientCeProviderNameWithoutEmail)]
+        [TestCase(SqlClientCeProviderWithoutEmail)]
         public void GivenUnregisteredUserWithUserNameEmptyWhenCreateUserThenInvalidUserNameStatus(string providerName)
         {
             // arrange
@@ -362,11 +362,11 @@
             Assert.That(status, Is.EqualTo(MembershipCreateStatus.InvalidUserName));
         }
 
-        [TestCase(SqlClientProviderNameWithEmail)]
+        [TestCase(SqlClientProviderWithEmail)]
         [TestCase(SqlClientProviderWithUniqueEmail)]
-        [TestCase(SqlClientCeProviderNameWithEmail)]
+        [TestCase(SqlClientCeProviderWithEmail)]
         [TestCase(SqlClientCeProviderWithUniqueEmail)]
-        [TestCase(SqlClientCeProviderNameWithoutEmail)]
+        [TestCase(SqlClientCeProviderWithoutEmail)]
         public void GivenUnregisteredUserWithUserNameMaxLengthWhenCreateUserThenSuccessStatus(string providerName)
         {
             // arrange
@@ -384,11 +384,11 @@
             Assert.That(status, Is.EqualTo(MembershipCreateStatus.Success));
         }
 
-        [TestCase(SqlClientProviderNameWithEmail)]
+        [TestCase(SqlClientProviderWithEmail)]
         [TestCase(SqlClientProviderWithUniqueEmail)]
-        [TestCase(SqlClientCeProviderNameWithEmail)]
+        [TestCase(SqlClientCeProviderWithEmail)]
         [TestCase(SqlClientCeProviderWithUniqueEmail)]
-        [TestCase(SqlClientCeProviderNameWithoutEmail)]
+        [TestCase(SqlClientCeProviderWithoutEmail)]
         public void GivenUnregisteredUserWithInvalidEmailWhenCreateUserThenInvalidEmailStatus(string providerName)
         {
             // arrange
@@ -406,9 +406,9 @@
             Assert.That(status, Is.EqualTo(MembershipCreateStatus.InvalidEmail));
         }
 
-        [TestCase(SqlClientProviderNameWithEmail)]
+        [TestCase(SqlClientProviderWithEmail)]
         [TestCase(SqlClientProviderWithUniqueEmail)]
-        [TestCase(SqlClientCeProviderNameWithEmail)]
+        [TestCase(SqlClientCeProviderWithEmail)]
         [TestCase(SqlClientCeProviderWithUniqueEmail)]
         public void GivenUnregisteredUserWithEmailTooLongWhenCreateUserThenInvalidEmailStatus(string providerName)
         {
@@ -427,8 +427,8 @@
             Assert.That(status, Is.EqualTo(MembershipCreateStatus.InvalidEmail));
         }
 
-        [TestCase(SqlClientCeProviderNameWithEmail)]
-        [TestCase(SqlClientProviderNameWithEmail)]
+        [TestCase(SqlClientCeProviderWithEmail)]
+        [TestCase(SqlClientProviderWithEmail)]
         public void GivenUnregisteredUserWithEmailNullWhenCreateUserThenSuccessStatus(string providerName)
         {
             // arrange
@@ -484,8 +484,8 @@
             Assert.That(status, Is.EqualTo(MembershipCreateStatus.InvalidEmail));
         }
 
-        [TestCase(SqlClientProviderNameWithEmail)]
-        [TestCase(SqlClientCeProviderNameWithEmail)]
+        [TestCase(SqlClientProviderWithEmail)]
+        [TestCase(SqlClientCeProviderWithEmail)]
         public void GivenUnregisteredUserWithEmailEmptyWhenCreateUserThenSuccessStatus(string providerName)
         {
             // arrange
@@ -503,9 +503,9 @@
             Assert.That(status, Is.EqualTo(MembershipCreateStatus.Success));
         }
 
-        [TestCase(SqlClientProviderNameWithEmail)]
+        [TestCase(SqlClientProviderWithEmail)]
         [TestCase(SqlClientProviderWithUniqueEmail)]
-        [TestCase(SqlClientCeProviderNameWithEmail)]
+        [TestCase(SqlClientCeProviderWithEmail)]
         [TestCase(SqlClientCeProviderWithUniqueEmail)]
         public void GivenUnregisteredUserWithEmailMaxLengthWhenCreateUserThenSuccessStatus(string providerName)
         {

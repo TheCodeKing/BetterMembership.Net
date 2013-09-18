@@ -2,6 +2,8 @@
 {
     using System;
     using System.Collections.Specialized;
+    using System.Configuration.Provider;
+    using System.Web.Security;
 
     using BetterMembership.Extensions;
     using BetterMembership.Facades;
@@ -13,54 +15,25 @@
 
     public sealed class BetterRoleProvider : SimpleRoleProvider
     {
+        private readonly MembershipProviderCollection membershipProviders;
+
         private readonly WebSecurityFacade webSecurityFacade;
 
-        private bool autoCreateTables;
-
-        private string connectionStringName;
-
-        private string userIdColumn;
-
-        private string userNameColumn;
-
-        private string userTableName;
+        private BetterMembershipProvider membershipProvider;
 
         public BetterRoleProvider()
-            : this(new WebSecurityFacade())
+            : this(new WebSecurityFacade(), Membership.Providers)
         {
         }
 
-        internal BetterRoleProvider(WebSecurityFacade webSecurityFacade)
+        internal BetterRoleProvider(
+            WebSecurityFacade webSecurityFacade, MembershipProviderCollection membershipProviders)
         {
             Condition.Requires(webSecurityFacade, "webSecurityFacade").IsNotNull();
+            Condition.Requires(membershipProviders, "membershipProviders").IsNotNull();
 
             this.webSecurityFacade = webSecurityFacade;
-        }
-
-        public override void Initialize(string name, NameValueCollection config)
-        {
-            Condition.Requires(name, "name").IsNotNullOrWhiteSpace();
-            Condition.Requires(config, "config").IsNotNull();
-
-            this.connectionStringName = config.GetString("connectionStringName", "DefaultConnection");
-            this.userTableName = config.GetString("userTableName", "UserProfile");
-            this.userIdColumn = config.GetString("userIdColumn", "UserId");
-            this.userNameColumn = config.GetString("userNameColumn", "UserName");
-            this.autoCreateTables = config.GetBoolean("autoCreateTables", true);
-            var autoInitialize = config.GetBoolean("autoInitialize", true);
-
-            config.Remove("userTableName");
-            config.Remove("userIdColumn");
-            config.Remove("userNameColumn");
-            config.Remove("autoCreateTables");
-            config.Remove("autoInitialize");
-
-            base.Initialize(name, config);
-
-            if (autoInitialize)
-            {
-                this.InitializeDatabaseConnection();
-            }
+            this.membershipProviders = membershipProviders;
         }
 
         public override string[] GetRolesForUser(string username)
@@ -75,16 +48,43 @@
             }
         }
 
+        public override void Initialize(string name, NameValueCollection config)
+        {
+            Condition.Requires(name, "name").IsNotNullOrWhiteSpace();
+            Condition.Requires(config, "config").IsNotNull();
+
+            var membershipProviderName = config.GetString("membershipProviderName");
+
+            if (!string.IsNullOrWhiteSpace(membershipProviderName))
+            {
+                this.membershipProvider = this.membershipProviders[membershipProviderName] as BetterMembershipProvider;
+            }
+
+            if (this.membershipProvider == null)
+            {
+                throw new ProviderException("membershipProviderName is required");
+            }
+
+            config.Remove("membershipProviderName");
+
+            base.Initialize(name, config);
+
+            if (this.membershipProvider.AutoInitialize)
+            {
+                this.InitializeDatabaseConnection();
+            }
+        }
+
         private void InitializeDatabaseConnection()
         {
             using (new DefaultProviderSwitcher(this))
             {
                 this.webSecurityFacade.InitializeDatabaseConnection(
-                    this.connectionStringName, 
-                    this.userTableName, 
-                    this.userIdColumn, 
-                    this.userNameColumn, 
-                    this.autoCreateTables);
+                    this.membershipProvider.ConnectionStringName, 
+                    this.membershipProvider.UserTableName, 
+                    this.membershipProvider.UserIdColumn, 
+                    this.membershipProvider.UserNameColumn, 
+                    this.membershipProvider.AutoCreateTables);
             }
         }
     }

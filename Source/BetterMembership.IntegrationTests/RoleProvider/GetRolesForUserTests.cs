@@ -7,8 +7,12 @@
     [TestFixture]
     public class GetRolesForUserTests : BaseRoleMembershipTests
     {
-        [TestCase(SqlClientRoleProviderName, SqlClientMembershipProviderName)]
-        [TestCase(SqlClientCeRoleProviderName, SqlClientCeMembershipProviderName)]
+        [TestCase(SqlClientCeRoleProviderWithEmail, SqlClientCeProviderWithEmail)]
+        [TestCase(SqlClientCeRoleProviderWithoutEmail, SqlClientCeProviderWithoutEmail)]
+        [TestCase(SqlClientCeRoleProviderWithUniqueEmail, SqlClientCeProviderWithUniqueEmail)]
+        [TestCase(SqlClientRoleProviderWithEmail, SqlClientProviderWithEmail)]
+        [TestCase(SqlClientRoleProviderWithoutEmail, SqlClientProviderWithoutEmail)]
+        [TestCase(SqlClientRoleProviderWithUniqueEmail, SqlClientProviderWithUniqueEmail)]
         public void GivenConfirmedUserWithRolesWhenGetRolesForUserThenRolesReturned(
             string providerName, string membershipProviderName)
         {
@@ -27,8 +31,12 @@
             Assert.That(roles[1], Is.EqualTo(testRoles[1]));
         }
 
-        [TestCase(SqlClientRoleProviderName, SqlClientMembershipProviderName)]
-        [TestCase(SqlClientCeRoleProviderName, SqlClientCeMembershipProviderName)]
+        [TestCase(SqlClientCeRoleProviderWithEmail, SqlClientCeProviderWithEmail)]
+        [TestCase(SqlClientCeRoleProviderWithoutEmail, SqlClientCeProviderWithoutEmail)]
+        [TestCase(SqlClientCeRoleProviderWithUniqueEmail, SqlClientCeProviderWithUniqueEmail)]
+        [TestCase(SqlClientRoleProviderWithEmail, SqlClientProviderWithEmail)]
+        [TestCase(SqlClientRoleProviderWithoutEmail, SqlClientProviderWithoutEmail)]
+        [TestCase(SqlClientRoleProviderWithUniqueEmail, SqlClientProviderWithUniqueEmail)]
         public void GivenConfirmedUserWithoutRolesWhenGetRolesForUserThenEmptyRolesReturned(
             string providerName, string membershipProviderName)
         {

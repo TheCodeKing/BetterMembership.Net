@@ -7,13 +7,29 @@
 
     public abstract class BaseRoleMembershipTests
     {
-        protected const string SqlClientCeMembershipProviderName = "SqlClientCeProviderWithoutEmailColumn";
+        protected const string SqlClientCeProviderWithEmail = "SqlClientCeProviderWithEmail";
 
-        protected const string SqlClientCeRoleProviderName = "SqlClientCeRoleProviderName";
+        protected const string SqlClientCeProviderWithoutEmail = "SqlClientCeProviderWithoutEmail";
 
-        protected const string SqlClientMembershipProviderName = "SqlClientProviderWithoutEmailColumn";
+        protected const string SqlClientCeProviderWithUniqueEmail = "SqlClientCeProviderWithUniqueEmail";
 
-        protected const string SqlClientRoleProviderName = "SqlClientRoleProviderName";
+        protected const string SqlClientProviderWithEmail = "SqlClientProviderWithEmail";
+
+        protected const string SqlClientProviderWithoutEmail = "SqlClientProviderWithoutEmail";
+
+        protected const string SqlClientProviderWithUniqueEmail = "SqlClientProviderWithUniqueEmail";
+
+        protected const string SqlClientCeRoleProviderWithEmail = "SqlClientCeRoleProviderWithEmail";
+
+        protected const string SqlClientCeRoleProviderWithoutEmail = "SqlClientCeRoleProviderWithoutEmail";
+
+        protected const string SqlClientCeRoleProviderWithUniqueEmail = "SqlClientCeRoleProviderWithUniqueEmail";
+
+        protected const string SqlClientRoleProviderWithEmail = "SqlClientRoleProviderWithEmail";
+
+        protected const string SqlClientRoleProviderWithoutEmail = "SqlClientRoleProviderWithoutEmail";
+
+        protected const string SqlClientRoleProviderWithUniqueEmail = "SqlClientRoleProviderWithUniqueEmail";
 
         [SetUp]
         public virtual void SetUp()
