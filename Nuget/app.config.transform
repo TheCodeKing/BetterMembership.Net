@@ -1,11 +1,11 @@
 <configuration>
   <system.web>
-    <membership defaultProvider="BetterProvider">
+    <membership>
       <providers>
         <add name="BetterProvider" type="BetterMembership.Web.BetterMembershipProvider, BetterMembership, Version=1.0.0.0, Culture=neutral, PublicKeyToken=737bc70442f2c4af" connectionStringName="DefaultConnection" autoInitialize="true" />
       </providers>
     </membership>
-    <roleManager defaultProvider="BetterProvider" enabled="true">
+    <roleManager>
       <providers>
         <add name="BetterProvider" type="BetterMembership.Web.BetterRoleProvider, BetterMembership, Version=1.0.0.0, Culture=neutral, PublicKeyToken=737bc70442f2c4af" membershipProviderName="BetterProvider" />
       </providers>

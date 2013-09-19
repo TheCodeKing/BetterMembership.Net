@@ -5,19 +5,27 @@
 
     internal interface ISqlQueryBuilder
     {
-        string FindUsersByEmailQuery { get; }
+        string DeleteMembershipUser { get; }
 
-        string FindUsersByNameQuery { get; }
+        string DeleteOAuthMembershipUser { get; }
 
-        string GetAllUsersQuery { get; }
+        string DeleteProfile { get; }
 
-        string GetUserByIdQuery { get; }
+        string DeleteUserInRoles { get; }
+
+        string FindUsersByEmail { get; }
+
+        string FindUsersByName { get; }
+
+        string GetAllUsers { get; }
+
+        string GetUser { get; }
+
+        string GetUserById { get; }
 
         string GetUserNameByEmail { get; }
 
         string GetUserProfile { get; }
-
-        string GetUserQuery { get; }
 
         string UnlockUser { get; }
 

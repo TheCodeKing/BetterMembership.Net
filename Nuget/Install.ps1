@@ -20,7 +20,6 @@ try {
     $projectName = [IO.Path]::GetFileName($project.ProjectName.Trim([IO.PATH]::DirectorySeparatorChar, [IO.PATH]::AltDirectorySeparatorChar))
     $catalogName = "aspnet-$projectName-$timestamp"
     $connectionString ="Data Source=(LocalDb)\v11.0;Initial Catalog=$catalogName;Integrated Security=SSPI;AttachDBFilename=|DataDirectory|\$catalogName.mdf"
-    $connectionStringToken = 'Data Source=(LocalDb)\v11.0;'
     $config = $project.ProjectItems | Where-Object { $_.Name -eq "Web.config" }    
     $configPath = ($config.Properties | Where-Object { $_.Name -eq "FullPath" }).Value
     
@@ -44,12 +43,15 @@ try {
         $xml.configuration.AppendChild($connectionStrings) | Out-Null
     }
     
-    if (!($connectionStrings.SelectNodes("add[@name='DefaultConnection']") | Where { $_.connectionString.StartsWith($connectionStringToken, 'OrdinalIgnoreCase') })) {
+	$connectionStrings = $xml.SelectSingleNode("/configuration/connectionStrings")
+	write-host $connectionStrings.OuterXml
+    if ($connectionStrings.SelectNodes("add[@name='DefaultConnection']").count -eq 0) {
+		write-host "Adding connection string"
         $newConnectionNode = $xml.CreateElement("add")
         $newConnectionNode.SetAttribute("name", 'DefaultConnection')
         $newConnectionNode.SetAttribute("providerName", "System.Data.SqlClient")
         $newConnectionNode.SetAttribute("connectionString", $connectionString)
-        
+		write-host $newConnectionNode.OuterXml
         $connectionStrings.AppendChild($newConnectionNode) | Out-Null
     }
     

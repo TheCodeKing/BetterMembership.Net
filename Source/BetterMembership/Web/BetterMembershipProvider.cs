@@ -406,7 +406,7 @@
             {
                 emailToMatch = AppendWildcardToSearchTerm(emailToMatch);
                 var rows =
-                    db.Query(this.sqlQueryBuilder.FindUsersByEmailQuery, startRow, pageSize, emailToMatch).ToList();
+                    db.Query(this.sqlQueryBuilder.FindUsersByEmail, startRow, pageSize, emailToMatch).ToList();
                 return this.ExtractMembershipUsersFromRows(rows, out totalRecords);
             }
         }
@@ -424,7 +424,7 @@
             {
                 usernameToMatch = AppendWildcardToSearchTerm(usernameToMatch);
                 var rows =
-                    db.Query(this.sqlQueryBuilder.FindUsersByNameQuery, startRow, pageSize, usernameToMatch).ToList();
+                    db.Query(this.sqlQueryBuilder.FindUsersByName, startRow, pageSize, usernameToMatch).ToList();
                 return this.ExtractMembershipUsersFromRows(rows, out totalRecords);
             }
         }
@@ -438,7 +438,7 @@
 
             using (var db = this.ConnectToDatabase())
             {
-                var rows = db.Query(this.sqlQueryBuilder.GetAllUsersQuery, startRow, pageSize).ToList();
+                var rows = db.Query(this.sqlQueryBuilder.GetAllUsers, startRow, pageSize).ToList();
                 return this.ExtractMembershipUsersFromRows(rows, out totalRecords);
             }
         }
@@ -464,7 +464,7 @@
 
             using (var db = this.ConnectToDatabase())
             {
-                var row = db.QuerySingle(this.sqlQueryBuilder.GetUserQuery, username);
+                var row = db.QuerySingle(this.sqlQueryBuilder.GetUser, username);
                 if (row != null)
                 {
                     return this.CreateMembershipUser(row);
@@ -488,7 +488,7 @@
 
             using (var db = this.ConnectToDatabase())
             {
-                var row = db.QuerySingle(this.sqlQueryBuilder.GetUserByIdQuery, userId);
+                var row = db.QuerySingle(this.sqlQueryBuilder.GetUserById, userId);
                 if (row != null)
                 {
                     return this.CreateMembershipUser(row);

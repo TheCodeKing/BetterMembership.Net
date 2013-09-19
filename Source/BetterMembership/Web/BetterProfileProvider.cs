@@ -42,9 +42,9 @@
                     new SqlResourceFinder(new ResourceManifestFacade(typeof(BetterMembershipProvider).Assembly)), 
                     a, 
                     b, 
-                    c,
-                    d,
-                    e),
+                    c, 
+                    d, 
+                    e), 
                 Membership.Providers)
         {
         }
@@ -73,12 +73,35 @@
 
         public override int DeleteProfiles(ProfileInfoCollection profiles)
         {
-            throw new NotSupportedException();
+            Condition.Requires(profiles, "profiles").IsNotNull();
+
+            int i;
+            using (var db = this.ConnectToDatabase())
+            {
+                DeleteUserInRoles(db, profiles);
+                DeleteOAuthMembership(db, profiles);
+                DeleteMembership(db, profiles);
+                i = profiles.Cast<ProfileBase>()
+                            .Sum(profile => db.Execute(this.sqlQueryBuilder.DeleteProfile, profile.UserName));
+            }
+
+            return i;
         }
 
         public override int DeleteProfiles(string[] usernames)
         {
-            throw new NotSupportedException();
+            Condition.Requires(usernames, "usernames").IsNotNull();
+
+            int i;
+            using (var db = this.ConnectToDatabase())
+            {
+                DeleteUserInRoles(db, usernames);
+                DeleteOAuthMembership(db, usernames);
+                DeleteMembership(db, usernames);
+                i = usernames.Sum(userName => db.Execute(this.sqlQueryBuilder.DeleteProfile, userName));
+            }
+
+            return i;
         }
 
         public override ProfileInfoCollection FindInactiveProfilesByUserName(
@@ -99,7 +122,20 @@
             int pageSize, 
             out int totalRecords)
         {
-            throw new NotSupportedException();
+            Condition.Requires(usernameToMatch, "usernameToMatch").IsNotNullOrWhiteSpace();
+            Condition.Requires(pageIndex, "pageIndex").IsGreaterOrEqual(0);
+            Condition.Requires(pageSize, "pageSize").IsGreaterOrEqual(1);
+
+            if (authenticationOption != ProfileAuthenticationOption.All)
+            {
+                throw new NotSupportedException("only ProfileAuthenticationOption.All is supported");
+            }
+
+            using (var db = this.ConnectToDatabase())
+            {
+                var rows = db.Query(this.sqlQueryBuilder.FindUsersByName, usernameToMatch).ToList();
+                return this.ExtractProfileInfoFromRows(rows, out totalRecords);
+            }
         }
 
         public override ProfileInfoCollection GetAllInactiveProfiles(
@@ -115,7 +151,21 @@
         public override ProfileInfoCollection GetAllProfiles(
             ProfileAuthenticationOption authenticationOption, int pageIndex, int pageSize, out int totalRecords)
         {
-            throw new NotSupportedException();
+            Condition.Requires(pageIndex, "pageIndex").IsGreaterOrEqual(0);
+            Condition.Requires(pageSize, "pageSize").IsGreaterOrEqual(1);
+
+            if (authenticationOption != ProfileAuthenticationOption.All)
+            {
+                throw new NotSupportedException("only ProfileAuthenticationOption.All is supported");
+            }
+
+            var startRow = GetPagingStartRow(pageIndex, pageSize);
+
+            using (var db = this.ConnectToDatabase())
+            {
+                var rows = db.Query(this.sqlQueryBuilder.GetAllUsers, startRow, pageSize).ToList();
+                return this.ExtractProfileInfoFromRows(rows, out totalRecords);
+            }
         }
 
         public override int GetNumberOfInactiveProfiles(
@@ -245,9 +295,65 @@
             }
         }
 
+        private static int GetPagingStartRow(int pageIndex, int pageSize)
+        {
+            return pageIndex * pageSize;
+        }
+
+        private static int GetTotalRecords(List<dynamic> rows)
+        {
+            return (int)rows[0][0];
+        }
+
         private IDatabase ConnectToDatabase()
         {
             return this.databaseFactory(this.membershipProvider.ConnectionStringName);
+        }
+
+        private ProfileInfo CreateProfileInfo(dynamic row)
+        {
+            string name = row[2];
+
+            return new ProfileInfo(name, true, DateTime.MinValue, DateTime.MinValue, 0);
+        }
+
+        private void DeleteMembership(IDatabase db, IEnumerable<string> userNames)
+        {
+            foreach (var username in userNames)
+            {
+                db.Execute(this.sqlQueryBuilder.DeleteMembershipUser, username);
+            }
+        }
+
+        private void DeleteMembership(IDatabase db, ProfileInfoCollection profiles)
+        {
+            this.DeleteMembership(db, profiles.Cast<ProfileInfo>().Select(x => x.UserName).ToArray());
+        }
+
+        private void DeleteOAuthMembership(IDatabase db, IEnumerable<string> userNames)
+        {
+            foreach (var username in userNames)
+            {
+                db.Execute(this.sqlQueryBuilder.DeleteOAuthMembershipUser, username);
+            }
+        }
+
+        private void DeleteOAuthMembership(IDatabase db, ProfileInfoCollection profiles)
+        {
+            this.DeleteOAuthMembership(db, profiles.Cast<ProfileInfo>().Select(x => x.UserName).ToArray());
+        }
+
+        private void DeleteUserInRoles(IDatabase db, IEnumerable<string> userNames)
+        {
+            foreach (var username in userNames)
+            {
+                db.Execute(this.sqlQueryBuilder.DeleteUserInRoles, username);
+            }
+        }
+
+        private void DeleteUserInRoles(IDatabase db, ProfileInfoCollection profiles)
+        {
+            this.DeleteUserInRoles(db, profiles.Cast<ProfileInfo>().Select(x => x.UserName).ToArray());
         }
 
         private void EnsureSupportedColumns()
@@ -280,6 +386,19 @@
                     }
                 }
             }
+        }
+
+        private ProfileInfoCollection ExtractProfileInfoFromRows(List<dynamic> rows, out int totalRecords)
+        {
+            var profiles = new ProfileInfoCollection();
+            totalRecords = 0;
+            if (rows.Any())
+            {
+                totalRecords = GetTotalRecords(rows);
+                rows.ForEach(row => profiles.Add(this.CreateProfileInfo(row)));
+            }
+
+            return profiles;
         }
     }
 }

@@ -1,6 +1,5 @@
 ﻿namespace BetterMembership.Utils
 {
-    using System;
     using System.Collections.Generic;
     using System.Configuration;
     using System.Text;
@@ -21,6 +20,14 @@
 
         private readonly string userTableName;
 
+        private string deleteMembershipUserQuery;
+
+        private string deleteOAuthMembershipUserQuery;
+
+        private string deleteProfileQuery;
+
+        private string deleteUserInRolesQuery;
+
         private string findUsersByEmailQuery;
 
         private string findUsersByNameQuery;
@@ -37,9 +44,9 @@
 
         private string unlockUserQuery;
 
-        private string updateUserMembershipQuery;
-
         private string updateUserEmailQuery;
+
+        private string updateUserMembershipQuery;
 
         public SqlQueryBuilder(
             SqlResourceFinder sqlResourceFinder, 
@@ -63,7 +70,43 @@
             this.userEmailColumn = userEmailColumn;
         }
 
-        public string FindUsersByEmailQuery
+        public string DeleteMembershipUser
+        {
+            get
+            {
+                return this.deleteMembershipUserQuery
+                       ?? (this.deleteMembershipUserQuery = this.PrepareSqlStatment("sqlDeleteMembershipUser"));
+            }
+        }
+
+        public string DeleteOAuthMembershipUser
+        {
+            get
+            {
+                return this.deleteOAuthMembershipUserQuery
+                       ?? (this.deleteOAuthMembershipUserQuery = this.PrepareSqlStatment("sqlDeleteOAuthMembershipUser"));
+            }
+        }
+
+        public string DeleteProfile
+        {
+            get
+            {
+                return this.deleteProfileQuery
+                       ?? (this.deleteProfileQuery = this.PrepareSqlStatment("sqlDeleteProfile"));
+            }
+        }
+
+        public string DeleteUserInRoles
+        {
+            get
+            {
+                return this.deleteUserInRolesQuery
+                       ?? (this.deleteUserInRolesQuery = this.PrepareSqlStatment("sqlDeleteUserInRoles"));
+            }
+        }
+
+        public string FindUsersByEmail
         {
             get
             {
@@ -72,7 +115,7 @@
             }
         }
 
-        public string FindUsersByNameQuery
+        public string FindUsersByName
         {
             get
             {
@@ -81,7 +124,7 @@
             }
         }
 
-        public string GetAllUsersQuery
+        public string GetAllUsers
         {
             get
             {
@@ -89,7 +132,15 @@
             }
         }
 
-        public string GetUserByIdQuery
+        public string GetUser
+        {
+            get
+            {
+                return this.getUserQuery ?? (this.getUserQuery = this.PrepareSqlStatment("sqlGetUser"));
+            }
+        }
+
+        public string GetUserById
         {
             get
             {
@@ -115,28 +166,11 @@
             }
         }
 
-        public string GetUserQuery
-        {
-            get
-            {
-                return this.getUserQuery ?? (this.getUserQuery = this.PrepareSqlStatment("sqlGetUser"));
-            }
-        }
-
         public string UnlockUser
         {
             get
             {
                 return this.unlockUserQuery ?? (this.unlockUserQuery = this.PrepareSqlStatment("sqlUnlockUser"));
-            }
-        }
-
-        public string UpdateUserMembership
-        {
-            get
-            {
-                return this.updateUserMembershipQuery
-                       ?? (this.updateUserMembershipQuery = this.PrepareSqlStatment("sqlUpdateUserMembership"));
             }
         }
 
@@ -149,7 +183,17 @@
             }
         }
 
-        public string UpdateUserProfile(IEnumerable<SettingsPropertyValue> properties, string userName, out object[] values)
+        public string UpdateUserMembership
+        {
+            get
+            {
+                return this.updateUserMembershipQuery
+                       ?? (this.updateUserMembershipQuery = this.PrepareSqlStatment("sqlUpdateUserMembership"));
+            }
+        }
+
+        public string UpdateUserProfile(
+            IEnumerable<SettingsPropertyValue> properties, string userName, out object[] values)
         {
             var builder = new StringBuilder("Update ").Append(this.userTableName).Append(" Set ");
             var sets = new List<string>();
