@@ -7,7 +7,7 @@
 		<authors>TheCodeKing</authors>
 		<owners>TheCodeKing</owners>
 		<licenseUrl>https://github.com/TheCodeKing/BetterMembershipProvider/blob/develop/LICENSE</licenseUrl>
-		<projectUrl>https://github.com/TheCodeKing/BetterMembershipProvider/</projectUrl>
+		<projectUrl>http://thecodeking.github.io/BetterMembershipProvider/</projectUrl>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<description>A better implementation of ExtendedMembershipProvider with support for legacy MembershipProvider APIs.</description>
 		<copyright>Copyright 2013</copyright>
