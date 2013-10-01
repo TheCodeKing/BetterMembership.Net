@@ -329,21 +329,6 @@
             return string.Concat("%", emailToMatch, "%");
         }
 
-        private static object GetDefaultValue(SettingsProperty property)
-        {
-            if (property.DefaultValue != null)
-            {
-                return property.DefaultValue;
-            }
-
-            if (property.PropertyType.IsValueType)
-            {
-                return Activator.CreateInstance(property.PropertyType);
-            }
-
-            return null;
-        }
-
         private static int GetPagingStartRow(int pageIndex, int pageSize)
         {
             return pageIndex * pageSize;
