@@ -1,0 +1,10 @@
+C:\Work\git\BetterMembershipProvider\Source\BetterMembership\bin\Debug\BetterMembership.dll.config
+C:\Work\git\BetterMembershipProvider\Source\BetterMembership\bin\Debug\BetterMembership.dll
+C:\Work\git\BetterMembershipProvider\Source\BetterMembership\bin\Debug\BetterMembership.pdb
+C:\Work\git\BetterMembershipProvider\Source\BetterMembership\bin\Debug\CuttingEdge.Conditions.dll
+C:\Work\git\BetterMembershipProvider\Source\BetterMembership\bin\Debug\EntityFramework.dll
+C:\Work\git\BetterMembershipProvider\Source\BetterMembership\bin\Debug\CuttingEdge.Conditions.xml
+C:\Work\git\BetterMembershipProvider\Source\BetterMembership\bin\Debug\EntityFramework.xml
+C:\Work\git\BetterMembershipProvider\Source\BetterMembership\obj\Debug\BetterMembership.dll
+C:\Work\git\BetterMembershipProvider\Source\BetterMembership\obj\Debug\BetterMembership.pdb
+C:\Work\git\BetterMembershipProvider\Source\BetterMembership\obj\Debug\BetterMembership.csprojResolveAssemblyReference.cache

@@ -1,0 +1,16 @@
+C:\Work\git\BetterMembershipProvider\Source\BetterMembership.IntegrationTests\obj\Debug\BetterMembership.IntegrationTests.csprojResolveAssemblyReference.cache
+C:\Work\git\BetterMembershipProvider\Source\BetterMembership.IntegrationTests\bin\Debug\BetterMembership.IntegrationTests.dll.config
+C:\Work\git\BetterMembershipProvider\Source\BetterMembership.IntegrationTests\bin\Debug\BetterMembership.IntegrationTests.dll
+C:\Work\git\BetterMembershipProvider\Source\BetterMembership.IntegrationTests\bin\Debug\BetterMembership.IntegrationTests.pdb
+C:\Work\git\BetterMembershipProvider\Source\BetterMembership.IntegrationTests\bin\Debug\BetterMembership.dll
+C:\Work\git\BetterMembershipProvider\Source\BetterMembership.IntegrationTests\bin\Debug\CuttingEdge.Conditions.dll
+C:\Work\git\BetterMembershipProvider\Source\BetterMembership.IntegrationTests\bin\Debug\EntityFramework.dll
+C:\Work\git\BetterMembershipProvider\Source\BetterMembership.IntegrationTests\bin\Debug\nunit.framework.dll
+C:\Work\git\BetterMembershipProvider\Source\BetterMembership.IntegrationTests\bin\Debug\System.Data.SqlServerCe.dll
+C:\Work\git\BetterMembershipProvider\Source\BetterMembership.IntegrationTests\bin\Debug\System.Data.SqlServerCe.Entity.dll
+C:\Work\git\BetterMembershipProvider\Source\BetterMembership.IntegrationTests\bin\Debug\BetterMembership.pdb
+C:\Work\git\BetterMembershipProvider\Source\BetterMembership.IntegrationTests\bin\Debug\CuttingEdge.Conditions.xml
+C:\Work\git\BetterMembershipProvider\Source\BetterMembership.IntegrationTests\bin\Debug\EntityFramework.xml
+C:\Work\git\BetterMembershipProvider\Source\BetterMembership.IntegrationTests\bin\Debug\nunit.framework.xml
+C:\Work\git\BetterMembershipProvider\Source\BetterMembership.IntegrationTests\obj\Debug\BetterMembership.IntegrationTests.dll
+C:\Work\git\BetterMembershipProvider\Source\BetterMembership.IntegrationTests\obj\Debug\BetterMembership.IntegrationTests.pdb
