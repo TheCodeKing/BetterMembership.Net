@@ -118,7 +118,7 @@
             // act
             int totalRecords1;
             var results1 = testClass.GetAllProfiles(ProfileAuthenticationOption.All, PageIndex, PageSize, out totalRecords1);
-            ProfileInfo info = results1.ToArray()[0];
+            var info = results1.ToArray()[0];
 
             // assert
             Assert.That(results1, Is.Not.Null);

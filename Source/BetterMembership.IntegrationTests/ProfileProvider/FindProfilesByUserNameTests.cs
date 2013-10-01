@@ -1,4 +1,4 @@
-﻿namespace BetterMembership.IntegrationTests.MembershipProvider
+﻿namespace BetterMembership.IntegrationTests.ProfileProvider
 {
     using System;
     using System.Web.Profile;
@@ -144,52 +144,6 @@
             Assert.That(info.IsAnonymous, Is.True);
             Assert.That(info.LastActivityDate, Is.EqualTo(DateTime.MinValue));
             Assert.That(info.LastUpdatedDate, Is.EqualTo(DateTime.MinValue));
-        }
-
-        [TestCase(SqlClientCeProfileProviderWithEmail, BaseMembershipTests.SqlClientCeProviderWithEmail)]
-        [TestCase(SqlClientCeProfileProviderWithoutEmail, BaseMembershipTests.SqlClientCeProviderWithoutEmail)]
-        [TestCase(SqlClientCeProfileProviderWithUniqueEmail, BaseMembershipTests.SqlClientCeProviderWithUniqueEmail)]
-        [TestCase(SqlClientProfileProviderWithEmail, BaseMembershipTests.SqlClientProviderWithEmail)]
-        [TestCase(SqlClientProfileProviderWithoutEmail, BaseMembershipTests.SqlClientProviderWithoutEmail)]
-        [TestCase(SqlClientProfileProviderWithUniqueEmail, BaseMembershipTests.SqlClientProviderWithUniqueEmail)]
-        public void GivenConfirmedUsersWhenFindUsersbyUserNameWithAnonymousThenThrowNotSupportedException(
-            string providerName, string membershipProviderName)
-        {
-            // arrange
-            var testClass = this.WithProvider(providerName);
-            var memProvider = this.WithMembershipProvider(membershipProviderName);
-            const int PageSize = 2;
-            const int PageIndex = 1;
-            const int TotalUsers = 3;
-            string prefix1;
-            var users1 = memProvider.WithConfirmedUsers(TotalUsers, out prefix1).Value;
-
-            // act // assert
-            int totalRecords1;
-            Assert.Throws<NotSupportedException>(() => testClass.FindProfilesByUserName(ProfileAuthenticationOption.Anonymous, prefix1, PageIndex, PageSize, out totalRecords1));
-        }
-
-        [TestCase(SqlClientCeProfileProviderWithEmail, BaseMembershipTests.SqlClientCeProviderWithEmail)]
-        [TestCase(SqlClientCeProfileProviderWithoutEmail, BaseMembershipTests.SqlClientCeProviderWithoutEmail)]
-        [TestCase(SqlClientCeProfileProviderWithUniqueEmail, BaseMembershipTests.SqlClientCeProviderWithUniqueEmail)]
-        [TestCase(SqlClientProfileProviderWithEmail, BaseMembershipTests.SqlClientProviderWithEmail)]
-        [TestCase(SqlClientProfileProviderWithoutEmail, BaseMembershipTests.SqlClientProviderWithoutEmail)]
-        [TestCase(SqlClientProfileProviderWithUniqueEmail, BaseMembershipTests.SqlClientProviderWithUniqueEmail)]
-        public void GivenConfirmedUsersWhenFindUsersbyUserNameWithAuthenticatedThenThrowNotSupportedException(
-            string providerName, string membershipProviderName)
-        {
-            // arrange
-            var testClass = this.WithProvider(providerName);
-            var memProvider = this.WithMembershipProvider(membershipProviderName);
-            const int PageSize = 2;
-            const int PageIndex = 1;
-            const int TotalUsers = 3;
-            string prefix1;
-            var users1 = memProvider.WithConfirmedUsers(TotalUsers, out prefix1).Value;
-
-            // act // assert
-            int totalRecords1;
-            Assert.Throws<NotSupportedException>(() => testClass.FindProfilesByUserName(ProfileAuthenticationOption.Authenticated, prefix1, PageIndex, PageSize, out totalRecords1));
         }
     }
 }

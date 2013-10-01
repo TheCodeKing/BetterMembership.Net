@@ -1,6 +1,5 @@
 ﻿namespace BetterMembership.IntegrationTests.ProfileProvider
 {
-    using System;
     using System.Web.Profile;
 
     using BetterMembership.IntegrationTests.Helpers;
@@ -28,13 +27,15 @@
             const int UserGroupCount = PageSize;
             int totalRecords;
             var users = memProvider.WithConfirmedUsers(UserGroupCount, out prefix1).Value;
-            var profiles = testClass.GetAllProfiles(ProfileAuthenticationOption.All, PageIndex, PageSize, out totalRecords);
+            var profiles = testClass.GetAllProfiles(
+                ProfileAuthenticationOption.All, PageIndex, PageSize, out totalRecords);
 
             // act
             testClass.DeleteProfiles(profiles);
 
             // assert
-            var checkProfiles = testClass.GetAllProfiles(ProfileAuthenticationOption.All, PageIndex, PageSize, out totalRecords);
+            var checkProfiles = testClass.GetAllProfiles(
+                ProfileAuthenticationOption.All, PageIndex, PageSize, out totalRecords);
             Assert.That(checkProfiles, Is.Not.Null);
             Assert.That(checkProfiles.Count, Is.EqualTo(0));
             Assert.That(totalRecords, Is.EqualTo(0));
