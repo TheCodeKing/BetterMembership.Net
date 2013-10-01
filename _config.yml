@@ -83,7 +83,7 @@ JB :
   comments :
     provider : disqus
     disqus :
-      short_name : bettermembership.net
+      short_name : bettermembershipnet
     livefyre :
       site_id : 123
     intensedebate :
