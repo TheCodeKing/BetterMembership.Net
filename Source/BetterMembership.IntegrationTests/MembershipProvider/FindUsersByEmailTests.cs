@@ -45,25 +45,25 @@
             var provider = this.WithProvider(providerName);
             const int PageSize = 2;
             const int PageIndex = 1;
-            string preFix1;
-            string preFix2;
+            string prefix1;
+            string prefix2;
             const int UserGroup1Count = 8;
             const int UserGroup2Count = 3;
-            var users1 = provider.WithConfirmedUsers(UserGroup1Count, out preFix1).Value;
-            var users2 = provider.WithConfirmedUsers(UserGroup2Count, out preFix2).Value;
+            var users1 = provider.WithConfirmedUsers(UserGroup1Count, out prefix1).Value;
+            var users2 = provider.WithConfirmedUsers(UserGroup2Count, out prefix2).Value;
 
             // act
             int totalRecords1;
             if (!provider.HasEmailColumnDefined())
             {
-                Assert.Throws<ProviderException>(() => provider.FindUsersByEmail(preFix1, PageIndex, PageSize, out totalRecords1));
+                Assert.Throws<ProviderException>(() => provider.FindUsersByEmail(prefix1, PageIndex, PageSize, out totalRecords1));
                 return;
             }
 
             int totalRecords2;
             int totalRecords3;
-            var results1 = provider.FindUsersByEmail(preFix1, PageIndex, PageSize, out totalRecords1);
-            var results2 = provider.FindUsersByEmail(preFix2, PageIndex, PageSize, out totalRecords2);
+            var results1 = provider.FindUsersByEmail(prefix1, PageIndex, PageSize, out totalRecords1);
+            var results2 = provider.FindUsersByEmail(prefix2, PageIndex, PageSize, out totalRecords2);
             var results3 = provider.FindUsersByEmail("missing", PageIndex, PageSize, out totalRecords3);
 
             // assert

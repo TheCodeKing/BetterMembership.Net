@@ -20,9 +20,9 @@
             var testClass = this.WithProvider(providerName);
             const int PageSize = 2;
             const int PageIndex = 0;
-            string preFix1;
+            string prefix1;
             const int UserGroup1Count = 10;
-            var users1 = testClass.WithConfirmedUsers(UserGroup1Count, out preFix1).Value;
+            var users1 = testClass.WithConfirmedUsers(UserGroup1Count, out prefix1).Value;
 
             // act
             int totalRecords;

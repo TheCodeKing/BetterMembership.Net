@@ -81,7 +81,8 @@
                 DeleteUserInRoles(db, profiles);
                 DeleteOAuthMembership(db, profiles);
                 DeleteMembership(db, profiles);
-                i = profiles.Cast<ProfileBase>()
+                i =
+                    profiles.Cast<ProfileInfo>()
                             .Sum(profile => db.Execute(this.sqlQueryBuilder.DeleteProfile, profile.UserName));
             }
 
@@ -131,9 +132,12 @@
                 throw new NotSupportedException("only ProfileAuthenticationOption.All is supported");
             }
 
+            var startRow = GetPagingStartRow(pageIndex, pageSize);
+
             using (var db = this.ConnectToDatabase())
             {
-                var rows = db.Query(this.sqlQueryBuilder.FindUsersByName, usernameToMatch).ToList();
+                usernameToMatch = AppendWildcardToSearchTerm(usernameToMatch);
+                var rows = db.Query(this.sqlQueryBuilder.FindUsersByName, startRow, pageSize, usernameToMatch).ToList();
                 return this.ExtractProfileInfoFromRows(rows, out totalRecords);
             }
         }
@@ -189,7 +193,7 @@
 
             this.EnsureSupportedColumns();
 
-            if (this.databaseColumns.Count == 0)
+            if (this.databaseColumns.Count == 0 && this.DoesNotContainDefaultColumns(collection))
             {
                 return values;
             }
@@ -211,15 +215,20 @@
 
             foreach (SettingsProperty property in collection)
             {
+                var valueProperty = new SettingsPropertyValue(property);
                 if (profile.ContainsKey(property.Name))
                 {
-                    values.Add(
-                        new SettingsPropertyValue(property)
-                            {
-                                Deserialized = true, 
-                                PropertyValue = profile[property.Name]
-                            });
+                    valueProperty.PropertyValue = profile[property.Name];
+                    valueProperty.Deserialized = true;
+                    valueProperty.IsDirty = false;
                 }
+                else if (!property.PropertyType.IsValueType)
+                {
+                    valueProperty.PropertyValue = property.DefaultValue;
+                    valueProperty.IsDirty = false;
+                }
+
+                values.Add(valueProperty);
             }
 
             return values;
@@ -274,6 +283,25 @@
 
             this.EnsureSupportedColumns();
 
+            var ignoreValues =
+                collection.Cast<SettingsPropertyValue>()
+                          .Where(value => !this.databaseColumns.Contains(value.Name))
+                          .Where(
+                              value =>
+                              string.Compare(
+                                  value.Name, 
+                                  this.membershipProvider.UserEmailColumn, 
+                                  StringComparison.OrdinalIgnoreCase) != 0
+                              && string.Compare(
+                                  value.Name, this.membershipProvider.UserIdColumn, StringComparison.OrdinalIgnoreCase)
+                              != 0)
+                          .ToList();
+
+            if (ignoreValues.Count > 0)
+            {
+                throw new NotSupportedException("invalid profile property, no matching database column defined.");
+            }
+
             if (this.databaseColumns.Count == 0)
             {
                 return;
@@ -283,6 +311,7 @@
                 collection.Cast<SettingsPropertyValue>()
                           .Where(value => this.databaseColumns.Contains(value.Name))
                           .ToList();
+
             if (updateValues.Count == 0)
             {
                 return;
@@ -293,6 +322,26 @@
                 object[] values;
                 db.Execute(this.sqlQueryBuilder.UpdateUserProfile(updateValues, userName, out values), values);
             }
+        }
+
+        private static string AppendWildcardToSearchTerm(string emailToMatch)
+        {
+            return string.Concat("%", emailToMatch, "%");
+        }
+
+        private static object GetDefaultValue(SettingsProperty property)
+        {
+            if (property.DefaultValue != null)
+            {
+                return property.DefaultValue;
+            }
+
+            if (property.PropertyType.IsValueType)
+            {
+                return Activator.CreateInstance(property.PropertyType);
+            }
+
+            return null;
         }
 
         private static int GetPagingStartRow(int pageIndex, int pageSize)
@@ -354,6 +403,21 @@
         private void DeleteUserInRoles(IDatabase db, ProfileInfoCollection profiles)
         {
             this.DeleteUserInRoles(db, profiles.Cast<ProfileInfo>().Select(x => x.UserName).ToArray());
+        }
+
+        private bool DoesNotContainDefaultColumns(SettingsPropertyCollection collection)
+        {
+            return
+                !collection.Cast<SettingsProperty>()
+                           .Any(
+                               value =>
+                               string.Compare(
+                                   value.Name, this.membershipProvider.UserIdColumn, StringComparison.OrdinalIgnoreCase)
+                               == 0
+                               || string.Compare(
+                                   value.Name, 
+                                   this.membershipProvider.UserEmailColumn, 
+                                   StringComparison.OrdinalIgnoreCase) == 0);
         }
 
         private void EnsureSupportedColumns()

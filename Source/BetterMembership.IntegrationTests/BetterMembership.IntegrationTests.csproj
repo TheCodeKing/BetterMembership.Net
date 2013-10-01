@@ -90,6 +90,8 @@
     </Compile>
     <Compile Include="ExtendedMembershipProvider\IsAccountLockedOutTests.cs" />
     <Compile Include="Helpers\BaseRoleMembershipTests.cs" />
+    <Compile Include="Helpers\BaseProfileProviderTests.cs" />
+    <Compile Include="Helpers\ProfileProviderCollectionExtensions.cs" />
     <Compile Include="Helpers\FluentProvider.cs" />
     <Compile Include="Helpers\HttpContextExtensions.cs" />
     <Compile Include="Helpers\MembershipContext.cs">
@@ -107,6 +109,11 @@
     <Compile Include="MembershipProvider\GetAllUsersTests.cs" />
     <Compile Include="MembershipProvider\GetUserTests.cs" />
     <Compile Include="ExtendedMembershipProvider\WebSecurityTests.cs" />
+    <Compile Include="ProfileProvider\DeleteProfilesTests.cs" />
+    <Compile Include="ProfileProvider\ProfileProviderTests.cs" />
+    <Compile Include="ProfileProvider\GetAndSetPropertyTests.cs" />
+    <Compile Include="ProfileProvider\GetAllProfilesTests.cs" />
+    <Compile Include="ProfileProvider\FindProfilesByUserNameTests.cs" />
     <Compile Include="RoleProvider\GetRolesForUserTests.cs" />
     <Compile Include="Utils\DefaultProviderSwitcherTest.cs" />
     <Compile Include="Helpers\TestUser.cs" />

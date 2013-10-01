@@ -9,17 +9,17 @@
 
     public abstract class BaseMembershipTests
     {
-        protected const string SqlClientCeProviderWithEmail = "SqlClientCeProviderWithEmail";
+        public const string SqlClientCeProviderWithEmail = "SqlClientCeProviderWithEmail";
 
-        protected const string SqlClientCeProviderWithoutEmail = "SqlClientCeProviderWithoutEmail";
+        public const string SqlClientCeProviderWithoutEmail = "SqlClientCeProviderWithoutEmail";
 
-        protected const string SqlClientCeProviderWithUniqueEmail = "SqlClientCeProviderWithUniqueEmail";
+        public const string SqlClientCeProviderWithUniqueEmail = "SqlClientCeProviderWithUniqueEmail";
 
-        protected const string SqlClientProviderWithEmail = "SqlClientProviderWithEmail";
+        public const string SqlClientProviderWithEmail = "SqlClientProviderWithEmail";
 
-        protected const string SqlClientProviderWithoutEmail = "SqlClientProviderWithoutEmail";
+        public const string SqlClientProviderWithoutEmail = "SqlClientProviderWithoutEmail";
 
-        protected const string SqlClientProviderWithUniqueEmail = "SqlClientProviderWithUniqueEmail";
+        public const string SqlClientProviderWithUniqueEmail = "SqlClientProviderWithUniqueEmail";
 
         [SetUp]
         public virtual void SetUp()
