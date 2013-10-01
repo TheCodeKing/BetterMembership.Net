@@ -375,17 +375,17 @@
         public override string CreateUserAndAccount(
             string userName, string password, IDictionary<string, object> values)
         {
-            return base.CreateUserAndAccount(userName, password, false, values);
+            return this.CreateUserAndAccount(userName, password, false, values);
         }
 
         public override string CreateUserAndAccount(string userName, string password)
         {
-            return base.CreateUserAndAccount(userName, password, false, null);
+            return this.CreateUserAndAccount(userName, password, false, null);
         }
 
         public override string CreateUserAndAccount(string userName, string password, bool requireConfirmation)
         {
-            return base.CreateUserAndAccount(userName, password, requireConfirmation, null);
+            return this.CreateUserAndAccount(userName, password, requireConfirmation, null);
         }
 
         public override MembershipUserCollection FindUsersByEmail(

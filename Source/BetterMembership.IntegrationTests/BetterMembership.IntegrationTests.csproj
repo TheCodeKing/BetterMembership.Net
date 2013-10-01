@@ -98,6 +98,7 @@
     </Compile>
     <Compile Include="Helpers\MembershipExtensions.cs" />
     <Compile Include="Helpers\BaseMembershipTests.cs" />
+    <Compile Include="MembershipProvider\MembershipProviderTests.cs" />
     <Compile Include="MembershipProvider\PasswordLockoutTests.cs" />
     <Compile Include="MembershipProvider\CreateUserTests.cs" />
     <Compile Include="MembershipProvider\UnlockUserTests.cs" />
