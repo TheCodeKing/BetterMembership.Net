@@ -7,9 +7,12 @@ tagline: about the library
 
 A better implementation of ExtendedMembershipProvider with support for legacy MembershipProvider APIs.
 
+Documentation coming soon...
+
 ### Installation
 
 Install the library using Nuget.
 
 	PM> Install-Package BetterMembership.Net
+
 	
