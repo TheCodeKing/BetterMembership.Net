@@ -2,9 +2,9 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-[assembly: AssemblyTitle("BetterMembershipProvider")]
+[assembly: AssemblyTitle("BetterMembership.Net")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyProduct("BetterMembershipProvider")]
+[assembly: AssemblyProduct("BetterMembership.Net")]
 [assembly: ComVisible(false)]
 [assembly: Guid("7367bbbb-7568-4e5b-996e-31fdd2405d70")]
 

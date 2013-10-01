@@ -16,13 +16,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BetterMembership.Tests", "B
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{70D38E31-7C32-4D00-8954-10D47C72E9BC}"
 	ProjectSection(SolutionItems) = preProject
-		..\Nuget\BetterMembershipProvider.nuspec = ..\Nuget\BetterMembershipProvider.nuspec
 		CommonAssemblyInfo.cs = CommonAssemblyInfo.cs
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Nuget", "Nuget", "{45C48895-5FB2-492A-8539-A88DD191A952}"
 	ProjectSection(SolutionItems) = preProject
-		..\Nuget\BetterMembershipProvider.nuspec = ..\Nuget\BetterMembershipProvider.nuspec
+		..\Nuget\BetterMembership.Net.nuspec = ..\Nuget\BetterMembership.Net.nuspec
 		..\Nuget\pack-nuget.bat = ..\Nuget\pack-nuget.bat
 		..\Nuget\web.config.transform = ..\Nuget\web.config.transform
 	EndProjectSection

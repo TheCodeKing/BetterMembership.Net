@@ -1,13 +1,13 @@
 <?xml version="1.0"?>
 <package>
 	<metadata>
-		<id>BetterMembershipProvider</id>
+		<id>BetterMembership.Net</id>
 		<version>1.0.0</version>
-		<title>BetterMembershipProvider</title>
+		<title>BetterMembership.Net</title>
 		<authors>TheCodeKing</authors>
 		<owners>TheCodeKing</owners>
-		<licenseUrl>https://github.com/TheCodeKing/BetterMembershipProvider/blob/develop/LICENSE</licenseUrl>
-		<projectUrl>http://thecodeking.github.io/BetterMembershipProvider/</projectUrl>
+		<licenseUrl>https://github.com/TheCodeKing/BetterMembership.Net/blob/develop/LICENSE</licenseUrl>
+		<projectUrl>http://thecodeking.github.io/BetterMembership.Net/</projectUrl>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<description>A better implementation of ExtendedMembershipProvider with support for legacy MembershipProvider APIs.</description>
 		<copyright>Copyright 2013</copyright>
