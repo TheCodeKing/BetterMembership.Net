@@ -138,7 +138,7 @@
             {
                 usernameToMatch = AppendWildcardToSearchTerm(usernameToMatch);
                 var rows = db.Query(this.sqlQueryBuilder.FindUsersByName, startRow, pageSize, usernameToMatch).ToList();
-                return this.ExtractProfileInfoFromRows(rows, out totalRecords);
+                return ExtractProfileInfoFromRows(rows, out totalRecords);
             }
         }
 
@@ -168,7 +168,7 @@
             using (var db = this.ConnectToDatabase())
             {
                 var rows = db.Query(this.sqlQueryBuilder.GetAllUsers, startRow, pageSize).ToList();
-                return this.ExtractProfileInfoFromRows(rows, out totalRecords);
+                return ExtractProfileInfoFromRows(rows, out totalRecords);
             }
         }
 
@@ -329,12 +329,32 @@
             return string.Concat("%", emailToMatch, "%");
         }
 
+        private static ProfileInfo CreateProfileInfo(dynamic row)
+        {
+            string name = row[2];
+
+            return new ProfileInfo(name, true, DateTime.MinValue, DateTime.MinValue, 0);
+        }
+
+        private static ProfileInfoCollection ExtractProfileInfoFromRows(List<dynamic> rows, out int totalRecords)
+        {
+            var profiles = new ProfileInfoCollection();
+            totalRecords = 0;
+            if (rows.Any())
+            {
+                totalRecords = GetTotalRecords(rows);
+                rows.ForEach(row => profiles.Add(CreateProfileInfo(row)));
+            }
+
+            return profiles;
+        }
+
         private static int GetPagingStartRow(int pageIndex, int pageSize)
         {
             return pageIndex * pageSize;
         }
 
-        private static int GetTotalRecords(List<dynamic> rows)
+        private static int GetTotalRecords(IList<dynamic> rows)
         {
             return (int)rows[0][0];
         }
@@ -342,13 +362,6 @@
         private IDatabase ConnectToDatabase()
         {
             return this.databaseFactory(this.membershipProvider.ConnectionStringName);
-        }
-
-        private ProfileInfo CreateProfileInfo(dynamic row)
-        {
-            string name = row[2];
-
-            return new ProfileInfo(name, true, DateTime.MinValue, DateTime.MinValue, 0);
         }
 
         private void DeleteMembership(IDatabase db, IEnumerable<string> userNames)
@@ -366,6 +379,11 @@
 
         private void DeleteOAuthMembership(IDatabase db, IEnumerable<string> userNames)
         {
+            if (!db.TableExists(TableNames.OAuthMembership))
+            {
+                return;
+            }
+
             foreach (var username in userNames)
             {
                 db.Execute(this.sqlQueryBuilder.DeleteOAuthMembershipUser, username);
@@ -379,6 +397,11 @@
 
         private void DeleteUserInRoles(IDatabase db, IEnumerable<string> userNames)
         {
+            if (!db.TableExists(TableNames.UsersInRoles))
+            {
+                return;
+            }
+
             foreach (var username in userNames)
             {
                 db.Execute(this.sqlQueryBuilder.DeleteUserInRoles, username);
@@ -412,42 +435,18 @@
                 return;
             }
 
-            this.databaseColumns = new List<string>();
             using (var db = this.ConnectToDatabase())
             {
-                var rows =
-                    db.Query(
-                        @"SELECT COLUMN_NAME from INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = @0", 
-                        this.membershipProvider.UserTableName).ToList();
-                if (rows.Any())
-                {
-                    foreach (var row in rows)
-                    {
-                        string columnName = row[0];
-                        if (string.Compare(
-                            columnName, this.membershipProvider.UserIdColumn, StringComparison.OrdinalIgnoreCase) != 0
-                            && string.Compare(
-                                columnName, this.membershipProvider.UserNameColumn, StringComparison.OrdinalIgnoreCase)
-                            != 0)
-                        {
-                            this.databaseColumns.Add(columnName);
-                        }
-                    }
-                }
+                this.databaseColumns = db.GetColumnsForTable(this.membershipProvider.UserTableName)
+                    .Where(columnName => string.Compare(
+                                            columnName, 
+                                            this.membershipProvider.UserIdColumn, 
+                                            StringComparison.OrdinalIgnoreCase) != 0
+                                         && string.Compare(
+                                             columnName,
+                                             this.membershipProvider.UserNameColumn,
+                                             StringComparison.OrdinalIgnoreCase) != 0).ToList();
             }
-        }
-
-        private ProfileInfoCollection ExtractProfileInfoFromRows(List<dynamic> rows, out int totalRecords)
-        {
-            var profiles = new ProfileInfoCollection();
-            totalRecords = 0;
-            if (rows.Any())
-            {
-                totalRecords = GetTotalRecords(rows);
-                rows.ForEach(row => profiles.Add(this.CreateProfileInfo(row)));
-            }
-
-            return profiles;
         }
     }
 }

@@ -81,6 +81,8 @@
     </Compile>
     <Compile Include="Data\DatabaseProxy.cs" />
     <Compile Include="Data\IDatabase.cs" />
+    <Compile Include="Data\TableNames.cs" />
+    <Compile Include="Extensions\DatabaseExtensions.cs" />
     <Compile Include="Facades\IResourceManifestFacade.cs" />
     <Compile Include="Facades\IWebSecurityFacade.cs" />
     <Compile Include="Facades\ResourceManifestFacade.cs" />

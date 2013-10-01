@@ -3,7 +3,6 @@
     using System;
     using System.Collections.Specialized;
     using System.Configuration.Provider;
-    using System.Web.Security;
 
     using BetterMembership.Web;
 
@@ -14,167 +13,151 @@
     [TestFixture]
     public class BetterMembershipProviderTests
     {
-        private const string DefaultEmailStrengthRegularExpression =
-            @"[-0-9a-zA-Z.+_]+@[-0-9a-zA-Z.+_]+\.[a-zA-Z]{2,4}";
-
         [Test]
-        public void GivenNoRequiresUniqueEmailAttributeWhenInitializeThenRequiresUniqueEmailIsFalse()
-        {
-            // arrange
-            var testClass = new BetterMembershipProvider();
-            var config = new NameValueCollection();
-
-            // act
-            testClass.Initialize("name", config);
-
-            // assert
-            Assert.That(testClass.RequiresUniqueEmail, Is.False);
-        }
-
-        [Test]
-        public void GivenProviderWhenGetNumberOfUsersOnlineThenProviderException()
-        {
-            // arrange
-            var provider = new BetterMembershipProvider();
-
-            // act // assert
-            Assert.Throws<NotSupportedException>(() => provider.GetNumberOfUsersOnline());
-        }
-
-        [Test]
-        public void GivenProviderWhenGetPasswordThenProviderException()
-        {
-            // arrange
-            var provider = new BetterMembershipProvider();
-
-            // act // assert
-            Assert.Throws<NotSupportedException>(() => provider.GetPassword("userName", "answer"));
-        }
-
-
-        [Test]
-        public void GivenProviderWhenRequiresQuestionAndAnswerThenProviderException()
-        {
-            // arrange
-            var provider = new BetterMembershipProvider();
-
-            // act
-            var result = provider.RequiresQuestionAndAnswer;
-
-            // assert
-            Assert.That(result, Is.False);
-        }
-
-        [Test]
-        public void GivenProviderWhenGetUserByKeyWithInvalidKeyThenProviderException()
-        {
-            // arrange
-            var provider = new BetterMembershipProvider();
-
-            // act // assert
-            Assert.Throws<ArgumentException>(() => provider.GetUser((object)"NotInteger", true));
-        }
-
-        [Test]
-        public void GivenProviderWhenGetUserByKeyWithUsersOnlineFlagThenProviderException()
-        {
-            // arrange
-            var provider = new BetterMembershipProvider();
-
-            // act // assert
-            Assert.Throws<NotSupportedException>(() => provider.GetUser(1, true));
-        }
-
-        [Test]
-        public void GivenProviderWhenGetUserWithUsersOnlineFlagThenProviderException()
-        {
-            // arrange
-            var provider = new BetterMembershipProvider();
-
-            // act // assert
-            Assert.Throws<NotSupportedException>(() => provider.GetUser("username", true));
-        }
-
-        [Test]
-        public void GivenRequiresEmailWithoutEmailColumnWhenInitializeThenProviderException()
-        {
-            // arrange
-            var provider = new BetterMembershipProvider();
-            var config = new NameValueCollection { { "requiresUniqueEmail", "true" } };
-
-            // act // assert
-            Assert.Throws<ProviderException>(() => provider.Initialize("name", config));
-        }
-
-        [Test]
-        public void GivenRequiresQuestionAndAnswerAttributeWhenInitializeThenProviderException()
-        {
-            // arrange
-            var provider = new BetterMembershipProvider();
-            var config = new NameValueCollection { { "requiresQuestionAndAnswer", "true" } };
-
-            // act // assert
-            Assert.Throws<ProviderException>(() => provider.Initialize("name", config));
-        }
-
-        [Test]
-        public void GivenProviderWhenResetPasswordThenNotSupportedException()
-        {
-            // arrange
-            var provider = new BetterMembershipProvider();
-
-            // act // assert
-            Assert.Throws<NotSupportedException>(() => provider.ResetPassword(null, null));
-        }
-
-        [Test]
-        public void GivenRequiresUniqueEmailWhenInitializeThenRequiresUniqueEmailIsCorrectValue()
-        {
-            // arrange
-            var testClass = new BetterMembershipProvider();
-            var config = new NameValueCollection { { "requiresUniqueEmail", "true" }, { "userEmailColumn", "Email" } };
-
-            // act
-            testClass.Initialize("name", config);
-
-            // assert
-            Assert.That(testClass.RequiresUniqueEmail, Is.True);
-        }
-
-        [Test]
-        public void GivenMinRequiredNonalphanumericCharactersConfigWhenMinRequiredNonalphanumericCharactersThenCorrectValueReturned()
+        public void
+            GivenEmailStrengthRegularExpressionConfigWhenDefaultEmailStrengthRegularExpressionThenCorrectValueReturned()
         {
             // arrange
             var testClass = new MoqAutoMocker<BetterMembershipProvider>().ClassUnderTest;
-            var config = new NameValueCollection { { "minRequiredNonalphanumericCharacters", "2" } };
+            var config = new NameValueCollection { { "emailStrengthRegularExpression", ".*" } };
 
             testClass.Initialize("name", config);
-            
+
             // act
-            var result = testClass.MinRequiredNonAlphanumericCharacters;
+            var result = testClass.EmailStrengthRegularExpression;
 
             // assert
-            Assert.That(result, Is.EqualTo(2));
+            Assert.That(result, Is.EqualTo(".*"));
         }
 
         [Test]
-        public void GivenNoMinRequiredNonalphanumericCharactersConfigWhenMinRequiredNonalphanumericCharactersThenDefaultValueReturned()
+        public void
+            GivenEmptyEmailStrengthRegularExpressionConfigWhenemailStrengthRegularExpressionThenEmptytValueReturned()
         {
             // arrange
             var testClass = new MoqAutoMocker<BetterMembershipProvider>().ClassUnderTest;
-            var config = new NameValueCollection();
+            var config = new NameValueCollection { { "emailStrengthRegularExpression", string.Empty } };
 
             testClass.Initialize("name", config);
 
             // act
-            var result = testClass.MinRequiredNonAlphanumericCharacters;
+            var result = testClass.EmailStrengthRegularExpression;
 
             // assert
-            Assert.That(result, Is.EqualTo(0));
+            Assert.That(result, Is.EqualTo(string.Empty));
         }
 
         [Test]
-        public void GivenInvalidMinRequiredNonalphanumericCharactersConfigWhenMinRequiredNonalphanumericCharactersThenDefaultValueReturned()
+        public void GivenEmptyMaxEmailLengthConfigWhenMaxEmailLengthThenDefaultValueReturned()
+        {
+            // arrange
+            var testClass = new MoqAutoMocker<BetterMembershipProvider>().ClassUnderTest;
+            var config = new NameValueCollection { { "maxEmailLength", string.Empty } };
+
+            testClass.Initialize("name", config);
+
+            // act
+            var result = testClass.MaxEmailLength;
+
+            // assert
+            Assert.That(result, Is.EqualTo(254));
+        }
+
+        [Test]
+        public void GivenEmptyMaxPasswordLengthConfigWhenMaxPasswordLengthThenDefaultValueReturned()
+        {
+            // arrange
+            var testClass = new MoqAutoMocker<BetterMembershipProvider>().ClassUnderTest;
+            var config = new NameValueCollection { { "maxPasswordLength", string.Empty } };
+
+            testClass.Initialize("name", config);
+
+            // act
+            var result = testClass.MaxPasswordLength;
+
+            // assert
+            Assert.That(result, Is.EqualTo(128));
+        }
+
+        [Test]
+        public void GivenEmptyMaxUserNameLengthConfigWhenMaxUserNameLengthThenDefaultValueReturned()
+        {
+            // arrange
+            var testClass = new MoqAutoMocker<BetterMembershipProvider>().ClassUnderTest;
+            var config = new NameValueCollection { { "maxUserNameLength", string.Empty } };
+
+            testClass.Initialize("name", config);
+
+            // act
+            var result = testClass.MaxUserNameLength;
+
+            // assert
+            Assert.That(result, Is.EqualTo(56));
+        }
+
+        [Test]
+        public void
+            GivenInvalidEmailStrengthRegularExpressionConfigWhenemailStrengthRegularExpressionThenDefaultValueReturned()
+        {
+            // arrange
+            var testClass = new MoqAutoMocker<BetterMembershipProvider>().ClassUnderTest;
+            var config = new NameValueCollection { { "emailStrengthRegularExpression", "(.*" } };
+
+            // act // asert
+            Assert.Throws<ProviderException>(() => testClass.Initialize("name", config));
+        }
+
+        [Test]
+        public void GivenInvalidMaxEmailLengthConfigWhenMaxEmailLengthThenDefaultValueReturned()
+        {
+            // arrange
+            var testClass = new MoqAutoMocker<BetterMembershipProvider>().ClassUnderTest;
+            var config = new NameValueCollection { { "maxEmailLength", "x" } };
+
+            testClass.Initialize("name", config);
+
+            // act
+            var result = testClass.MaxEmailLength;
+
+            // assert
+            Assert.That(result, Is.EqualTo(254));
+        }
+
+        [Test]
+        public void GivenInvalidMaxPasswordLengthConfigWhenMaxPasswordLengthThenDefaultValueReturned()
+        {
+            // arrange
+            var testClass = new MoqAutoMocker<BetterMembershipProvider>().ClassUnderTest;
+            var config = new NameValueCollection { { "maxPasswordLength", "x" } };
+
+            testClass.Initialize("name", config);
+
+            // act
+            var result = testClass.MaxPasswordLength;
+
+            // assert
+            Assert.That(result, Is.EqualTo(128));
+        }
+
+        [Test]
+        public void GivenInvalidMaxUserNameLengthConfigWhenMaxUserNameLengthThenDefaultValueReturned()
+        {
+            // arrange
+            var testClass = new MoqAutoMocker<BetterMembershipProvider>().ClassUnderTest;
+            var config = new NameValueCollection { { "maxUserNameLength", "x" } };
+
+            testClass.Initialize("name", config);
+
+            // act
+            var result = testClass.MaxUserNameLength;
+
+            // assert
+            Assert.That(result, Is.EqualTo(56));
+        }
+
+        [Test]
+        public void
+            GivenInvalidMinRequiredNonalphanumericCharactersConfigWhenMinRequiredNonalphanumericCharactersThenDefaultValueReturned()
         {
             // arrange
             var testClass = new MoqAutoMocker<BetterMembershipProvider>().ClassUnderTest;
@@ -187,38 +170,6 @@
 
             // assert
             Assert.That(result, Is.EqualTo(0));
-        }
-
-        [Test]
-        public void GivenMinRequiredPasswordLengthConfigWhenMinRequiredPasswordLengthThenCorrectValueReturned()
-        {
-            // arrange
-            var testClass = new MoqAutoMocker<BetterMembershipProvider>().ClassUnderTest;
-            var config = new NameValueCollection { { "minRequiredPasswordLength", "2" } };
-
-            testClass.Initialize("name", config);
-
-            // act
-            var result = testClass.MinRequiredPasswordLength;
-
-            // assert
-            Assert.That(result, Is.EqualTo(2));
-        }
-
-        [Test]
-        public void GivenNoMinRequiredPasswordLengthConfigWhenMinRequiredNonalphanumericCharactersThenDefaultValueReturned()
-        {
-            // arrange
-            var testClass = new MoqAutoMocker<BetterMembershipProvider>().ClassUnderTest;
-            var config = new NameValueCollection();
-
-            testClass.Initialize("name", config);
-
-            // act
-            var result = testClass.MinRequiredPasswordLength;
-
-            // assert
-            Assert.That(result, Is.EqualTo(1));
         }
 
         [Test]
@@ -254,35 +205,19 @@
         }
 
         [Test]
-        public void GivenInvalidMaxEmailLengthConfigWhenMaxEmailLengthThenDefaultValueReturned()
+        public void GivenMaxPasswordLengthConfigWhenMaxPasswordLengthThenCorrectValueReturned()
         {
             // arrange
             var testClass = new MoqAutoMocker<BetterMembershipProvider>().ClassUnderTest;
-            var config = new NameValueCollection { { "maxEmailLength", "x" } };
+            var config = new NameValueCollection { { "maxPasswordLength", "10" } };
 
             testClass.Initialize("name", config);
 
             // act
-            var result = testClass.MaxEmailLength;
+            var result = testClass.MaxPasswordLength;
 
             // assert
-            Assert.That(result, Is.EqualTo(254));
-        }
-
-        [Test]
-        public void GivenEmptyMaxEmailLengthConfigWhenMaxEmailLengthThenDefaultValueReturned()
-        {
-            // arrange
-            var testClass = new MoqAutoMocker<BetterMembershipProvider>().ClassUnderTest;
-            var config = new NameValueCollection { { "maxEmailLength", string.Empty } };
-
-            testClass.Initialize("name", config);
-
-            // act
-            var result = testClass.MaxEmailLength;
-
-            // assert
-            Assert.That(result, Is.EqualTo(254));
+            Assert.That(result, Is.EqualTo(10));
         }
 
         [Test]
@@ -302,126 +237,163 @@
         }
 
         [Test]
-        public void GivenInvalidMaxUserNameLengthConfigWhenMaxUserNameLengthThenDefaultValueReturned()
+        public void
+            GivenMinRequiredNonalphanumericCharactersConfigWhenMinRequiredNonalphanumericCharactersThenCorrectValueReturned()
         {
             // arrange
             var testClass = new MoqAutoMocker<BetterMembershipProvider>().ClassUnderTest;
-            var config = new NameValueCollection { { "maxUserNameLength", "x" } };
+            var config = new NameValueCollection { { "minRequiredNonalphanumericCharacters", "2" } };
 
             testClass.Initialize("name", config);
 
             // act
-            var result = testClass.MaxUserNameLength;
+            var result = testClass.MinRequiredNonAlphanumericCharacters;
 
             // assert
-            Assert.That(result, Is.EqualTo(56));
+            Assert.That(result, Is.EqualTo(2));
         }
 
         [Test]
-        public void GivenEmptyMaxUserNameLengthConfigWhenMaxUserNameLengthThenDefaultValueReturned()
+        public void GivenMinRequiredPasswordLengthConfigWhenMinRequiredPasswordLengthThenCorrectValueReturned()
         {
             // arrange
             var testClass = new MoqAutoMocker<BetterMembershipProvider>().ClassUnderTest;
-            var config = new NameValueCollection { { "maxUserNameLength", string.Empty } };
+            var config = new NameValueCollection { { "minRequiredPasswordLength", "2" } };
 
             testClass.Initialize("name", config);
 
             // act
-            var result = testClass.MaxUserNameLength;
+            var result = testClass.MinRequiredPasswordLength;
 
             // assert
-            Assert.That(result, Is.EqualTo(56));
+            Assert.That(result, Is.EqualTo(2));
         }
 
         [Test]
-        public void GivenMaxPasswordLengthConfigWhenMaxPasswordLengthThenCorrectValueReturned()
+        public void
+            GivenNoMinRequiredNonalphanumericCharactersConfigWhenMinRequiredNonalphanumericCharactersThenDefaultValueReturned()
         {
             // arrange
             var testClass = new MoqAutoMocker<BetterMembershipProvider>().ClassUnderTest;
-            var config = new NameValueCollection { { "maxPasswordLength", "10" } };
+            var config = new NameValueCollection();
 
             testClass.Initialize("name", config);
 
             // act
-            var result = testClass.MaxPasswordLength;
+            var result = testClass.MinRequiredNonAlphanumericCharacters;
 
             // assert
-            Assert.That(result, Is.EqualTo(10));
+            Assert.That(result, Is.EqualTo(0));
         }
 
         [Test]
-        public void GivenInvalidMaxPasswordLengthConfigWhenMaxPasswordLengthThenDefaultValueReturned()
+        public void
+            GivenNoMinRequiredPasswordLengthConfigWhenMinRequiredNonalphanumericCharactersThenDefaultValueReturned()
         {
             // arrange
             var testClass = new MoqAutoMocker<BetterMembershipProvider>().ClassUnderTest;
-            var config = new NameValueCollection { { "maxPasswordLength", "x" } };
+            var config = new NameValueCollection();
 
             testClass.Initialize("name", config);
 
             // act
-            var result = testClass.MaxPasswordLength;
+            var result = testClass.MinRequiredPasswordLength;
 
             // assert
-            Assert.That(result, Is.EqualTo(128));
+            Assert.That(result, Is.EqualTo(1));
         }
 
         [Test]
-        public void GivenEmptyMaxPasswordLengthConfigWhenMaxPasswordLengthThenDefaultValueReturned()
+        public void GivenNoRequiresUniqueEmailAttributeWhenInitializeThenRequiresUniqueEmailIsFalse()
         {
             // arrange
-            var testClass = new MoqAutoMocker<BetterMembershipProvider>().ClassUnderTest;
-            var config = new NameValueCollection { { "maxPasswordLength", string.Empty } };
-
-            testClass.Initialize("name", config);
+            var testClass = new BetterMembershipProvider();
+            var config = new NameValueCollection();
 
             // act
-            var result = testClass.MaxPasswordLength;
-
-            // assert
-            Assert.That(result, Is.EqualTo(128));
-        }
-
-        [Test]
-        public void GivenEmailStrengthRegularExpressionConfigWhenDefaultEmailStrengthRegularExpressionThenCorrectValueReturned()
-        {
-            // arrange
-            var testClass = new MoqAutoMocker<BetterMembershipProvider>().ClassUnderTest;
-            var config = new NameValueCollection { { "emailStrengthRegularExpression", ".*" } };
-
             testClass.Initialize("name", config);
 
+            // assert
+            Assert.That(testClass.RequiresUniqueEmail, Is.False);
+        }
+
+        [Test]
+        public void GivenProviderWhenGetNumberOfUsersOnlineThenProviderException()
+        {
+            // arrange
+            var provider = new BetterMembershipProvider();
+
+            // act // assert
+            Assert.Throws<NotSupportedException>(() => provider.GetNumberOfUsersOnline());
+        }
+
+        [Test]
+        public void GivenProviderWhenGetPasswordThenProviderException()
+        {
+            // arrange
+            var provider = new BetterMembershipProvider();
+
+            // act // assert
+            Assert.Throws<NotSupportedException>(() => provider.GetPassword("userName", "answer"));
+        }
+
+        [Test]
+        public void GivenProviderWhenRequiresQuestionAndAnswerThenProviderException()
+        {
+            // arrange
+            var provider = new BetterMembershipProvider();
+
             // act
-            var result = testClass.EmailStrengthRegularExpression;
+            var result = provider.RequiresQuestionAndAnswer;
 
             // assert
-            Assert.That(result, Is.EqualTo(".*"));
+            Assert.That(result, Is.False);
         }
 
         [Test]
-        public void GivenInvalidEmailStrengthRegularExpressionConfigWhenemailStrengthRegularExpressionThenDefaultValueReturned()
+        public void GivenProviderWhenResetPasswordThenNotSupportedException()
         {
             // arrange
-            var testClass = new MoqAutoMocker<BetterMembershipProvider>().ClassUnderTest;
-            var config = new NameValueCollection { { "emailStrengthRegularExpression", "(.*" } };
+            var provider = new BetterMembershipProvider();
 
-            // act // asert
-            Assert.Throws<ProviderException>(() => testClass.Initialize("name", config));
+            // act // assert
+            Assert.Throws<NotSupportedException>(() => provider.ResetPassword(null, null));
         }
 
         [Test]
-        public void GivenEmptyEmailStrengthRegularExpressionConfigWhenemailStrengthRegularExpressionThenEmptytValueReturned()
+        public void GivenRequiresEmailWithoutEmailColumnWhenInitializeThenProviderException()
         {
             // arrange
-            var testClass = new MoqAutoMocker<BetterMembershipProvider>().ClassUnderTest;
-            var config = new NameValueCollection { { "emailStrengthRegularExpression", string.Empty } };
+            var provider = new BetterMembershipProvider();
+            var config = new NameValueCollection { { "requiresUniqueEmail", "true" } };
 
+            // act // assert
+            Assert.Throws<ProviderException>(() => provider.Initialize("name", config));
+        }
+
+        [Test]
+        public void GivenRequiresQuestionAndAnswerAttributeWhenInitializeThenProviderException()
+        {
+            // arrange
+            var provider = new BetterMembershipProvider();
+            var config = new NameValueCollection { { "requiresQuestionAndAnswer", "true" } };
+
+            // act // assert
+            Assert.Throws<ProviderException>(() => provider.Initialize("name", config));
+        }
+
+        [Test]
+        public void GivenRequiresUniqueEmailWhenInitializeThenRequiresUniqueEmailIsCorrectValue()
+        {
+            // arrange
+            var testClass = new BetterMembershipProvider();
+            var config = new NameValueCollection { { "requiresUniqueEmail", "true" }, { "userEmailColumn", "Email" } };
+
+            // act
             testClass.Initialize("name", config);
 
-            // act
-            var result = testClass.EmailStrengthRegularExpression;
-
             // assert
-            Assert.That(result, Is.EqualTo(string.Empty));
+            Assert.That(testClass.RequiresUniqueEmail, Is.True);
         }
     }
 }

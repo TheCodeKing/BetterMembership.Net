@@ -5,6 +5,7 @@
     using System.Collections.Specialized;
     using System.Configuration;
     using System.Configuration.Provider;
+    using System.Data;
     using System.Data.Entity;
     using System.Linq;
     using System.Text.RegularExpressions;
@@ -405,8 +406,7 @@
             using (var db = this.ConnectToDatabase())
             {
                 emailToMatch = AppendWildcardToSearchTerm(emailToMatch);
-                var rows =
-                    db.Query(this.sqlQueryBuilder.FindUsersByEmail, startRow, pageSize, emailToMatch).ToList();
+                var rows = db.Query(this.sqlQueryBuilder.FindUsersByEmail, startRow, pageSize, emailToMatch).ToList();
                 return this.ExtractMembershipUsersFromRows(rows, out totalRecords);
             }
         }
@@ -423,8 +423,7 @@
             using (var db = this.ConnectToDatabase())
             {
                 usernameToMatch = AppendWildcardToSearchTerm(usernameToMatch);
-                var rows =
-                    db.Query(this.sqlQueryBuilder.FindUsersByName, startRow, pageSize, usernameToMatch).ToList();
+                var rows = db.Query(this.sqlQueryBuilder.FindUsersByName, startRow, pageSize, usernameToMatch).ToList();
                 return this.ExtractMembershipUsersFromRows(rows, out totalRecords);
             }
         }
@@ -457,11 +456,6 @@
         {
             Condition.Requires(username, "username").IsNotNullOrWhiteSpace();
 
-            if (userIsOnline)
-            {
-                throw new NotSupportedException("value provided for userIsOnline is not supported");
-            }
-
             using (var db = this.ConnectToDatabase())
             {
                 var row = db.QuerySingle(this.sqlQueryBuilder.GetUser, username);
@@ -478,11 +472,6 @@
         {
             Condition.Requires(providerUserKey, "providerUserKey")
                      .Evaluate(this.ValidateProviderUserKey(providerUserKey, false));
-
-            if (userIsOnline)
-            {
-                throw new NotSupportedException("value provided for userIsOnline is not supported");
-            }
 
             var userId = (int)providerUserKey;
 
@@ -676,16 +665,6 @@
             return string.Concat("%", emailToMatch, "%");
         }
 
-        private static bool CheckEmailColumnExists(IDatabase db, string tableName, string columnName)
-        {
-            var query =
-                db.QuerySingle(
-                    @"SELECT * from INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = @0 and COLUMN_NAME = @1", 
-                    tableName, 
-                    columnName);
-            return query != null;
-        }
-
         private static DateTime GetDateTime(object value)
         {
             return value == null ? DateTime.MinValue : (DateTime)value;
@@ -740,40 +719,37 @@
         {
             using (var db = this.ConnectToDatabase())
             {
-                if (!CheckEmailColumnExists(db, this.UserTableName, this.UserEmailColumn))
+                if (!db.ColumnExists(this.UserTableName, this.UserEmailColumn))
                 {
                     if (this.RequiresUniqueEmail)
                     {
-                        try
+                        if (
+                            !db.AddColumnToTable(
+                                this.UserTableName, 
+                                this.UserEmailColumn, 
+                                SqlDbType.NVarChar, 
+                                this.MaxEmailLength, 
+                                false, 
+                                true))
                         {
-                            db.Execute(
-                                @"ALTER TABLE [" + this.UserTableName + "] ADD [" + this.UserEmailColumn + "] nvarchar("
-                                + this.MaxEmailLength + ") NOT NULL UNIQUE");
-                        }
-                        catch (Exception)
-                        {
-                            try
-                            {
-                                db.Execute(
-                                    @"ALTER TABLE [" + this.UserTableName + "] ADD [" + this.UserEmailColumn
-                                    + "] nvarchar(" + this.MaxEmailLength + ") NULL");
-                            }
-                            catch
-                            {
-                            }
+                            db.AddColumnToTable(
+                                this.UserTableName, 
+                                this.UserEmailColumn, 
+                                SqlDbType.NVarChar, 
+                                this.MaxEmailLength, 
+                                true, 
+                                false);
                         }
                     }
                     else
                     {
-                        try
-                        {
-                            db.Execute(
-                                @"ALTER TABLE [" + this.UserTableName + "] ADD [" + this.UserEmailColumn + "] nvarchar("
-                                + this.MaxEmailLength + ") NULL");
-                        }
-                        catch
-                        {
-                        }
+                        db.AddColumnToTable(
+                            this.UserTableName, 
+                            this.UserEmailColumn, 
+                            SqlDbType.NVarChar, 
+                            this.MaxEmailLength, 
+                            false, 
+                            false);
                     }
                 }
             }
