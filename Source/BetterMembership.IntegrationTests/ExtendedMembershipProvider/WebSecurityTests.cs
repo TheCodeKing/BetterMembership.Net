@@ -7,6 +7,8 @@
 
     using NUnit.Framework;
 
+    using WebMatrix.WebData;
+
     [TestFixture]
     public class WebSecurityTests : BaseMembershipTests
     {

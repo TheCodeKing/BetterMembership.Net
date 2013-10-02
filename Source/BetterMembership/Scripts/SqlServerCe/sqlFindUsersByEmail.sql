@@ -1,6 +1,6 @@
 ﻿Select	Total.total Total,
 		p.[userId] UserId, 
-		[userName] UserName,
+		p.[userName] UserName,
 		m.[IsConfirmed] IsConfirmed,
 		m.[lastPasswordFailureDate] LastPasswordFailureDate,
 		m.[PasswordFailuresSinceLastSuccess] PasswordFailuresSinceLastSuccess,
@@ -8,11 +8,10 @@
 		m.[passwordChangedDate] PasswordChangedDate,
 		p.[email] Email
 From	[UserProfile] p
-		inner join [webpages_Membership] m on m.UserId=p.[UserId]
+		left join [webpages_Membership] m on m.UserId=p.[UserId]
 		cross join (
 					Select	Count(*) total
 					From	[UserProfile] p
-							inner join [webpages_Membership] m on m.UserId=p.[UserId]
 					Where UPPER(p.[email]) like UPPER(@2)
 					) as total
 Where UPPER(p.[email]) like UPPER(@2)

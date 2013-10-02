@@ -16,4 +16,9 @@
       </providers>
     </profile>
   </system.web>
+  <entityFramework>
+    <contexts>
+      <context type="$rootnamespace$.Models.UsersContext, $assemblyname$" disableDatabaseInitialization="true" />
+    </contexts>
+  </entityFramework>
 </configuration>

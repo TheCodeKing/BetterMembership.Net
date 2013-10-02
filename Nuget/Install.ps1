@@ -1,16 +1,18 @@
 param($installPath, $toolsPath, $package, $project)
 
 try {
+	$withWebSecurity = $false
 	$projectPath = split-path $project.FullName -parent
-	$files = get-childitem $projectPath *Controller.cs -rec
+	$files = get-childitem $projectPath *.cs -rec
 	if ($files)
 	{
 		foreach ($file in $files)
 		{
 			$content = (Get-Content $file.PSPath)
-			if ($content -match "\[InitializeSimpleMembership\]")
+			if ($content -match "WebSecurity\.InitializeDatabaseConnection")
 			{
-				$content = ($content -join "`r`n") -replace "\s+\[InitializeSimpleMembership\]", ""
+				$withWebSecurity = $true
+				$content = ($content -join "`r`n") -replace "WebSecurity\.InitializeDatabaseConnection", "//WebSecurity.InitializeDatabaseConnection"
 				Set-Content $file.PSPath $content 
 			}
 		}
@@ -51,9 +53,17 @@ try {
         $newConnectionNode.SetAttribute("name", 'DefaultConnection')
         $newConnectionNode.SetAttribute("providerName", "System.Data.SqlClient")
         $newConnectionNode.SetAttribute("connectionString", $connectionString)
-		write-host $newConnectionNode.OuterXml
         $connectionStrings.AppendChild($newConnectionNode) | Out-Null
     }
+
+	if (!$withWebSecurity) {
+		$node = $xml.SelectSingleNode("/configuration/entityFramework/contexts/context[contains(@type, 'Models.UsersContext')]")
+		$parent = $node.parentNode
+		$parent.RemoveChild($node)
+		if (!$parent.hasChildnodes) {
+			$parent.parentNode.removeChild($parent);
+		}
+	}
     
     $xml.Save($configPath)
     

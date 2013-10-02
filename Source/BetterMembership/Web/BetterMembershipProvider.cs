@@ -9,6 +9,7 @@
     using System.Data.Entity;
     using System.Linq;
     using System.Text.RegularExpressions;
+    using System.Web.Helpers;
     using System.Web.Security;
 
     using BetterMembership.Data;
@@ -24,7 +25,7 @@
 
     public sealed class BetterMembershipProvider : SimpleMembershipProvider
     {
-        private static readonly Regex UserNameRegularExpression = new Regex("[^a-zA-Z0-9_-]", RegexOptions.Compiled);
+        private const int PasswordSize = 14;
 
         private readonly Func<string, IDatabase> databaseFactory;
 
@@ -64,6 +65,8 @@
 
         private string userNameColumn;
 
+        private string userNameRegularExpression;
+
         private string userTableName;
 
         public BetterMembershipProvider()
@@ -94,6 +97,8 @@
             this.databaseFactory = databaseFactory;
             this.sqlQueryBuilderFactory = sqlQueryBuilderFactory;
         }
+
+        public override string ApplicationName { get; set; }
 
         public string EmailStrengthRegularExpression
         {
@@ -215,6 +220,14 @@
             }
         }
 
+        public string UserNameRegularExpression
+        {
+            get
+            {
+                return this.userNameRegularExpression;
+            }
+        }
+
         internal bool AutoCreateTables
         {
             get
@@ -249,9 +262,10 @@
 
         public override bool ChangePassword(string username, string oldPassword, string newPassword)
         {
-            Condition.Requires(username, "username").Evaluate(this.ValidateUserName(username));
+            Condition.Requires(username, "username").IsNotNullOrWhiteSpace();
             Condition.Requires(oldPassword, "oldPassword").IsNotNullOrWhiteSpace();
-            Condition.Requires(newPassword, "newPassword").Evaluate(this.ValidatePassword(newPassword, username));
+
+            Assert(this.ValidatePassword(newPassword, username), MembershipCreateStatus.InvalidPassword);
 
             return base.ChangePassword(username, oldPassword, newPassword);
         }
@@ -262,28 +276,27 @@
             throw new NotSupportedException();
         }
 
-        public override string CreateAccount(string userName, string password, bool requireConfirmationTotken)
+        public override string CreateAccount(string userName, string password, bool requireConfirmationToken)
         {
-            Condition.Requires(userName, "userName").IsNotNullOrWhiteSpace();
-            Condition.Requires(password, "password").IsNotNullOrWhiteSpace();
+            Assert(this.ValidateUserName(userName), MembershipCreateStatus.InvalidUserName);
+            Assert(this.ValidatePassword(password, userName), MembershipCreateStatus.InvalidPassword);
 
-            Condition.Requires(userName, "userName").Evaluate(this.ValidateUserName(userName));
-            Condition.Requires(password, "password").Evaluate(this.ValidatePassword(password, userName));
-
-            return base.CreateAccount(userName, password, requireConfirmationTotken);
+            return base.CreateAccount(userName, password, requireConfirmationToken);
         }
 
         public override string CreateAccount(string userName, string password)
         {
-            Condition.Requires(userName, "userName").Evaluate(this.ValidateUserName(userName));
-            Condition.Requires(password, "password").Evaluate(this.ValidatePassword(password, userName));
+            Assert(this.ValidateUserName(userName), MembershipCreateStatus.InvalidUserName);
+            Assert(this.ValidatePassword(password, userName), MembershipCreateStatus.InvalidPassword);
 
             return base.CreateAccount(userName, password);
         }
 
         public override void CreateOrUpdateOAuthAccount(string provider, string providerUserId, string userName)
         {
-            Condition.Requires(userName, "userName").Evaluate(this.ValidateUserName(userName));
+            Condition.Ensures(provider, "provider").IsNotNullOrWhiteSpace();
+            Condition.Ensures(providerUserId, "providerUserId").IsNotNullOrWhiteSpace();
+            Condition.Ensures(userName, "userName").IsNotNullOrWhiteSpace();
 
             base.CreateOrUpdateOAuthAccount(provider, providerUserId, userName);
         }
@@ -327,6 +340,12 @@
 
             var profile = new Dictionary<string, object>();
 
+            if (!this.HasEmailColumnDefined && !string.IsNullOrWhiteSpace(email))
+            {
+                status = MembershipCreateStatus.ProviderError;
+                return null;
+            }
+
             if (this.RequiresUniqueEmail && this.HasEmailColumnDefined && !string.IsNullOrWhiteSpace(email))
             {
                 var user = this.GetUserNameByEmail(email);
@@ -359,15 +378,14 @@
         public override string CreateUserAndAccount(
             string userName, string password, bool requireConfirmation, IDictionary<string, object> values)
         {
-            Condition.Requires(userName, "userName").IsNotNullOrWhiteSpace();
-            Condition.Requires(password, "password").IsNotNullOrWhiteSpace();
-
-            Condition.Requires(userName, "userName").Evaluate(this.ValidateUserName(userName));
-            Condition.Requires(password, "password").Evaluate(this.ValidatePassword(password, userName));
+            Assert(this.ValidateUserName(userName), MembershipCreateStatus.InvalidUserName);
+            Assert(this.ValidatePassword(password, userName), MembershipCreateStatus.InvalidPassword);
 
             if (this.RequiresUniqueEmail && (values == null || !values.ContainsKey(this.UserEmailColumn)))
             {
-                throw new ArgumentException(string.Format("{0} is required", this.UserEmailColumn));
+                throw new MembershipCreateUserException(
+                    string.Format("{0} is required", this.UserEmailColumn), 
+                    new MembershipCreateUserException(MembershipCreateStatus.UserRejected));
             }
 
             return base.CreateUserAndAccount(userName, password, requireConfirmation, values);
@@ -470,8 +488,8 @@
 
         public override MembershipUser GetUser(object providerUserKey, bool userIsOnline)
         {
-            Condition.Requires(providerUserKey, "providerUserKey")
-                     .Evaluate(this.ValidateProviderUserKey(providerUserKey, false));
+            Condition.Requires(providerUserKey, "providerUserKey").IsOfType(typeof(int));
+            Condition.Requires((int)providerUserKey, "providerUserKey").IsGreaterThan(-1);
 
             var userId = (int)providerUserKey;
 
@@ -531,7 +549,7 @@
             this.userTableName = config.GetString("userTableName", "UserProfile");
             this.userIdColumn = config.GetString("userIdColumn", "UserId");
             this.userNameColumn = config.GetString("userNameColumn", "UserName");
-            this.userEmailColumn = config.GetString("userEmailColumn");
+            this.userEmailColumn = config.GetString("userEmailColumn", "Email");
             this.autoCreateTables = config.GetBoolean("autoCreateTables", true);
             this.autoInitialize = config.GetBoolean("autoInitialize", true);
             this.maxInvalidPasswordAttempts = config.GetInteger("maxInvalidPasswordAttempts", int.MaxValue);
@@ -542,8 +560,9 @@
             this.maxUserNameLength = config.GetInteger("maxUserNameLength", 56);
             this.maxPasswordLength = config.GetInteger("maxPasswordLength", 128);
             this.emailStrengthRegularExpression = config.GetString(
-                "emailStrengthRegularExpression", @"[-0-9a-zA-Z.+_]+@[-0-9a-zA-Z.+_]+\.[a-zA-Z]{2,4}");
-
+                "emailStrengthRegularExpression", @"^[0-9a-zA-Z.+_-]+@[0-9a-zA-Z.+_-]+\.[a-zA-Z]{2,4}$");
+            this.userNameRegularExpression = config.GetString("userNameRegularExpression", @"^[0-9a-zA-Z_-]+$");
+            this.ApplicationName = config.GetString("applicationName", "/");
             try
             {
                 new Regex(this.emailStrengthRegularExpression);
@@ -551,6 +570,15 @@
             catch (ArgumentException e)
             {
                 throw new ProviderException("invalid value for emailStrengthRegularExpression", e);
+            }
+
+            try
+            {
+                new Regex(this.userNameRegularExpression);
+            }
+            catch (ArgumentException e)
+            {
+                throw new ProviderException("invalid value for userNameRegularExpression", e);
             }
 
             if (config.ContainsKey("passwordAttemptWindowInSeconds") && config.ContainsKey("passwordAttemptWindow"))
@@ -593,6 +621,7 @@
             config.Remove("maxUserNameLength");
             config.Remove("maxPasswordLength");
             config.Remove("emailStrengthRegularExpression");
+            config.Remove("userNameRegularExpression");
 
             var providerName = string.Empty;
             var connectionString = ConfigurationManager.ConnectionStrings[this.ConnectionStringName];
@@ -617,16 +646,32 @@
             }
         }
 
-        public override string ResetPassword(string username, string answer)
+        public override string ResetPassword(string userName, string answer)
         {
-            throw new NotSupportedException();
+            Condition.Requires(userName, "userName").IsNotNullOrEmpty();
+
+            if (!string.IsNullOrWhiteSpace(answer))
+            {
+                throw new NotSupportedException("answer is not supported, pass an empty string or null");
+            }
+
+            var newPassword =
+                Membership.GeneratePassword(
+                    this.MinRequiredPasswordLength < PasswordSize ? PasswordSize : this.MinRequiredPasswordLength, 
+                    this.MinRequiredNonAlphanumericCharacters);
+
+            if (!this.HasLocalAccount(this.GetUserId(userName)))
+            {
+                this.CreateAccount(userName, newPassword, false);
+                return newPassword;
+            }
+
+            return this.ResetPasswordAndUnlock(userName, newPassword) ? newPassword : null;
         }
 
         public override bool ResetPasswordWithToken(string token, string newPassword)
         {
-            Condition.Requires(newPassword, "newPassword").IsNotNullOrWhiteSpace();
-            Condition.Requires(newPassword, "newPassword")
-                     .Evaluate(this.ValidatePasswordWithoutNotification(newPassword));
+            Assert(this.ValidatePasswordWithoutNotification(newPassword), MembershipCreateStatus.InvalidPassword);
 
             return base.ResetPasswordWithToken(token, newPassword);
         }
@@ -644,10 +689,11 @@
         public override void UpdateUser(MembershipUser user)
         {
             Condition.Requires(user, "user").IsNotNull();
-            Condition.Requires(user.UserName, "user.UserName").Evaluate(this.ValidateUserName(user.UserName));
-            Condition.Requires(user.ProviderUserKey, "user.ProviderUserKey")
-                     .Evaluate(this.ValidateProviderUserKey(user.ProviderUserKey, false));
-            Condition.Requires(user.Email, "user.Email").Evaluate(this.ValidateEmail(user.Email));
+
+            Assert(this.ValidateUserName(user.UserName), MembershipCreateStatus.InvalidUserName);
+            Assert(this.ValidateEmail(user.Email), MembershipCreateStatus.InvalidEmail);
+            Assert(
+                this.ValidateProviderUserKey(user.ProviderUserKey, false), MembershipCreateStatus.InvalidProviderUserKey);
 
             using (var db = this.ConnectToDatabase())
             {
@@ -663,6 +709,14 @@
         private static string AppendWildcardToSearchTerm(string emailToMatch)
         {
             return string.Concat("%", emailToMatch, "%");
+        }
+
+        private static void Assert(bool condition, MembershipCreateStatus status)
+        {
+            if (!condition)
+            {
+                throw new MembershipCreateUserException(status);
+            }
         }
 
         private static DateTime GetDateTime(object value)
@@ -689,9 +743,9 @@
         {
             int userId = row[1];
             string name = row[2];
-            bool isConfirmed = row[3];
+            bool isConfirmed = row[3] ?? true;
             DateTime lastPasswordFailureDate = GetDateTime(row[4]);
-            int passwordFailuresSinceLastSuccess = row[5];
+            int passwordFailuresSinceLastSuccess = row[5] ?? 0;
             DateTime creationDate = GetDateTime(row[6]);
             DateTime passwordChangedDate = GetDateTime(row[7]);
             string email = this.HasEmailColumnDefined ? row[8] : string.Empty;
@@ -772,6 +826,8 @@
         {
             using (new DefaultProviderSwitcher(this))
             {
+                System.Data.Entity.Database.SetInitializer<DbContext>(null);
+
                 using (var context = new DbContext(this.ConnectionStringName))
                 {
                     if (!context.Database.Exists())
@@ -789,9 +845,24 @@
             }
         }
 
+        private bool ResetPasswordAndUnlock(string userName, string newPassword)
+        {
+            var hashedPassword = Crypto.HashPassword(newPassword);
+
+            using (var db = this.ConnectToDatabase())
+            {
+                return db.Execute(this.sqlQueryBuilder.ResetPassword, userName, hashedPassword) > 0;
+            }
+        }
+
         private bool ValidateEmail(string email)
         {
-            if (string.IsNullOrWhiteSpace(email) && this.RequiresUniqueEmail)
+            return this.ValidateEmail(email, this.RequiresUniqueEmail, this.MaxEmailLength);
+        }
+
+        private bool ValidateEmail(string email, bool requireUnique, int maxLength)
+        {
+            if (string.IsNullOrWhiteSpace(email) && requireUnique)
             {
                 return false;
             }
@@ -801,7 +872,7 @@
                 return true;
             }
 
-            if (email.Length > this.MaxEmailLength)
+            if (email.Length > maxLength)
             {
                 return false;
             }
@@ -873,8 +944,30 @@
 
         private bool ValidateUserName(string username)
         {
-            return !string.IsNullOrWhiteSpace(username) && username.Length <= this.MaxUserNameLength
-                   && !UserNameRegularExpression.IsMatch(username);
+            if (string.IsNullOrWhiteSpace(username))
+            {
+                return false;
+            }
+
+            if (username.Contains("@"))
+            {
+                return this.ValidateEmail(username, true, this.MaxUserNameLength);
+            }
+
+            if (username.Length > this.MaxUserNameLength)
+            {
+                return false;
+            }
+
+            if (this.UserNameRegularExpression.Length > 0)
+            {
+                if (!Regex.IsMatch(username, this.UserNameRegularExpression))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
     }
 }

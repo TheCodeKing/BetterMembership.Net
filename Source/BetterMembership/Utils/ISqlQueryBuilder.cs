@@ -27,6 +27,8 @@
 
         string GetUserProfile { get; }
 
+        string ResetPassword { get; }
+
         string UnlockUser { get; }
 
         string UpdateUserEmail { get; }

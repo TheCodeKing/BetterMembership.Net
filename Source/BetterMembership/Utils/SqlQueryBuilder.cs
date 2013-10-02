@@ -42,6 +42,8 @@
 
         private string getUserQuery;
 
+        private string resetPasswordQuery;
+
         private string unlockUserQuery;
 
         private string updateUserEmailQuery;
@@ -163,6 +165,15 @@
             {
                 return this.getUserProfileQuery
                        ?? (this.getUserProfileQuery = this.PrepareSqlStatment("sqlGetUserProfile"));
+            }
+        }
+
+        public string ResetPassword
+        {
+            get
+            {
+                return this.resetPasswordQuery
+                       ?? (this.resetPasswordQuery = this.PrepareSqlStatment("sqlResetPassword"));
             }
         }
 

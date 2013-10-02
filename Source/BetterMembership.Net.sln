@@ -21,8 +21,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Nuget", "Nuget", "{45C48895-5FB2-492A-8539-A88DD191A952}"
 	ProjectSection(SolutionItems) = preProject
+		..\Nuget\app.config.transform = ..\Nuget\app.config.transform
 		..\Nuget\BetterMembership.Net.nuspec = ..\Nuget\BetterMembership.Net.nuspec
+		..\Nuget\Install.ps1 = ..\Nuget\Install.ps1
 		..\Nuget\pack-nuget.bat = ..\Nuget\pack-nuget.bat
+		..\Nuget\Uninstall.ps1 = ..\Nuget\Uninstall.ps1
 		..\Nuget\web.config.transform = ..\Nuget\web.config.transform
 	EndProjectSection
 EndProject

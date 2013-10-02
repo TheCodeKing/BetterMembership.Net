@@ -1,27 +1,22 @@
 param($installPath, $toolsPath, $package, $project)
 
 try {
-
 	$projectPath = split-path $project.FullName -parent
-	$files = get-childitem $projectPath AccountController.cs -rec
+	$files = get-childitem $projectPath *.cs -rec
 	if ($files)
 	{
 		foreach ($file in $files)
 		{
 			$content = (Get-Content $file.PSPath)
-			if ($content -match "\s+\[Authorize\]")
+			if ($content -match "//WebSecurity\.InitializeDatabaseConnection")
 			{
-				$content = ($content -join "`r`n") -replace "\s+\[Authorize\]", "    [Authorize]\r\n    [InitializeSimpleMembership]"
+				$content = ($content -join "`r`n") -replace "//WebSecurity\.InitializeDatabaseConnection", "WebSecurity.InitializeDatabaseConnection"
 				Set-Content $file.PSPath $content 
 			}
 		}
 	}
-	
-    $timestamp = (Get-Date).ToString('yyyyMMddHHmmss')
-    $projectName = [IO.Path]::GetFileName($project.ProjectName.Trim([IO.PATH]::DirectorySeparatorChar, [IO.PATH]::AltDirectorySeparatorChar))
-    $catalogName = "aspnet-$projectName-$timestamp"
-    $connectionString ="Data Source=(LocalDb)\v11.0;Initial Catalog=$catalogName;Integrated Security=SSPI;AttachDBFilename=|DataDirectory|\$catalogName.mdf"
-    $connectionStringToken = 'Data Source=(LocalDb)\v11.0;'
+
+
     $config = $project.ProjectItems | Where-Object { $_.Name -eq "Web.config" }    
     $configPath = ($config.Properties | Where-Object { $_.Name -eq "FullPath" }).Value
     
@@ -54,11 +49,8 @@ try {
 	if ($membershipProviderNode.name) {
 		$node.SetAttribute("defaultProvider", $membershipProviderNode.name)
 	} else {
-		write-host "remove"
 		$node.removeAttribute("defaultProvider")
 	}
-    
-	write-host "Web.config transform"
 	
     $xml.Save($configPath)
 	

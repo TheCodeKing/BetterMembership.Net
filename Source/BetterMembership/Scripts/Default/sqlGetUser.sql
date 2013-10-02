@@ -8,5 +8,5 @@
 		m.[passwordChangedDate] PasswordChangedDate,
 		p.[email] Email
 From [UserProfile] p
-	  inner join [webpages_Membership] m on m.UserId=p.[UserId]
+	  left join [webpages_Membership] m on m.UserId=p.[UserId]
 Where UPPER(p.[userName]) = UPPER(@0)

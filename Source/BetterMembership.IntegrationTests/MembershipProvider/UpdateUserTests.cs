@@ -1,6 +1,7 @@
 ﻿namespace BetterMembership.IntegrationTests.MembershipProvider
 {
     using System;
+    using System.Web.Security;
 
     using BetterMembership.IntegrationTests.Helpers;
 
@@ -76,7 +77,7 @@
         [TestCase(SqlClientCeProviderWithEmail)]
         [TestCase(SqlClientCeProviderWithUniqueEmail)]
         [TestCase(SqlClientCeProviderWithoutEmail)]
-        public void GivenConfirmedUserWithInvalidEmailWhenUpdateUserThenArgumentException(string providerName)
+        public void GivenConfirmedUserWithInvalidEmailWhenUpdateUserThenMembershipCreateUserException(string providerName)
         {
             // arrange
             var testClass = this.WithProvider(providerName);
@@ -84,14 +85,14 @@
             testUser.Email = "email";
 
             // act // assert
-            Assert.Throws<ArgumentException>(() => testClass.UpdateUser(testUser));
+            Assert.Throws<MembershipCreateUserException>(() => testClass.UpdateUser(testUser));
         }
 
         [TestCase(SqlClientProviderWithEmail)]
         [TestCase(SqlClientProviderWithUniqueEmail)]
         [TestCase(SqlClientCeProviderWithEmail)]
         [TestCase(SqlClientCeProviderWithUniqueEmail)]
-        public void GivenConfirmedUserWithEmailTooLongWhenUpdateUserThenArgumentException(string providerName)
+        public void GivenConfirmedUserWithEmailTooLongWhenUpdateUserThenMembershipCreateUserException(string providerName)
         {
             // arrange
             var testClass = this.WithProvider(providerName);
@@ -99,7 +100,7 @@
             testUser.Email = "@x.com".PadLeft(testClass.AsBetter().MaxEmailLength + 1);
 
             // act // assert
-            Assert.Throws<ArgumentException>(() => testClass.UpdateUser(testUser));
+            Assert.Throws<MembershipCreateUserException>(() => testClass.UpdateUser(testUser));
         }
 
         [TestCase(SqlClientProviderWithEmail)]
@@ -117,7 +118,7 @@
 
         [TestCase(SqlClientProviderWithUniqueEmail)]
         [TestCase(SqlClientCeProviderWithUniqueEmail)]
-        public void GivenConfirmedUserWithUniqueEmailNullWhenUpdateUserThenArgumentException(string providerName)
+        public void GivenConfirmedUserWithUniqueEmailNullWhenUpdateUserThenMembershipCreateUserException(string providerName)
         {
             // arrange
             var testClass = this.WithProvider(providerName);
@@ -125,7 +126,7 @@
             testUser.Email = null;
 
             // act // assert
-            Assert.Throws<ArgumentNullException>(() => testClass.UpdateUser(testUser));
+            Assert.Throws<MembershipCreateUserException>(() => testClass.UpdateUser(testUser));
         }
 
         [TestCase(SqlClientProviderWithEmail)]
@@ -143,7 +144,7 @@
 
         [TestCase(SqlClientProviderWithUniqueEmail)]
         [TestCase(SqlClientCeProviderWithUniqueEmail)]
-        public void GivenConfirmedUserWithUniqueEmailEmptyWhenUpdateUserThenArgumentException(string providerName)
+        public void GivenConfirmedUserWithUniqueEmailEmptyWhenUpdateUserThenMembershipCreateUserException(string providerName)
         {
             // arrange
             var testClass = this.WithProvider(providerName);
@@ -151,7 +152,7 @@
             testUser.Email = string.Empty;
 
             // act // assert
-            Assert.Throws<ArgumentException>(() => testClass.UpdateUser(testUser));
+            Assert.Throws<MembershipCreateUserException>(() => testClass.UpdateUser(testUser));
         }
 
         [TestCase(SqlClientProviderWithEmail)]

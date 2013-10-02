@@ -351,13 +351,13 @@
         }
 
         [Test]
-        public void GivenProviderWhenResetPasswordThenNotSupportedException()
+        public void GivenProviderWhenResetPasswordWithAnswerThenNotSupportedException()
         {
             // arrange
             var provider = new BetterMembershipProvider();
 
             // act // assert
-            Assert.Throws<NotSupportedException>(() => provider.ResetPassword(null, null));
+            Assert.Throws<NotSupportedException>(() => provider.ResetPassword("username", "not null"));
         }
 
         [Test]
@@ -365,7 +365,11 @@
         {
             // arrange
             var provider = new BetterMembershipProvider();
-            var config = new NameValueCollection { { "requiresUniqueEmail", "true" } };
+            var config = new NameValueCollection
+                             {
+                                 { "requiresUniqueEmail", "true" },
+                                 { "userEmailColumn", string.Empty }
+                             };
 
             // act // assert
             Assert.Throws<ProviderException>(() => provider.Initialize("name", config));
