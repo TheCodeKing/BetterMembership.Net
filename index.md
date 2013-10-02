@@ -11,8 +11,6 @@ Documentation coming soon...
 
 ### Installation
 
-Install the library using Nuget.
-
-	PM> Install-Package BetterMembership.Net
+Coming soon...
 
 	
