@@ -69,6 +69,8 @@
 
         private string userTableName;
 
+        private bool allowEmailAsUserName;
+
         public BetterMembershipProvider()
             : this(
                 new WebSecurityFacade(), 
@@ -257,6 +259,14 @@
             get
             {
                 return this.passwordAttemptWindowInSeconds;
+            }
+        }
+
+        public bool AllowEmailAsUserName
+        {
+            get
+            {
+                return this.allowEmailAsUserName;
             }
         }
 
@@ -563,6 +573,8 @@
                 "emailStrengthRegularExpression", @"^[0-9a-zA-Z.+_-]+@[0-9a-zA-Z.+_-]+\.[a-zA-Z]{2,4}$");
             this.userNameRegularExpression = config.GetString("userNameRegularExpression", @"^[0-9a-zA-Z_-]+$");
             this.ApplicationName = config.GetString("applicationName", "/");
+            this.allowEmailAsUserName = config.GetBoolean("allowEmailAsUserName", true);
+
             try
             {
                 new Regex(this.emailStrengthRegularExpression);
@@ -622,6 +634,7 @@
             config.Remove("maxPasswordLength");
             config.Remove("emailStrengthRegularExpression");
             config.Remove("userNameRegularExpression");
+            config.Remove("allowEmailAsUserName");
 
             var providerName = string.Empty;
             var connectionString = ConfigurationManager.ConnectionStrings[this.ConnectionStringName];
@@ -949,7 +962,7 @@
                 return false;
             }
 
-            if (username.Contains("@"))
+            if (username.Contains("@") && this.AllowEmailAsUserName)
             {
                 return this.ValidateEmail(username, true, this.MaxUserNameLength);
             }
