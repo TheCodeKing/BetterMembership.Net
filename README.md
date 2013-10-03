@@ -21,3 +21,13 @@ For more information on why SimpleMembershipProvider cannot natively be used as 
 * Supports initialization of multiple provider instances
 * Supports external authentication providers
 * Provides customizable validation of username/email/password
+
+#### Installation
+
+	PM> Install-Package BetterMembership.Net
+		
+[1]: http://www.thecodeking.co.uk/2013/08/simplemembershipprovider-vs.html
+[2]: http://msdn.microsoft.com/en-us/library/webmatrix.webdata.extendedmembershipprovider(v=vs.111).aspx
+[3]: http://msdn.microsoft.com/en-us/library/system.web.security.membershipprovider.aspx
+[4]: http://msdn.microsoft.com/en-us/library/webmatrix.webdata.simplemembershipprovider(v=vs.111).aspx
+[5]: http://msdn.microsoft.com/en-us/library/webmatrix.webdata.websecurity(v=vs.111).aspx
