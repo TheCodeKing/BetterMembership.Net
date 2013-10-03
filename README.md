@@ -25,6 +25,10 @@ For more information on why SimpleMembershipProvider cannot natively be used as 
 #### Installation
 
 	PM> Install-Package BetterMembership.Net
+
+#### Documentation
+
+Further documentation can be found at [http://thecodeking.github.io/BetterMembership.Net]
 		
 [1]: http://www.thecodeking.co.uk/2013/08/simplemembershipprovider-vs.html
 [2]: http://msdn.microsoft.com/en-us/library/webmatrix.webdata.extendedmembershipprovider(v=vs.111).aspx
