@@ -17,17 +17,17 @@ The providers are configured within the web.config in the usual way. Note Better
 
 	<membership defaultProvider="BetterProvider">
       <providers>
-        <add name="BetterProvider" type="BetterMembership.Web.BetterMembershipProvider, BetterMembership, Version=1.0.0.0, Culture=neutral, PublicKeyToken=737bc70442f2c4af" connectionStringName="DefaultConnection" autoInitialize="true" />
+        <add name="BetterProvider" type="BetterMembership.Web.BetterMembershipProvider, BetterMembership, Version=1.0.1.0, Culture=neutral, PublicKeyToken=737bc70442f2c4af" connectionStringName="DefaultConnection" autoInitialize="true" />
       </providers>
     </membership>
     <roleManager defaultProvider="BetterProvider" enabled="true">
       <providers>
-        <add name="BetterProvider" type="BetterMembership.Web.BetterRoleProvider, BetterMembership, Version=1.0.0.0, Culture=neutral, PublicKeyToken=737bc70442f2c4af" membershipProviderName="BetterProvider" />
+        <add name="BetterProvider" type="BetterMembership.Web.BetterRoleProvider, BetterMembership, Version=1.0.1.0, Culture=neutral, PublicKeyToken=737bc70442f2c4af" membershipProviderName="BetterProvider" />
       </providers>
     </roleManager>
     <profile defaultProvider="BetterProvider" enabled="true">
       <providers>
-        <add name="BetterProvider" type="BetterMembership.Web.BetterProfileProvider, BetterMembership, Version=1.0.0.0, Culture=neutral, PublicKeyToken=737bc70442f2c4af" membershipProviderName="BetterProvider" />
+        <add name="BetterProvider" type="BetterMembership.Web.BetterProfileProvider, BetterMembership, Version=1.0.1.0, Culture=neutral, PublicKeyToken=737bc70442f2c4af" membershipProviderName="BetterProvider" />
       </providers>
 	  <properties>
 	  </properties>
