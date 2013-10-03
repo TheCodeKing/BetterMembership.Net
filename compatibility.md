@@ -32,7 +32,7 @@ The library maps properties on the legacy MembershipUser instance as follows.
 
 * CreationDate -> WebPages_Membership.CreatedDate
 * IsApproved -> WebPages_Membership.IsConfirmed
-* LAstPAsswordChangedDate -> WebPages_Membership.PasswordChangedDate
+* LastPasswordChangedDate -> WebPages_Membership.PasswordChangedDate
 * IsLockedOut -> Based on configured maxInvalidPasswordAttempts/passwordAttemptWindow
 * UserProviderKey -> Configured userIdColumn on user table
 * Username -> Configured userNameColumn on user table
