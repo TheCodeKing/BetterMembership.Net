@@ -13,7 +13,7 @@ The library can be installed via Nuget as follows:
 	
 ### Configuration
 
-The providers are configured within the web.config in the usual way. Note BetterRoleProvider and BetterProfileProvider require an membershipProviderName attribute. This is used to reference an instance of the BetterMembershipProvider instance from which they will inherit the relevant settings, such as connection string and schema configuration.
+The providers are configured within the web.config in the usual way. Note BetterRoleProvider and BetterProfileProvider require a membershipProviderName attribute. This is used to reference an instance of the BetterMembershipProvider instance from which they will inherit the relevant settings, such as connection string and schema configuration.
 
 	<membership defaultProvider="BetterProvider">
       <providers>
