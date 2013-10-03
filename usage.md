@@ -63,9 +63,9 @@ The name of the column to use for storing userName, specified in calls to WebSec
 
 The name of the column to use for storing the unique identifier of the user, specified in calls to WebSecurity.InitializeDatabaseConnection.
 
-##### UserEmailColumn <small>Email</small>
+##### UserEmailColumn <small>Not Set</small>
 
-The name of the column to use for storing the email address of the user, which will then be mapped to MembershipProvider APIs.
+The name of the column to use for storing the email address of the user, which will then be mapped to MembershipProvider APIs. If not set, then any FindByEmail APIs will treat email as username, and the email property of MembershipUser will be null.
 
 ##### AutoCreateTables <small>true</small>
 
