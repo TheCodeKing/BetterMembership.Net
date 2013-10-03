@@ -34,7 +34,6 @@ The BetterProfileProvider is provided for backwards compatibility with legacy sy
 
 Like the BetterMembershipProvider, BetterRoleProvider overcomes a limitation of SimpleRoleProvider, and allows multiple instances to be configured and used at runtime. It uses the SimpleRoleProvider database schema, and changes the behaviour of GetRolesForUser to avoid InvalidOperationException when a user is not found. This makes it more compatible with some role management systems that use multiple providers at runtime.
 
-
 ### Installation
 
 	PM> Install-Package BetterMembership.Net
