@@ -559,7 +559,7 @@
             this.userTableName = config.GetString("userTableName", "UserProfile");
             this.userIdColumn = config.GetString("userIdColumn", "UserId");
             this.userNameColumn = config.GetString("userNameColumn", "UserName");
-            this.userEmailColumn = config.GetString("userEmailColumn", "Email");
+            this.userEmailColumn = config.GetString("userEmailColumn");
             this.autoCreateTables = config.GetBoolean("autoCreateTables", true);
             this.autoInitialize = config.GetBoolean("autoInitialize", true);
             this.maxInvalidPasswordAttempts = config.GetInteger("maxInvalidPasswordAttempts", int.MaxValue);

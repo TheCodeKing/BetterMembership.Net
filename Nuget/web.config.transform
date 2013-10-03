@@ -2,17 +2,17 @@
   <system.web>
     <membership>
       <providers>
-        <add name="BetterProvider" type="BetterMembership.Web.BetterMembershipProvider, BetterMembership, Version=1.0.0.0, Culture=neutral, PublicKeyToken=737bc70442f2c4af" connectionStringName="DefaultConnection" autoInitialize="true" />
+        <add name="BetterProvider" type="BetterMembership.Web.BetterMembershipProvider, BetterMembership, Version=1.0.1.0, Culture=neutral, PublicKeyToken=737bc70442f2c4af" connectionStringName="DefaultConnection" autoInitialize="true" userEmailColumn="Email" />
       </providers>
     </membership>
     <roleManager>
       <providers>
-        <add name="BetterProvider" type="BetterMembership.Web.BetterRoleProvider, BetterMembership, Version=1.0.0.0, Culture=neutral, PublicKeyToken=737bc70442f2c4af" membershipProviderName="BetterProvider" />
+        <add name="BetterProvider" type="BetterMembership.Web.BetterRoleProvider, BetterMembership, Version=1.0.1.0, Culture=neutral, PublicKeyToken=737bc70442f2c4af" membershipProviderName="BetterProvider" />
       </providers>
     </roleManager>
     <profile>
       <providers>
-        <add name="BetterProvider" type="BetterMembership.Web.BetterProfileProvider, BetterMembership, Version=1.0.0.0, Culture=neutral, PublicKeyToken=737bc70442f2c4af" membershipProviderName="BetterProvider" />
+        <add name="BetterProvider" type="BetterMembership.Web.BetterProfileProvider, BetterMembership, Version=1.0.1.0, Culture=neutral, PublicKeyToken=737bc70442f2c4af" membershipProviderName="BetterProvider" />
       </providers>
       <properties>
       </properties>

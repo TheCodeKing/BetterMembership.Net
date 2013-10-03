@@ -8,8 +8,8 @@ using System.Security;
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: AssemblyDescription("A better implementation of ExtendedMembershipProvider with support for legacy MembershipProvider APIs.")]
-[assembly: AssemblyVersion("1.0.0")]
-[assembly: AssemblyFileVersion("1.0.0")]
+[assembly: AssemblyVersion("1.0.1")]
+[assembly: AssemblyFileVersion("1.0.1")]
 
 #if SIGNED
 [assembly: AssemblyKeyFile(@"..\..\..\..\..\thecodeking.snk")]
