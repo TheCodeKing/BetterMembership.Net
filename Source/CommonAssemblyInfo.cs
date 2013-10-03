@@ -1,6 +1,8 @@
 ﻿using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Security;
 
+[assembly: AllowPartiallyTrustedCallers]
 [assembly: AssemblyCompany("TheCodeKing")]
 [assembly: AssemblyCopyright("Copyright © 2013")]
 [assembly: AssemblyTrademark("")]
