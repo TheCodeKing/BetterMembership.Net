@@ -35,7 +35,7 @@ The providers are configured within the web.config in the usual way. Note Better
 	
 ### Initialization
 
-The providers can be initialized in one of 2 ways. Either automatically by setting the autoInitialize attribute to true, or alternatively by a call to WebSecurity.InitializeDatabaseConnection once on application startup. Support for multiple providers is only possible when using autoInitialize=true. 
+The providers can be initialized in one of 2 ways. Either automatically by setting the autoInitialize attribute to true, or alternatively by a call to WebSecurity.InitializeDatabaseConnection once on application startup. Support for non-default providers is only possible when using autoInitialize=true. 
 
 Regardless of how the provider is initialized, the provider must be configured via the web.config with the correct userIdColumn, userNameColumn, and userTableName attributes (see below). When using WebSecurity.InitializeDatabaseConnection for initialization, these values must correspond to the values passed to the API call.
 
